@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">msea-compose</string>
+    <string name="app_name">Msea</string>
+    <string name="placeholder_search">Search</string>
+    <string name="ab1_inversions">Inversions</string>
 </resources>
