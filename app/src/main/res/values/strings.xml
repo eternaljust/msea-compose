@@ -1,5 +1,21 @@
 <resources>
     <string name="app_name">Msea</string>
-    <string name="placeholder_search">Search</string>
+    <string name="favorite_collections">Favorite Collections</string>
+    <string name="align_your_body">Align your body</string>
     <string name="ab1_inversions">Inversions</string>
+    <string name="ab2_quick_yoga">Quick yoga</string>
+    <string name="ab3_stretching">Stretching</string>
+    <string name="ab4_tabata">Tabata</string>
+    <string name="ab5_hiit">HIIT</string>
+    <string name="ab6_pre_natal_yoga">Pre-natal yoga</string>
+    <string name="fc1_short_mantras">Short mantras</string>
+    <string name="fc2_nature_meditations">Nature meditations</string>
+    <string name="fc3_stress_and_anxiety">Stress and anxiety</string>
+    <string name="fc4_self_massage">Self massage</string>
+    <string name="fc5_overwhelmed">Overwhelmed</string>
+    <string name="fc6_nightly_wind_down">Nightly wind down</string>
+    <string name="cd_fab_start">start</string>
+    <string name="bottom_navigation_home">HOME</string>
+    <string name="bottom_navigation_profile">PROFILE</string>
+    <string name="placeholder_search">Search</string>
 </resources>
