@@ -9,8 +9,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,11 +17,11 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,12 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
+import java.util.*
 
 private val alignYourBodyData = listOf(
     R.drawable.ab1_inversions to R.string.ab1_inversions,
@@ -60,12 +61,22 @@ private data class DrawableStringPair(
     @StringRes val text: Int
 )
 
+private val bottomNavigationBarItems = listOf(
+    ItmeStringPair(Icons.Default.Home, R.string.bottom_navigation_home),
+    ItmeStringPair(Icons.Default.AccountCircle, R.string.bottom_navigation_profile)
+)
+
+private data class ItmeStringPair(
+    val image: ImageVector,
+    @StringRes val text: Int
+)
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MseaComposeTheme {
-                MyApp()
+                MySootheApp()
             }
         }
     }
@@ -198,7 +209,7 @@ fun AlignYourBodyElement(
 
         Text(
             text = stringResource(id = text),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.paddingFromBaseline(24.dp, 8.dp)
         )
     }
@@ -272,6 +283,78 @@ fun FavoriteCollectionsGrid(
     }
 }
 
+@Composable
+fun HomeSection(
+    @StringRes title: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier) {
+        Text(
+            stringResource(id = title).uppercase(Locale.getDefault()),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .paddingFromBaseline(top = 40.dp, bottom = 8.dp)
+                .padding(horizontal = 16.dp)
+        )
+
+        content()
+    }
+}
+
+@Composable
+fun HomeScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier
+            .padding(vertical = 16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Spacer(Modifier.height(16.dp))
+
+        SearchBar(Modifier.padding(horizontal = 16.dp))
+        
+        HomeSection(title = R.string.align_your_body) {
+            AlignYourBodyRow()
+        }
+        
+        HomeSection(title = R.string.favorite_collections) {
+            FavoriteCollectionsGrid()
+        }
+
+        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun SootheBottomNavigation() {
+    var selectedItem by remember { mutableStateOf(0) }
+
+    NavigationBar {
+        bottomNavigationBarItems.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = { Icon(item.image, contentDescription = null) },
+                label = { Text(stringResource(id = item.text)) },
+                selected = selectedItem == index,
+                onClick = { selectedItem = index }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MySootheApp() {
+    MaterialTheme {
+        Scaffold(
+            bottomBar = {
+                SootheBottomNavigation()
+            }
+        ) { padding ->
+            HomeScreen(Modifier.padding(padding))
+        }
+    }
+}
+
 @Preview(showBackground = true, widthDp = 320, heightDp = 320, uiMode = UI_MODE_NIGHT_YES)
 @Preview(showBackground = true, widthDp = 320, heightDp = 320)
 @Composable
@@ -335,4 +418,36 @@ fun FavoriteCollectionsGridPreview() {
     MaterialTheme {
         FavoriteCollectionsGrid()
     }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF0EAE2)
+@Composable
+fun HomeSectionPreview() {
+    MaterialTheme {
+        HomeSection(R.string.align_your_body) {
+            AlignYourBodyRow()
+        }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF0EAE2, heightDp = 180)
+@Composable
+fun ScreenContentPreview() {
+    MaterialTheme {
+        HomeScreen()
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF0EAE2)
+@Composable
+fun BottomNavigationPreview() {
+    MaterialTheme {
+        SootheBottomNavigation()
+    }
+}
+
+@Preview(widthDp = 360, heightDp = 640)
+@Composable
+fun MySoothePreview() {
+    MySootheApp()
 }
