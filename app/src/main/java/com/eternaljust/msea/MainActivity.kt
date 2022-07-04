@@ -304,10 +304,9 @@ fun HomeSection(
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier
-            .padding(vertical = 16.dp)
-            .verticalScroll(rememberScrollState())
+    Column(modifier
+               .padding(vertical = 16.dp)
+               .verticalScroll(rememberScrollState())
     ) {
         Spacer(Modifier.height(16.dp))
 
