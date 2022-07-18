@@ -1,15 +1,44 @@
 package com.eternaljust.msea.ui.page.home
-
+import android.os.Bundle
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.eternaljust.msea.R
+import kotlinx.coroutines.launch
 
 @Composable
-fun HomePage(padding: PaddingValues) {
-    Surface(modifier = Modifier.padding(padding)) {
-        Text(text = "虫部落")
+fun HomePage(
+    paddingValues: PaddingValues,
+    scaffoldState: SnackbarHostState
+) {
+    val scope = rememberCoroutineScope()
+    val text = LocalContext.current.resources.getString(R.string.bottom_navigation_home)
+
+    Surface(
+        modifier = Modifier
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
+    ) {
+        Column() {
+            Text(text)
+
+            Button(onClick = {
+                scope.launch {
+                    scaffoldState.showSnackbar(message = text)
+                }
+            }) {
+                Text(text)
+            }
+        }
     }
 }
