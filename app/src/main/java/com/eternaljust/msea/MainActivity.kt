@@ -3,34 +3,51 @@ package com.eternaljust.msea
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
+import com.eternaljust.msea.ui.page.home.TopicDetailPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
+import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.launch
 
-private val bottomNavigationBarItems = listOf(
-    NavigationBarItem(Icons.Default.Home, R.string.bottom_navigation_home),
-    NavigationBarItem(Icons.Default.Notifications , R.string.bottom_navigation_notice),
-    NavigationBarItem(Icons.Default.List, R.string.bottom_navigation_node)
-)
+sealed class BottomBarScreen(
+    val route: String,
+    val title: String,
+    val icon: ImageVector
+) {
+    object Home : BottomBarScreen(
+        route = RouteName.HOME,
+        title = "虫部落",
+        icon = Icons.Default.Home
+    )
 
-private data class NavigationBarItem(
-    val image: ImageVector,
-    @StringRes val text: Int
-)
+    object Notice : BottomBarScreen(
+        route = RouteName.NOTICE,
+        title = "通知",
+        icon = Icons.Default.Notifications
+    )
+
+    object Node : BottomBarScreen(
+        route = RouteName.NODE,
+        title = "节点",
+        icon = Icons.Default.List
+    )
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +69,7 @@ fun MyApp() {
         val items = listOf(Icons.Default.Home, Icons.Default.Notifications, Icons.Default.List)
         val selectedDrawerItem = remember { mutableStateOf(items[0]) }
         val snackbarHostState = remember { SnackbarHostState() }
+        val navController = rememberNavController()
 
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -75,8 +93,6 @@ fun MyApp() {
 
             },
             content = {
-                var selectedBarItem by remember { mutableStateOf(0) }
-
                 Scaffold(
                     topBar = {
                         CenterAlignedTopAppBar(
@@ -102,22 +118,31 @@ fun MyApp() {
                         )
                     },
                     bottomBar = {
+                        val screens = listOf(
+                            BottomBarScreen.Home,
+                            BottomBarScreen.Notice,
+                            BottomBarScreen.Node,
+                        )
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentDestination = navBackStackEntry?.destination
+
                         NavigationBar {
-                            bottomNavigationBarItems.forEachIndexed { index, item ->
+                            screens.forEach { screen ->
                                 NavigationBarItem(
-                                    icon = { Icon(item.image, contentDescription = null) },
-                                    label = { Text(stringResource(id = item.text)) },
-                                    selected = selectedBarItem == index,
-                                    onClick = { selectedBarItem = index }
+                                    icon = { Icon(screen.icon, contentDescription = null) },
+                                    label = { Text(screen.title) },
+                                    selected = currentDestination?.hierarchy?.any {
+                                        it.route == screen.route
+                                    } == true,
+                                    onClick = {
+                                        navController.navigate(screen.route) {
+                                            popUpTo(navController.graph.findStartDestination().id)
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
                                 )
                             }
-                        }
-                    },
-                    content = { paddingValues ->
-                        when (selectedBarItem) {
-                            0 -> HomePage(paddingValues = paddingValues, scaffoldState = snackbarHostState)
-                            1 -> NoticePage(paddingValues = paddingValues, scaffoldState = snackbarHostState)
-                            2 -> NodePage(paddingValues = paddingValues, scaffoldState = snackbarHostState)
                         }
                     },
                     snackbarHost = {
@@ -129,6 +154,27 @@ fun MyApp() {
                                 Text(
                                     text = data.visuals.message,
                                 )
+                            }
+                        }
+                    },
+                    content = { paddingValues ->
+                        NavHost(navController,
+                                startDestination = RouteName.HOME,
+                                Modifier.padding(paddingValues)) {
+                            composable(RouteName.HOME) {
+                                HomePage(scaffoldState = snackbarHostState, navController = navController)
+                            }
+
+                            composable(RouteName.NOTICE) {
+                                NoticePage(scaffoldState = snackbarHostState)
+                            }
+
+                            composable(RouteName.NODE) {
+                                NodePage(scaffoldState = snackbarHostState)
+                            }
+
+                            composable(RouteName.TOPIC_DETAIL) {
+                                TopicDetailPage(scaffoldState = snackbarHostState)
                             }
                         }
                     }

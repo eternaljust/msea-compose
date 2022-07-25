@@ -11,18 +11,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
-import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomePage(
-    scaffoldState: SnackbarHostState,
-    navController: NavHostController
+fun TopicDetailPage(
+    scaffoldState: SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
-    val text = LocalContext.current.resources.getString(R.string.bottom_navigation_home)
+    val text = "帖子详情"
 
     Surface(
         modifier = Modifier
@@ -32,7 +29,6 @@ fun HomePage(
             Text(text)
 
             Button(onClick = {
-                navController.navigate(RouteName.TOPIC_DETAIL)
                 scope.launch {
                     scaffoldState.showSnackbar(message = text)
                 }

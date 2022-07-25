@@ -1,7 +1,6 @@
 package com.eternaljust.msea.ui.page.node
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.SnackbarHostState
@@ -17,7 +16,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NodePage(
-    paddingValues: PaddingValues,
     scaffoldState: SnackbarHostState
 )  {
     val scope = rememberCoroutineScope()
@@ -25,7 +23,6 @@ fun NodePage(
 
     Surface(
         modifier = Modifier
-            .padding(paddingValues)
             .padding(horizontal = 16.dp)
     ) {
         Column() {
