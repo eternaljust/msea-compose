@@ -116,6 +116,7 @@ fun MyApp() {
                                             text = "Msea / 虫部落",
                                             style = MaterialTheme.typography.titleLarge
                                         )
+
                                         Text(
                                             text = "Make search easier / 让搜索更简单",
                                             style = MaterialTheme.typography.titleSmall
@@ -211,9 +212,9 @@ fun MyApp() {
 
 private fun NavGraphBuilder.detailsNav(
     scaffoldState: SnackbarHostState,
-    navController: NavHostController)
-{
+    navController: NavHostController
+) {
     composable(RouteName.TOPIC_DETAIL) {
-        TopicDetailPage(scaffoldState = scaffoldState)
+        TopicDetailPage(scaffoldState = scaffoldState, navController = navController)
     }
 }
