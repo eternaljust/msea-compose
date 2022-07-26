@@ -3,16 +3,20 @@ package com.eternaljust.msea
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -93,55 +97,78 @@ fun MyApp() {
 
             },
             content = {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                val screens = listOf(
+                    BottomBarScreen.Home,
+                    BottomBarScreen.Notice,
+                    BottomBarScreen.Node,
+                )
+                val mainScreens = screens.map { it.route }
+
                 Scaffold(
                     topBar = {
-                        CenterAlignedTopAppBar(
-                            title = { Text("Msea") },
-                            navigationIcon = {
-                                IconButton(onClick = {
-                                    scope.launch { drawerState.open() }
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Menu,
-                                        contentDescription = null
-                                    )
-                                }
-                            },
-                            actions = {
-                                IconButton(onClick = { /* doSomething() */ }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Search,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
+                        if (mainScreens.contains(currentDestination?.route)) {
+                            SmallTopAppBar(
+                                title = {
+                                    Column(modifier = Modifier.padding(16.dp)) {
+                                        Text(
+                                            text = "Msea / 虫部落",
+                                            style = MaterialTheme.typography.titleLarge
+                                        )
+                                        Text(
+                                            text = "Make search easier / 让搜索更简单",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                    }
+                                },
+                                navigationIcon = {
+                                    IconButton(onClick = {
+                                        scope.launch { drawerState.open() }
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Menu,
+                                            contentDescription = null
+                                        )
+                                    }
+                                },
+                                actions = {
+                                    IconButton(onClick = { /* doSomething() */ }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Search,
+                                            contentDescription = null
+                                        )
+                                    }
+                                },
+                                colors = TopAppBarDefaults.smallTopAppBarColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    titleContentColor = Color.White,
+                                    actionIconContentColor = Color.White,
+                                    navigationIconContentColor = Color.White
+                                )
+                            )
+                        }
                     },
                     bottomBar = {
-                        val screens = listOf(
-                            BottomBarScreen.Home,
-                            BottomBarScreen.Notice,
-                            BottomBarScreen.Node,
-                        )
-                        val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentDestination = navBackStackEntry?.destination
-
-                        NavigationBar {
-                            screens.forEach { screen ->
-                                NavigationBarItem(
-                                    icon = { Icon(screen.icon, contentDescription = null) },
-                                    label = { Text(screen.title) },
-                                    selected = currentDestination?.hierarchy?.any {
-                                        it.route == screen.route
-                                    } == true,
-                                    onClick = {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id)
-                                            launchSingleTop = true
-                                            restoreState = true
+                        if (mainScreens.contains(currentDestination?.route)) {
+                            NavigationBar(
+                                containerColor = if(isSystemInDarkTheme()) Color.Black else Color.White
+                            )
+                            {
+                                screens.forEach { screen ->
+                                    NavigationBarItem(
+                                        icon = { Icon(screen.icon, contentDescription = null) },
+                                        label = { Text(screen.title) },
+                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route  } == true,
+                                        onClick = {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.findStartDestination().id)
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     },
@@ -173,13 +200,20 @@ fun MyApp() {
                                 NodePage(scaffoldState = snackbarHostState)
                             }
 
-                            composable(RouteName.TOPIC_DETAIL) {
-                                TopicDetailPage(scaffoldState = snackbarHostState)
-                            }
+                            detailsNav(scaffoldState = snackbarHostState, navController = navController)
                         }
                     }
                 )
             }
         )
+    }
+}
+
+private fun NavGraphBuilder.detailsNav(
+    scaffoldState: SnackbarHostState,
+    navController: NavHostController)
+{
+    composable(RouteName.TOPIC_DETAIL) {
+        TopicDetailPage(scaffoldState = scaffoldState)
     }
 }
