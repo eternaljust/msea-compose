@@ -4,7 +4,7 @@
 
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/news_avd_v02</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/icon_avd</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/Theme.Mseacompose</item>
     </style>
