@@ -25,7 +25,7 @@ import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.TopicDetailPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
-import com.eternaljust.msea.ui.page.profile.DrawerPage
+import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.launch
@@ -78,8 +78,13 @@ fun MyApp() {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerPage(onClick = {
+            DrawerPage(onClick = { item ->
                 scope.launch { drawerState.close() }
+                navController.navigate(item.route) {
+                    popUpTo(navController.graph.findStartDestination().id)
+                    launchSingleTop = true
+                    restoreState = true
+                }
             })
         },
         content = {
@@ -204,6 +209,26 @@ private fun NavGraphBuilder.detailsNav(
     navController: NavHostController
 ) {
     composable(RouteName.TOPIC_DETAIL) {
-        TopicDetailPage(scaffoldState = scaffoldState, navController = navController)
+        ProfileTopicPage(scaffoldState = scaffoldState, navController = navController)
+    }
+
+    composable(RouteName.Profile_Topic) {
+        ProfileTopicPage(scaffoldState = scaffoldState, navController = navController)
+    }
+
+    composable(RouteName.Profile_Friend) {
+        ProfileFriendPage(scaffoldState = scaffoldState, navController = navController)
+    }
+
+    composable(RouteName.Profile_Favorite) {
+        ProfileFavoritePage(scaffoldState = scaffoldState, navController = navController)
+    }
+
+    composable(RouteName.Setting) {
+        SettingPage(scaffoldState = scaffoldState, navController = navController)
+    }
+
+    composable(RouteName.About) {
+        AboutPage(scaffoldState = scaffoldState, navController = navController)
     }
 }
