@@ -1,11 +1,8 @@
 package com.eternaljust.msea.ui.page.profile
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,11 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.RouteName
 
@@ -29,43 +26,47 @@ sealed class DrawerNavigationItem(
     val icon: ImageVector
 ) {
     object Topic : DrawerNavigationItem(
-        route = RouteName.Profile_Topic,
+        route = RouteName.PROFILE_TOPIC,
         title = "主题",
         icon = Icons.Default.Topic
     )
 
     object Friend : DrawerNavigationItem(
-        route = RouteName.Profile_Friend,
+        route = RouteName.PROFILE_FRIEND,
         title = "好友",
         icon = Icons.Default.Group
     )
 
     object Favorite : DrawerNavigationItem(
-        route = RouteName.Profile_Favorite,
+        route = RouteName.PROFILE_FAVORITE,
         title = "收藏",
         icon = Icons.Default.Favorite
     )
 
     object Setting : DrawerNavigationItem(
-        route = RouteName.Setting,
+        route = RouteName.SETTING,
         title = "设置",
         icon = Icons.Default.Settings
     )
 
     object About : DrawerNavigationItem(
-        route = RouteName.About,
+        route = RouteName.ABOUT,
         title = "关于",
         icon = Icons.Default.Info
     )
 }
 
 @Composable
-fun DrawerPage(onClick: (DrawerNavigationItem) -> Unit) {
+fun DrawerPage(
+    navController: NavHostController,
+    onClick: (DrawerNavigationItem) -> Unit,
+    headerClick: () -> Unit
+) {
     val items1 = listOf(DrawerNavigationItem.Topic, DrawerNavigationItem.Friend, DrawerNavigationItem.Favorite)
     val items2 = listOf(DrawerNavigationItem.Setting, DrawerNavigationItem.About)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        DrawerHeader()
+        DrawerHeader(navController = navController, onClick = headerClick)
 
         DrawerList(
             items = items1,
@@ -99,7 +100,10 @@ fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNavigationItem
     }
 }
 @Composable
-fun DrawerHeader() {
+fun DrawerHeader(
+    navController: NavHostController,
+    onClick: () -> Unit
+) {
     Surface(
         modifier = Modifier
             .height(200.dp)
@@ -118,7 +122,12 @@ fun DrawerHeader() {
                 contentDescription = null
             )
 
-            Text(text = "未登录")
+            Button(onClick = {
+                onClick()
+                navController.navigate(route = RouteName.LOGIN)
+            }) {
+                Text(text = "未登录")
+            }
         }
     }
 }

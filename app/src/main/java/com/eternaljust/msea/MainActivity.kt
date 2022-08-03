@@ -22,11 +22,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
-import com.eternaljust.msea.ui.page.home.TopicDetailPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
+import com.eternaljust.msea.ui.widget.MseaSmallTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.launch
 
@@ -78,14 +78,20 @@ fun MyApp() {
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            DrawerPage(onClick = { item ->
-                scope.launch { drawerState.close() }
-                navController.navigate(item.route) {
-                    popUpTo(navController.graph.findStartDestination().id)
-                    launchSingleTop = true
-                    restoreState = true
+            DrawerPage(
+                navController = navController,
+                onClick = { item ->
+                    scope.launch { drawerState.close() }
+                    navController.navigate(item.route) {
+                        popUpTo(navController.graph.findStartDestination().id)
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                headerClick = {
+                    scope.launch { drawerState.close() }
                 }
-            })
+            )
         },
         content = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -132,26 +138,21 @@ fun MyApp() {
                                     )
                                 }
                             },
-                            colors = TopAppBarDefaults.smallTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                titleContentColor = Color.White,
-                                actionIconContentColor = Color.White,
-                                navigationIconContentColor = Color.White
-                            )
+                            colors = MseaSmallTopAppBarColors()
                         )
                     }
                 },
                 bottomBar = {
                     if (mainScreens.contains(currentDestination?.route)) {
                         NavigationBar(
-                            containerColor = if(isSystemInDarkTheme()) Color.Black else Color.White
+                            containerColor = if (isSystemInDarkTheme()) Color.Black else Color.White
                         )
                         {
                             screens.forEach { screen ->
                                 NavigationBarItem(
                                     icon = { Icon(screen.icon, contentDescription = null) },
                                     label = { Text(screen.title) },
-                                    selected = currentDestination?.hierarchy?.any { it.route == screen.route  } == true,
+                                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                     onClick = {
                                         navController.navigate(screen.route) {
                                             popUpTo(navController.graph.findStartDestination().id)
@@ -181,11 +182,16 @@ fun MyApp() {
                     }
                 },
                 content = { paddingValues ->
-                    NavHost(navController,
-                            startDestination = RouteName.HOME,
-                            Modifier.padding(paddingValues)) {
+                    NavHost(
+                        navController,
+                        startDestination = RouteName.HOME,
+                        Modifier.padding(paddingValues)
+                    ) {
                         composable(RouteName.HOME) {
-                            HomePage(scaffoldState = snackbarHostState, navController = navController)
+                            HomePage(
+                                scaffoldState = snackbarHostState,
+                                navController = navController
+                            )
                         }
 
                         composable(RouteName.NOTICE) {
@@ -212,23 +218,27 @@ private fun NavGraphBuilder.detailsNav(
         ProfileTopicPage(scaffoldState = scaffoldState, navController = navController)
     }
 
-    composable(RouteName.Profile_Topic) {
+    composable(RouteName.PROFILE_TOPIC) {
         ProfileTopicPage(scaffoldState = scaffoldState, navController = navController)
     }
 
-    composable(RouteName.Profile_Friend) {
+    composable(RouteName.PROFILE_FRIEND) {
         ProfileFriendPage(scaffoldState = scaffoldState, navController = navController)
     }
 
-    composable(RouteName.Profile_Favorite) {
+    composable(RouteName.PROFILE_FAVORITE) {
         ProfileFavoritePage(scaffoldState = scaffoldState, navController = navController)
     }
 
-    composable(RouteName.Setting) {
+    composable(RouteName.SETTING) {
         SettingPage(scaffoldState = scaffoldState, navController = navController)
     }
 
-    composable(RouteName.About) {
+    composable(RouteName.ABOUT) {
         AboutPage(scaffoldState = scaffoldState, navController = navController)
+    }
+
+    composable(RouteName.LOGIN) {
+        LoginPage(scaffoldState = scaffoldState, navController = navController)
     }
 }
