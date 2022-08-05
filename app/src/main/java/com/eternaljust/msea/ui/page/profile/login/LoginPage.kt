@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -21,46 +20,43 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.ui.page.profile.login.LoginViewModel
 import com.eternaljust.msea.ui.widget.MseaSmallTopAppBarColors
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eternaljust.msea.ui.page.profile.login.LoginViewAction
+import com.eternaljust.msea.ui.page.profile.login.LoginViewEvent
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginPage(
     scaffoldState: SnackbarHostState,
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: LoginViewModel = viewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scope = rememberCoroutineScope()
 
-    var username by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var answer by rememberSaveable { mutableStateOf("") }
-    var passwordHidden by rememberSaveable { mutableStateOf(true) }
-
-    var fieldExpanded by remember { mutableStateOf(false) }
-    var questionExpanded by remember { mutableStateOf(false) }
-    val fieldItems = listOf(
-        LoginFieldItem.Username,
-        LoginFieldItem.Email
-    )
-    val questionItems = listOf(
-        LoginQuestionItem.No,
-        LoginQuestionItem.MotherName,
-        LoginQuestionItem.GrandpaName,
-        LoginQuestionItem.FatherBornCity,
-        LoginQuestionItem.OneTeacherName,
-        LoginQuestionItem.ComputerModel,
-        LoginQuestionItem.FavoriteRestaurantName,
-        LoginQuestionItem.LastFourDigitsOfDriverLicense
-    )
+    LaunchedEffect(Unit) {
+        viewModel.viewEvents.collect {
+            if (it is LoginViewEvent.PopBack) {
+                navController.popBackStack()
+            } else if (it is LoginViewEvent.Message) {
+                scope.launch {
+                    scaffoldState.showSnackbar(message = it.message)
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             SmallTopAppBar(
                 title = { Text("登录") },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
+                    IconButton(
+                        onClick = { viewModel.dispatch(LoginViewAction.PopBack) }
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -100,20 +96,25 @@ fun LoginPage(
                                 end = 14.dp,
                                 bottom = 4.dp
                             ),
-                            onClick = { fieldExpanded = !fieldExpanded }
+                            onClick = {
+                                viewModel.dispatch(LoginViewAction.UpdateLoginfieldExpanded(!viewModel.viewStates.lgoinfieldExpanded))
+                            }
                         ) {
-                            Text(text = "用户名 ▼")
+                            Text(text = "${viewModel.viewStates.loginfield.title} ▼")
                         }
                     }
 
                     DropdownMenu(
-                        expanded = fieldExpanded,
-                        onDismissRequest = { fieldExpanded = false }
+                        expanded = viewModel.viewStates.lgoinfieldExpanded,
+                        onDismissRequest = { viewModel.dispatch(LoginViewAction.UpdateLoginfieldExpanded(false)) }
                     ) {
-                        fieldItems.forEach { item ->
+                        viewModel.fieldItems.forEach { item ->
                             DropdownMenuItem(
                                 text = { Text(item.title) },
-                                onClick = { /* Handle settings! */ },
+                                onClick = {
+                                    viewModel.dispatch(LoginViewAction.UpdateLoginfield(item))
+                                    viewModel.dispatch(LoginViewAction.UpdateLoginfieldExpanded(false))
+                                },
                                 leadingIcon = {
                                     Icon(
                                         item.icon,
@@ -128,26 +129,28 @@ fun LoginPage(
 
                 OutlinedTextField(
                     modifier = LoginModifier(),
-                    value = username,
+                    value = viewModel.viewStates.username,
                     singleLine = true,
-                    onValueChange = { username = it },
-                    label = { Text("用户名") }
+                    onValueChange = { viewModel.dispatch(LoginViewAction.UpdateUsername(it)) },
+                    label = { Text(viewModel.viewStates.loginfield.title) }
                 )
 
                 OutlinedTextField(
                     modifier = LoginModifier(),
-                    value = password,
-                    onValueChange = { password = it },
+                    value = viewModel.viewStates.password,
+                    onValueChange = { viewModel.dispatch(LoginViewAction.UpdatePassword(it)) },
                     singleLine = true,
                     label = { Text("密码") },
                     visualTransformation =
-                    if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+                    if (viewModel.viewStates.passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     trailingIcon = {
-                        IconButton(onClick = { passwordHidden = !passwordHidden }) {
+                        IconButton(
+                            onClick = { viewModel.dispatch(LoginViewAction.PasswordShowOrHidden)}
+                        ) {
                             val visibilityIcon =
-                                if (passwordHidden) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                            val description = if (passwordHidden) "显示密码" else "隐藏密码"
+                                if (viewModel.viewStates.passwordHidden) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                            val description = if (viewModel.viewStates.passwordHidden) "显示密码" else "隐藏密码"
                             Icon(imageVector = visibilityIcon, contentDescription = description)
                         }
                     }
@@ -171,46 +174,57 @@ fun LoginPage(
                                 end = 24.dp,
                                 bottom = 4.dp
                             ),
-                            onClick = { questionExpanded = !questionExpanded })
-                        {
-                            Text(text = "未设置请忽略 ▼")
+                            onClick = {
+                                viewModel.dispatch(LoginViewAction.UpdateQuestionExpanded(!viewModel.viewStates.questionExpanded))
+                            }
+                        ) {
+                            Text(text = "${viewModel.viewStates.question.title} ▼")
                         }
                     }
 
                     DropdownMenu(
-                        expanded = questionExpanded,
-                        onDismissRequest = { questionExpanded = false }
+                        expanded = viewModel.viewStates.questionExpanded,
+                        onDismissRequest = { viewModel.dispatch(LoginViewAction.UpdateQuestionExpanded(false))}
                     ) {
-                        questionItems.forEach { item ->
+                        viewModel.questionItems.forEach { item ->
                             DropdownMenuItem(
                                 text = { Text(item.title) },
-                                onClick = { /* Handle settings! */ },
+                                onClick = {
+                                    viewModel.dispatch(LoginViewAction.UpdateQuestion(item))
+                                    viewModel.dispatch(LoginViewAction.UpdateQuestionExpanded(false))
+                                },
                                 leadingIcon = {
                                     Icon(
                                         item.icon,
                                         contentDescription = item.title
                                     )
-                                })
+                                }
+                            )
 
                             MenuDefaults.Divider()
                         }
                     }
                 }
 
-                OutlinedTextField(
-                    modifier = LoginModifier(),
-                    value = answer,
-                    singleLine = true,
-                    onValueChange = { answer = it },
-                    label = { Text("答案") }
-                )
+                if (viewModel.viewStates.question != LoginQuestionItem.No) {
+                    OutlinedTextField(
+                        modifier = LoginModifier(),
+                        value = viewModel.viewStates.answer,
+                        singleLine = true,
+                        onValueChange = { viewModel.dispatch(LoginViewAction.UpdateAnswer(it)) },
+                        label = { Text("答案") }
+                    )
+                }
 
                 LoginSpacer()
                 
                 Button(
                     modifier = LoginModifier(),
-                    onClick = { /*TODO*/ })
-                {
+                    onClick = {
+                        keyboardController?.hide()
+                        viewModel.dispatch(LoginViewAction.Login)
+                    }
+                ) {
                     Text(text = "登录")
                 }
             }
@@ -229,73 +243,72 @@ fun LoginSpacer() {
     Spacer(modifier = Modifier.height(10.dp))
 }
 
-
-sealed class LoginQuestionItem(
+enum class LoginQuestionItem(
     val id: String,
     val title: String,
     val icon: ImageVector
 ) {
-    object No : LoginQuestionItem(
+     No(
         id = "0",
         title = "未设置请忽略",
         icon = Icons.Filled.Visibility
-    )
+    ),
 
-    object MotherName : LoginQuestionItem(
+    MotherName(
         id = "1",
         title = "母亲的名字",
         icon = Icons.Filled.Woman
-    )
+    ),
 
-    object GrandpaName : LoginQuestionItem(
+    GrandpaName(
         id = "2",
         title = "爷爷的名字",
         icon = Icons.Filled.Elderly
-    )
+    ),
 
-    object FatherBornCity : LoginQuestionItem(
+    FatherBornCity(
         id = "3",
         title = "父亲出生的城市",
         icon = Icons.Filled.Man
-    )
+    ),
 
-    object OneTeacherName : LoginQuestionItem(
+    OneTeacherName(
         id = "4",
         title = "您其中一位老师的名字",
         icon = Icons.Filled.School
-    )
+    ),
 
-    object ComputerModel : LoginQuestionItem(
+    ComputerModel(
         id = "5",
         title = "您个人计算机的型号",
         icon = Icons.Filled.Computer
-    )
+    ),
 
-    object FavoriteRestaurantName : LoginQuestionItem(
+    FavoriteRestaurantName(
         id = "6",
         title = "您最喜欢的餐馆名称",
         icon = Icons.Filled.Restaurant
-    )
+    ),
 
-    object LastFourDigitsOfDriverLicense : LoginQuestionItem(
+    LastFourDigitsOfDriverLicense(
         id = "7",
         title = "驾驶执照最后四位数字",
         icon = Icons.Filled.Pin
     )
 }
 
-sealed class LoginFieldItem(
-    val id: String,
-    val title: String,
-    val icon: ImageVector
+enum class LoginFieldItem(
+    var id: String,
+    var title: String,
+    var icon: ImageVector
 ) {
-    object Username : LoginFieldItem(
+    Username(
         id = "username",
         title = "用户名",
         icon = Icons.Filled.AccountCircle
-    )
+    ),
 
-    object Email : LoginFieldItem(
+    Email(
         id = "email",
         title = "邮箱",
         icon = Icons.Filled.Email
