@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,6 +22,7 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.page.profile.login.LoginViewModel
 import com.eternaljust.msea.ui.widget.MseaSmallTopAppBarColors
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eternaljust.msea.ui.page.profile.login.LoginQuestionItem
 import com.eternaljust.msea.ui.page.profile.login.LoginViewAction
 import com.eternaljust.msea.ui.page.profile.login.LoginViewEvent
 import kotlinx.coroutines.launch
@@ -151,7 +151,9 @@ fun LoginPage(
                             val visibilityIcon =
                                 if (viewModel.viewStates.passwordHidden) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                             val description = if (viewModel.viewStates.passwordHidden) "显示密码" else "隐藏密码"
-                            Icon(imageVector = visibilityIcon, contentDescription = description)
+                            if (viewModel.viewStates.password.isNotEmpty()) {
+                                Icon(imageVector = visibilityIcon, contentDescription = description)
+                            }
                         }
                     }
                 )
@@ -241,76 +243,4 @@ fun LoginModifier(): Modifier {
 @Composable
 fun LoginSpacer() {
     Spacer(modifier = Modifier.height(10.dp))
-}
-
-enum class LoginQuestionItem(
-    val id: String,
-    val title: String,
-    val icon: ImageVector
-) {
-     No(
-        id = "0",
-        title = "未设置请忽略",
-        icon = Icons.Filled.Visibility
-    ),
-
-    MotherName(
-        id = "1",
-        title = "母亲的名字",
-        icon = Icons.Filled.Woman
-    ),
-
-    GrandpaName(
-        id = "2",
-        title = "爷爷的名字",
-        icon = Icons.Filled.Elderly
-    ),
-
-    FatherBornCity(
-        id = "3",
-        title = "父亲出生的城市",
-        icon = Icons.Filled.Man
-    ),
-
-    OneTeacherName(
-        id = "4",
-        title = "您其中一位老师的名字",
-        icon = Icons.Filled.School
-    ),
-
-    ComputerModel(
-        id = "5",
-        title = "您个人计算机的型号",
-        icon = Icons.Filled.Computer
-    ),
-
-    FavoriteRestaurantName(
-        id = "6",
-        title = "您最喜欢的餐馆名称",
-        icon = Icons.Filled.Restaurant
-    ),
-
-    LastFourDigitsOfDriverLicense(
-        id = "7",
-        title = "驾驶执照最后四位数字",
-        icon = Icons.Filled.Pin
-    )
-}
-
-enum class LoginFieldItem(
-    var id: String,
-    var title: String,
-    var icon: ImageVector
-) {
-    Username(
-        id = "username",
-        title = "用户名",
-        icon = Icons.Filled.AccountCircle
-    ),
-
-    Email(
-        id = "email",
-        title = "邮箱",
-        icon = Icons.Filled.Email
-    )
 }

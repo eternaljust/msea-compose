@@ -1,12 +1,13 @@
 package com.eternaljust.msea.ui.page.profile.login
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eternaljust.msea.ui.page.profile.LoginFieldItem
-import com.eternaljust.msea.ui.page.profile.LoginQuestionItem
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -124,4 +125,76 @@ sealed class LoginViewAction {
     data class UpdateLoginfield(val loginfield: LoginFieldItem) : LoginViewAction()
     data class UpdateQuestionExpanded(val expanded: Boolean) : LoginViewAction()
     data class UpdateLoginfieldExpanded(val expanded: Boolean) : LoginViewAction()
+}
+
+enum class LoginQuestionItem(
+    val id: String,
+    val title: String,
+    val icon: ImageVector
+) {
+    No(
+        id = "0",
+        title = "未设置请忽略",
+        icon = Icons.Filled.Visibility
+    ),
+
+    MotherName(
+        id = "1",
+        title = "母亲的名字",
+        icon = Icons.Filled.Woman
+    ),
+
+    GrandpaName(
+        id = "2",
+        title = "爷爷的名字",
+        icon = Icons.Filled.Elderly
+    ),
+
+    FatherBornCity(
+        id = "3",
+        title = "父亲出生的城市",
+        icon = Icons.Filled.Man
+    ),
+
+    OneTeacherName(
+        id = "4",
+        title = "您其中一位老师的名字",
+        icon = Icons.Filled.School
+    ),
+
+    ComputerModel(
+        id = "5",
+        title = "您个人计算机的型号",
+        icon = Icons.Filled.Computer
+    ),
+
+    FavoriteRestaurantName(
+        id = "6",
+        title = "您最喜欢的餐馆名称",
+        icon = Icons.Filled.Restaurant
+    ),
+
+    LastFourDigitsOfDriverLicense(
+        id = "7",
+        title = "驾驶执照最后四位数字",
+        icon = Icons.Filled.Pin
+    )
+}
+
+enum class LoginFieldItem(
+    var id: String,
+    var title: String,
+    var icon: ImageVector
+) {
+    Username(
+        id = "username",
+        title = "用户名",
+        icon = Icons.Filled.AccountCircle
+    ),
+
+    Email(
+        id = "email",
+        title = "邮箱",
+        icon = Icons.Filled.Email
+    )
 }
