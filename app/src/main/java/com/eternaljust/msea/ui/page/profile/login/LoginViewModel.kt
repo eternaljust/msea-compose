@@ -8,9 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.utils.NetworkUtil
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
     var viewStates by mutableStateOf(LoginViewState())
@@ -36,6 +37,13 @@ class LoginViewModel : ViewModel() {
             LoginQuestionItem.LastFourDigitsOfDriverLicense
         )
 
+    private var action = ""
+    private var formhash = ""
+
+    init {
+        loadData()
+    }
+
     fun dispatch(action: LoginViewAction) {
         when (action) {
             is LoginViewAction.Login -> login()
@@ -51,9 +59,61 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    private fun loadData() {
+        GlobalScope.launch {
+            val url = "https://www.chongbuluo.com/member.php?mod=logging&action=login"
+            val document = NetworkUtil.getRequest(url)
+            val element1 = document.selectXpath("//form[@name='login']").first()
+            val text1 = element1?.attr("action")
+            if (text1 != null) {
+                action = text1
+                println("action=$action")
+            }
+            val element2 = document.selectXpath("//input[@name='formhash']").first()
+            val text2 = element2?.attr("value")
+            if (text2 != null) {
+                formhash = text2
+                println("formhash=$formhash")
+            }
+        }
+    }
+
     private fun login() {
         viewModelScope.launch {
-            _viewEvents.send(LoginViewEvent.Message("正在登录"))
+            if (viewStates.username.isEmpty() || viewStates.password.isEmpty()) {
+                _viewEvents.send(LoginViewEvent.Message("请输入用户名｜邮箱或者密码"))
+                return@launch
+            }
+            if (viewStates.question != LoginQuestionItem.No && viewStates.answer.isEmpty()) {
+                _viewEvents.send(LoginViewEvent.Message("请输入安全提问的答案"))
+                return@launch
+            }
+            _viewEvents.send(LoginViewEvent.Message("正在登录..."))
+
+            val params = mapOf(
+                "formhash" to viewStates.formhash,
+                "loginfield" to viewStates.loginfield.id,
+                "username" to viewStates.username,
+                "questionid" to viewStates.loginfield.id,
+                "answer" to viewStates.answer,
+                "password" to viewStates.password
+            )
+
+            var url = "https://www.chongbuluo.com/$action"
+            GlobalScope.launch {
+                var document = NetworkUtil.postRequest(url = url, params = params)
+
+                val messagetext = document.selectXpath("//div[@class='alert_error']/p")
+                val info = document.selectXpath("//div[@class='info']/li")
+                val myinfo = document.selectXpath("//div[@id='myinfo']/p")
+                if (messagetext.text().isNotEmpty()) {
+                    _viewEvents.send(LoginViewEvent.Message(messagetext.text()))
+                } else if (info.text().isNotEmpty()) {
+                    _viewEvents.send(LoginViewEvent.Message(info.text()))
+                } else if (myinfo.text().isNotEmpty()) {
+                    _viewEvents.send((LoginViewEvent.Message("欢迎回来")))
+                }
+            }
         }
     }
 
