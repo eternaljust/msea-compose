@@ -114,6 +114,7 @@ fun LoginPage(
                                 onClick = {
                                     viewModel.dispatch(LoginViewAction.UpdateLoginfield(item))
                                     viewModel.dispatch(LoginViewAction.UpdateLoginfieldExpanded(false))
+                                    viewModel.dispatch(LoginViewAction.UpdateUsername(""))
                                 },
                                 leadingIcon = {
                                     Icon(
