@@ -1,26 +1,47 @@
 package com.eternaljust.msea.utils
 
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.net.URLEncoder
 
 class NetworkUtil private constructor() {
     companion object {
-        private val userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
+        private const val userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36"
-        private val contentType = "application/text/html; charset=utf-8"
+        private const val contentType = "application/text/html; charset=utf-8"
 
-        val httpClient by lazy {
+        private val httpClient by lazy {
             val builder = OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
+                .followRedirects(false)
                 .addInterceptor { chain ->
                     val request = chain.request()
                         .newBuilder()
                         .build()
                     chain.proceed(request)
                 }
+                .cookieJar(object : CookieJar {
+                    override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+                        cookies.forEach {
+                            println("cookie=${it.name}, value=${it.value}")
+                            if (it.name.contains("auth") && it.value != "deleted") {
+                                val auth = "${it.name}=${it.value}"
+                                println("cookie auth = $auth")
+                                DataStoreUtil.syncSetData(UserInfoKey.AUTH, auth)
+                            }
+                        }
+                    }
+
+                    override fun loadForRequest(url: HttpUrl): List<Cookie> {
+                        val cookies: ArrayList<Cookie> = ArrayList()
+                        val auth = DataStoreUtil.getData(UserInfoKey.AUTH, "")
+                        println("auth=$auth")
+                        println("HttpUrl=$url")
+                        return cookies
+                    }
+                })
+
             builder.build()
         }
 
@@ -48,11 +69,9 @@ class NetworkUtil private constructor() {
             println("encodedParams=$encodedParams")
 
             val builder = FormBody.Builder()
-            params.forEach { t, u ->
-                builder.add(t, u)
-            }
+            params.forEach { (t, u) -> builder.add(t, u) }
             if (encodedParams.isNotEmpty()) {
-                encodedParams.forEach { t, u ->
+                encodedParams.forEach { (t, u) ->
                     builder.addEncoded(t, u)
                 }
             }
@@ -64,13 +83,25 @@ class NetworkUtil private constructor() {
                 .build()
             val response = httpClient.newCall(request).execute()
             val html = response.body?.string()
+
             println("response html begin!")
             println(html)
             println("response html end!")
 
-            val document = Jsoup.parse(html)
+            html?.let {
+                return Jsoup.parse(it)
+            }
+            return Jsoup.parse("")
+        }
 
-            return document
+        fun urlEncode(param: String): String {
+            return URLEncoder.encode(param, "UTF-8")
         }
     }
+}
+
+object HTMLURL {
+    const val BASE = "https://www.chongbuluo.com"
+
+    const val LOGIN = BASE + "/member.php?mod=logging&action=login&loginsubmit=yes"
 }

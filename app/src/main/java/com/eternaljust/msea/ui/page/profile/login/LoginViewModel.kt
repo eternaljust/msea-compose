@@ -8,11 +8,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.utils.DataStoreUtil
+import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.UserInfoKey
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import java.net.URLEncoder
 
 class LoginViewModel : ViewModel() {
     var viewStates by mutableStateOf(LoginViewState())
@@ -54,7 +56,7 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun login() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (viewStates.username.isEmpty() || viewStates.password.isEmpty()) {
                 _viewEvents.send(LoginViewEvent.Message("请输入用户名｜邮箱或者密码"))
                 return@launch
@@ -63,58 +65,61 @@ class LoginViewModel : ViewModel() {
                 _viewEvents.send(LoginViewEvent.Message("请输入安全提问的答案"))
                 return@launch
             }
-            _viewEvents.send(LoginViewEvent.Message("正在登录..."))
+            viewStates = viewStates.copy(loginEnabled = false)
 
-            GlobalScope.launch {
-                val url = "https://www.chongbuluo.com/member.php?mod=logging&action=login&loginsubmit=yes"
-                val username = URLEncoder.encode(viewStates.username, "UTF-8")
-                val password = URLEncoder.encode(viewStates.password, "UTF-8")
-                val answer = URLEncoder.encode(viewStates.answer, "UTF-8")
-                val params = mapOf(
-                    "loginfield" to viewStates.loginfield.id,
-                    "questionid" to viewStates.question.id,
-                )
-                val encodedParams = mapOf(
-                    "username" to username,
-                    "password" to password,
-                    "answer" to answer
-                )
+            val url = HTMLURL.LOGIN
+            val username = NetworkUtil.urlEncode(viewStates.username)
+            val password = NetworkUtil.urlEncode(viewStates.password)
+            val answer = NetworkUtil.urlEncode(viewStates.answer)
+            val params = mapOf(
+                "loginfield" to viewStates.loginfield.id,
+                "questionid" to viewStates.question.id,
+            )
+            val encodedParams = mapOf(
+                "username" to username,
+                "password" to password,
+                "answer" to answer
+            )
 
-                val document = NetworkUtil.postRequest(url, params, encodedParams)
-                val messagetext = document.selectXpath("//div[@class='alert_error']/p")
-                val info = document.selectXpath("//div[@class='info']/li")
-                val myinfo = document.selectXpath("//div[@id='myinfo']/p")
-                if (messagetext.text().isNotEmpty()) {
-                    _viewEvents.send(LoginViewEvent.Message(messagetext.text()))
-                } else if (info.text().isNotEmpty()) {
-                    _viewEvents.send(LoginViewEvent.Message(info.text()))
-                } else if (myinfo.text().isNotEmpty()) {
-                    val level = myinfo.first()?.selectXpath("//a[@id='g_upmine']")?.text()
-                    val avatar = document.selectXpath("//div[@id='um']//img")?.attr("src")
-                    val xpath = "//div[@id='myinfo']/p//a[@target='_blank']"
-                    val name = document.selectXpath(xpath)?.text()
-                    val href = document.selectXpath(xpath)?.attr("href")
-                    if (href != null && href.isNotEmpty()) {
-                        val ids = href.split("&")
-                        val last = ids.last()
-                        if (last.contains("uid")) {
-                            val uid = last.split("=")[1]
-                            println("uid=$uid")
-                        }
+            val document = NetworkUtil.postRequest(url, params, encodedParams)
+            val messagetext = document.selectXpath("//div[@class='alert_error']/p")
+            val info = document.selectXpath("//div[@class='info']/li")
+            val myinfo = document.selectXpath("//div[@id='myinfo']/p")
+            if (messagetext.text().isNotEmpty()) {
+                _viewEvents.send(LoginViewEvent.Message(messagetext.text()))
+            } else if (info.text().isNotEmpty()) {
+                _viewEvents.send(LoginViewEvent.Message(info.text()))
+            } else if (myinfo.text().isNotEmpty()) {
+                val level = myinfo.first()?.selectXpath("//a[@id='g_upmine']")?.text()
+                val src = document.selectXpath("//div[@id='um']//img").attr("src")
+                val xpath = "//div[@id='myinfo']/p//a[@target='_blank']"
+                val name = document.selectXpath(xpath).text()
+                val href = document.selectXpath(xpath).attr("href")
+                if (href.isNotEmpty()) {
+                    val ids = href.split("&")
+                    val last = ids.last()
+                    if (last.contains("uid")) {
+                        val uid = last.split("=")[1]
+                        println("uid=$uid")
+                        DataStoreUtil.syncSetData(UserInfoKey.UID, uid)
                     }
-                    if (name != null && name.isNotEmpty()) {
-                        println("name=$name")
-                    }
-                    if (level != null && level.isNotEmpty()) {
-                        println("level=$level")
-                    }
-                    if (avatar != null && avatar.isNotEmpty()) {
-                        val avatar = avatar.replace("&size=small", "" )
-                        println("avatar=$avatar")
-                    }
-                    _viewEvents.send((LoginViewEvent.Message("欢迎您回来，$level $name")))
                 }
+                if (name.isNotEmpty()) {
+                    println("name=$name")
+                    DataStoreUtil.syncSetData(UserInfoKey.NAME, name)
+                }
+                if (level != null && level.isNotEmpty()) {
+                    println("level=$level")
+                    DataStoreUtil.syncSetData(UserInfoKey.LEVEL, level)
+                }
+                if (src.isNotEmpty()) {
+                    val avatar = src.replace("&size=small", "" )
+                    println("avatar=$avatar")
+                    DataStoreUtil.syncSetData(UserInfoKey.AVATAR, avatar)
+                }
+                _viewEvents.send((LoginViewEvent.Message("欢迎您回来，$level $name")))
             }
+            viewStates = viewStates.copy(loginEnabled = true)
         }
     }
 
@@ -160,13 +165,14 @@ class LoginViewModel : ViewModel() {
 data class LoginViewState(
     val formhash: String = "",
     val loginfield: LoginFieldItem = LoginFieldItem.Username,
-    val username: String = "",
-    val password: String = "",
+    val username: String = "远恒之义",
+    val password: String = "tzq1118?CBL",
     val question: LoginQuestionItem = LoginQuestionItem.No,
     val answer: String = "",
     val passwordHidden: Boolean = true,
     val lgoinfieldExpanded: Boolean = false,
-    val questionExpanded: Boolean = false
+    val questionExpanded: Boolean = false,
+    val loginEnabled: Boolean = true,
 )
 
 sealed class LoginViewEvent {

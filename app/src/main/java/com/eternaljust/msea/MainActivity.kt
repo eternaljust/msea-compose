@@ -26,7 +26,7 @@ import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
-import com.eternaljust.msea.ui.widget.MseaSmallTopAppBarColors
+import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.launch
 
@@ -138,7 +138,7 @@ fun MyApp() {
                                     )
                                 }
                             },
-                            colors = MseaSmallTopAppBarColors()
+                            colors = mseaSmallTopAppBarColors()
                         )
                     }
                 },

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun MseaSmallTopAppBarColors(): TopAppBarColors {
+fun mseaSmallTopAppBarColors(): TopAppBarColors {
     return TopAppBarDefaults.smallTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         titleContentColor = Color.White,
@@ -15,7 +15,7 @@ fun MseaSmallTopAppBarColors(): TopAppBarColors {
 }
 
 @Composable
-fun MseaCenterAlignedTopAppBarColors(): TopAppBarColors {
+fun mseaCenterAlignedTopAppBarColors(): TopAppBarColors {
     return TopAppBarDefaults.centerAlignedTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         titleContentColor = Color.White,

@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.page.profile.login.LoginViewModel
-import com.eternaljust.msea.ui.widget.MseaSmallTopAppBarColors
+import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.ui.page.profile.login.LoginQuestionItem
 import com.eternaljust.msea.ui.page.profile.login.LoginViewAction
@@ -63,7 +63,7 @@ fun LoginPage(
                         )
                     }
                 },
-                colors = MseaSmallTopAppBarColors()
+                colors = mseaSmallTopAppBarColors()
             )
         },
         content = { paddingValues ->
@@ -84,7 +84,7 @@ fun LoginPage(
             ) {
                 Box {
                     Row(
-                        modifier = LoginModifier(),
+                        modifier = loginModifier(),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -129,7 +129,7 @@ fun LoginPage(
                 }
 
                 OutlinedTextField(
-                    modifier = LoginModifier(),
+                    modifier = loginModifier(),
                     value = viewModel.viewStates.username,
                     singleLine = true,
                     onValueChange = { viewModel.dispatch(LoginViewAction.UpdateUsername(it)) },
@@ -137,7 +137,7 @@ fun LoginPage(
                 )
 
                 OutlinedTextField(
-                    modifier = LoginModifier(),
+                    modifier = loginModifier(),
                     value = viewModel.viewStates.password,
                     onValueChange = { viewModel.dispatch(LoginViewAction.UpdatePassword(it)) },
                     singleLine = true,
@@ -159,11 +159,11 @@ fun LoginPage(
                     }
                 )
 
-                LoginSpacer()
+                loginSpacer()
 
                 Box {
                     Row(
-                        modifier = LoginModifier(),
+                        modifier = loginModifier(),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -211,7 +211,7 @@ fun LoginPage(
 
                 if (viewModel.viewStates.question != LoginQuestionItem.No) {
                     OutlinedTextField(
-                        modifier = LoginModifier(),
+                        modifier = loginModifier(),
                         value = viewModel.viewStates.answer,
                         singleLine = true,
                         onValueChange = { viewModel.dispatch(LoginViewAction.UpdateAnswer(it)) },
@@ -219,16 +219,17 @@ fun LoginPage(
                     )
                 }
 
-                LoginSpacer()
+                loginSpacer()
                 
                 Button(
-                    modifier = LoginModifier(),
+                    modifier = loginModifier(),
+                    enabled = viewModel.viewStates.loginEnabled,
                     onClick = {
                         keyboardController?.hide()
                         viewModel.dispatch(LoginViewAction.Login)
                     }
                 ) {
-                    Text(text = "登录")
+                    Text(text = if (viewModel.viewStates.loginEnabled) "登录" else "登录中...")
                 }
             }
         }
@@ -236,12 +237,12 @@ fun LoginPage(
 }
 
 @Composable
-fun LoginModifier(): Modifier {
+private fun loginModifier(): Modifier {
     return Modifier
         .width(300.dp)
 }
 
 @Composable
-fun LoginSpacer() {
+private fun loginSpacer() {
     Spacer(modifier = Modifier.height(10.dp))
 }
