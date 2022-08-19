@@ -1,6 +1,5 @@
 package com.eternaljust.msea
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import com.eternaljust.msea.utils.DataStoreUtil

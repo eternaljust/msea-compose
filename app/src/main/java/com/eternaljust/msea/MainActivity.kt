@@ -25,9 +25,12 @@ import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
+import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
+import com.eternaljust.msea.utils.DataStoreUtil
 import com.eternaljust.msea.utils.RouteName
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 sealed class BottomBarScreen(
@@ -74,22 +77,26 @@ fun MyApp() {
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
 
-    print(MaterialTheme.colorScheme.primary)
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             DrawerPage(
                 navController = navController,
+                drawerState = drawerState,
                 onClick = { item ->
                     scope.launch { drawerState.close() }
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.findStartDestination().id)
-                        launchSingleTop = true
-                        restoreState = true
+                    if (item.route == RouteName.LOGOUT) {
+                        GlobalScope.launch { DataStoreUtil.clear() }
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message = "已退出登录")
+                        }
+                    } else {
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.findStartDestination().id)
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
-                },
-                headerClick = {
-                    scope.launch { drawerState.close() }
                 }
             )
         },

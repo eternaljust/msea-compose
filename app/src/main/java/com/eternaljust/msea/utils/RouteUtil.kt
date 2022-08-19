@@ -11,4 +11,5 @@ object RouteName {
     const val SETTING = "setting"
     const val ABOUT = "about"
     const val LOGIN = "login"
+    const val LOGOUT= "logout"
 }

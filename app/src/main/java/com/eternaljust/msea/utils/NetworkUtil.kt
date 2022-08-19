@@ -28,14 +28,14 @@ class NetworkUtil private constructor() {
                             if (it.name.contains("auth") && it.value != "deleted") {
                                 val auth = "${it.name}=${it.value}"
                                 println("cookie auth = $auth")
-                                DataStoreUtil.syncSetData(UserInfoKey.AUTH, auth)
+                                UserInfo.instance.auth = auth
                             }
                         }
                     }
 
                     override fun loadForRequest(url: HttpUrl): List<Cookie> {
                         val cookies: ArrayList<Cookie> = ArrayList()
-                        val auth = DataStoreUtil.getData(UserInfoKey.AUTH, "")
+                        val auth = UserInfo.instance.auth
                         println("auth=$auth")
                         println("HttpUrl=$url")
                         return cookies
@@ -49,10 +49,13 @@ class NetworkUtil private constructor() {
             url: String
         ): Document {
             println("\ngetRequest.url=$url")
+            val cookie = DataStoreUtil.getData(UserInfoKey.AUTH, "")
+            println("cookie auth = $cookie")
 
             val document = Jsoup.connect(url)
                 .userAgent(userAgent)
                 .header("Content-Type", contentType)
+                .header("Cookie", cookie)
                 .get()
             println(document.html())
 
@@ -104,4 +107,5 @@ object HTMLURL {
     const val BASE = "https://www.chongbuluo.com"
 
     const val LOGIN = BASE + "/member.php?mod=logging&action=login&loginsubmit=yes"
+    const val PROFILE = BASE + "/home.php?mod=space&uid="
 }

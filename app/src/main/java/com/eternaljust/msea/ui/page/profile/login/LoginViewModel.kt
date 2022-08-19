@@ -165,8 +165,8 @@ class LoginViewModel : ViewModel() {
 data class LoginViewState(
     val formhash: String = "",
     val loginfield: LoginFieldItem = LoginFieldItem.Username,
-    val username: String = "远恒之义",
-    val password: String = "tzq1118?CBL",
+    val username: String = "",
+    val password: String = "",
     val question: LoginQuestionItem = LoginQuestionItem.No,
     val answer: String = "",
     val passwordHidden: Boolean = true,

@@ -74,6 +74,7 @@ dependencies {
     // vendor
     implementation 'org.jsoup:jsoup:1.15.2'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation('io.coil-kt:coil-compose:2.2.0')
 
     // debug
     testImplementation 'junit:junit:4.13.2'
