@@ -12,6 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,6 +34,7 @@ import kotlinx.coroutines.launch
 fun LoginPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
+    loginMessage: (String) -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -40,6 +43,9 @@ fun LoginPage(
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             if (it is LoginViewEvent.PopBack) {
+                if (it.message.isNotEmpty()) {
+                    loginMessage(it.message)
+                }
                 navController.popBackStack()
             } else if (it is LoginViewEvent.Message) {
                 scope.launch {
@@ -55,7 +61,7 @@ fun LoginPage(
                 title = { Text("登录") },
                 navigationIcon = {
                     IconButton(
-                        onClick = { viewModel.dispatch(LoginViewAction.PopBack) }
+                        onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,

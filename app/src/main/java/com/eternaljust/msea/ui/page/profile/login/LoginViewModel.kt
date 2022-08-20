@@ -43,7 +43,7 @@ class LoginViewModel : ViewModel() {
     fun dispatch(action: LoginViewAction) {
         when (action) {
             is LoginViewAction.Login -> login()
-            is LoginViewAction.PopBack -> popBack()
+            is LoginViewAction.PopBack -> popBack(action.message)
             is LoginViewAction.PasswordShowOrHidden -> passwordShowOrHidden()
             is LoginViewAction.UpdateUsername -> updateUsername(action.username)
             is LoginViewAction.UpdatePassword -> updatePassword(action.password)
@@ -117,15 +117,15 @@ class LoginViewModel : ViewModel() {
                     println("avatar=$avatar")
                     DataStoreUtil.syncSetData(UserInfoKey.AVATAR, avatar)
                 }
-                _viewEvents.send((LoginViewEvent.Message("欢迎您回来，$level $name")))
+                popBack("欢迎您回来，$level $name")
             }
             viewStates = viewStates.copy(loginEnabled = true)
         }
     }
 
-    private fun popBack() {
+    private fun popBack(message: String = "") {
         viewModelScope.launch {
-            _viewEvents.send(LoginViewEvent.PopBack)
+            _viewEvents.send(LoginViewEvent.PopBack(message))
         }
     }
 
@@ -176,15 +176,15 @@ data class LoginViewState(
 )
 
 sealed class LoginViewEvent {
-    object PopBack : LoginViewEvent()
+    data class PopBack(val message: String) : LoginViewEvent()
     data class Message(val message: String) : LoginViewEvent()
 }
 
 sealed class LoginViewAction {
     object Login : LoginViewAction()
-    object PopBack : LoginViewAction()
     object PasswordShowOrHidden : LoginViewAction()
 
+    data class PopBack(val message: String = "") : LoginViewAction()
     data class UpdateUsername(val username: String) : LoginViewAction()
     data class UpdatePassword(val password: String) : LoginViewAction()
     data class UpdateAnswer(val answer: String) : LoginViewAction()

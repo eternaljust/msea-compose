@@ -30,6 +30,7 @@ import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
 import com.eternaljust.msea.utils.DataStoreUtil
 import com.eternaljust.msea.utils.RouteName
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -222,30 +223,55 @@ private fun NavGraphBuilder.detailsNav(
     navController: NavHostController
 ) {
     composable(RouteName.TOPIC_DETAIL) {
-        ProfileTopicPage(scaffoldState = scaffoldState, navController = navController)
+        ProfileTopicPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 
     composable(RouteName.PROFILE_TOPIC) {
-        ProfileTopicPage(scaffoldState = scaffoldState, navController = navController)
+        ProfileTopicPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 
     composable(RouteName.PROFILE_FRIEND) {
-        ProfileFriendPage(scaffoldState = scaffoldState, navController = navController)
+        ProfileFriendPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 
     composable(RouteName.PROFILE_FAVORITE) {
-        ProfileFavoritePage(scaffoldState = scaffoldState, navController = navController)
+        ProfileFavoritePage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 
     composable(RouteName.SETTING) {
-        SettingPage(scaffoldState = scaffoldState, navController = navController)
+        SettingPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 
     composable(RouteName.ABOUT) {
-        AboutPage(scaffoldState = scaffoldState, navController = navController)
+        AboutPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 
     composable(RouteName.LOGIN) {
-        LoginPage(scaffoldState = scaffoldState, navController = navController)
+        LoginPage(
+            scaffoldState = scaffoldState,
+            navController = navController,
+            loginMessage = {
+                GlobalScope.launch(Dispatchers.Main) {
+                    scaffoldState.showSnackbar(message = it)
+                }
+            })
     }
 }

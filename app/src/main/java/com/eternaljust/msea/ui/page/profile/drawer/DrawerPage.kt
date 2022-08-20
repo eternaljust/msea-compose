@@ -198,10 +198,15 @@ fun DrawerHeader(
                     fontWeight = FontWeight.SemiBold
                 )
 
+                val level = if (userInfo.level.contains("(")) {
+                    userInfo.level
+                } else {
+                    "用户组(${userInfo.level})"
+                }
                 Text(
                     modifier = Modifier
                         .offset(y = 10.dp),
-                    text = "用户组(${userInfo.level})",
+                    text = level,
                     color = MaterialTheme.colorScheme.secondary
                 )
 

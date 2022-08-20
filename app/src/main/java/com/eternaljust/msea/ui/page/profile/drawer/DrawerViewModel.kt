@@ -97,6 +97,38 @@ class DrawerViewModel : ViewModel() {
                 UserInfo.instance.violation = violation
             }
 
+            val x = "//div[@class='bm_c u_profile']/div[@class='pbm mbm bbda cl'][last()]/ul[1]/li"
+            val li = document.selectXpath(x)
+            if (li.isNotEmpty()) {
+                var levels = mutableListOf<String>()
+                li.forEach {
+                    var name = it.selectXpath("//em[@class='xg1']").text()
+                    name = name.trim()
+                    println("name=$name")
+                    if (name.isNotEmpty()) {
+                        var lv = ""
+                        val text = it.selectXpath("/span/a").text()
+                        println("text=$text")
+                        if (text.isNotEmpty()) {
+                            lv = text.trim()
+                        } else {
+                            val text1 = it.text()
+                            println("text1=$text1")
+                            if (text1.isNotEmpty()) {
+                                lv = text1.replace(name, "").trim()
+                            }
+                        }
+                        println("lv=$lv")
+                        levels.add("$name($lv)")
+                    }
+                }
+                if (levels.isNotEmpty()) {
+                    val level = levels.joinToString(separator = " ")
+                    println("level=$level")
+                    UserInfo.instance.level = level
+                }
+            }
+
             val userInfo = UserInfo()
             userInfo.avatar = UserInfo.instance.avatar
             userInfo.name = UserInfo.instance.name
