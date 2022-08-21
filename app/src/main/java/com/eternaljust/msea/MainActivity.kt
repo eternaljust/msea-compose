@@ -7,6 +7,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.EnergySavingsLeaf
+import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
+import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
@@ -119,12 +122,12 @@ fun MyApp() {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
                                         text = "Msea / 虫部落",
-                                        style = MaterialTheme.typography.titleLarge
+                                        style = MaterialTheme.typography.titleMedium
                                     )
 
                                     Text(
                                         text = "Make search easier / 让搜索更简单",
-                                        style = MaterialTheme.typography.titleSmall
+                                        style = MaterialTheme.typography.labelSmall
                                     )
                                 }
                             },
@@ -134,15 +137,31 @@ fun MyApp() {
                                 }) {
                                     Icon(
                                         imageVector = Icons.Filled.Menu,
-                                        contentDescription = null
+                                        contentDescription = "我的"
                                     )
                                 }
                             },
                             actions = {
+                                IconButton(
+                                    onClick = { navController.navigate(route = RouteName.Sign) }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.EnergySavingsLeaf,
+                                        contentDescription = "签到"
+                                    )
+                                }
+
+                                IconButton(onClick = { /* doSomething() */ }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.FormatListNumbered,
+                                        contentDescription = "排行榜"
+                                    )
+                                }
+
                                 IconButton(onClick = { /* doSomething() */ }) {
                                     Icon(
                                         imageVector = Icons.Filled.Search,
-                                        contentDescription = null
+                                        contentDescription = "搜索"
                                     )
                                 }
                             },
@@ -273,5 +292,12 @@ private fun NavGraphBuilder.detailsNav(
                     scaffoldState.showSnackbar(message = it)
                 }
             })
+    }
+
+    composable(RouteName.Sign) {
+        SignPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 }

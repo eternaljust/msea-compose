@@ -150,7 +150,7 @@ fun DrawerPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNavigationItem) -> Unit) {
+private fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNavigationItem) -> Unit) {
     items.forEach { item ->
         NavigationDrawerItem(
             icon = { Icon(item.icon, contentDescription = null) },
@@ -163,7 +163,7 @@ fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNavigationItem
 }
 
 @Composable
-fun DrawerHeader(
+private fun DrawerHeader(
     isLogin: Boolean,
     userInfo: UserInfo,
     onClick: () -> Unit,
