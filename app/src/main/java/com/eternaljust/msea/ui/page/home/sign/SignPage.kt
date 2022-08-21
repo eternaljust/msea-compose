@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
+import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.launch
+import okhttp3.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,13 +31,20 @@ fun SignPage(
 ) {
     val scope = rememberCoroutineScope()
 
+    viewModel.dispatch(SignViewAction.GetDaySign)
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
-            if (it is SignViewEvent.PopBack) {
-                navController.popBackStack()
-            } else if (it is SignViewEvent.Message) {
-                scope.launch {
-                    scaffoldState.showSnackbar(message = it.message)
+            when (it) {
+                is SignViewEvent.PopBack -> {
+                    navController.popBackStack()
+                }
+                is SignViewEvent.Login -> {
+                    navController.navigate(route = RouteName.LOGIN)
+                }
+                is SignViewEvent.Message -> {
+                    scope.launch {
+                        scaffoldState.showSnackbar(message = it.message)
+                    }
                 }
             }
         }
@@ -64,7 +73,8 @@ fun SignPage(
                     .padding(paddingValues)
             ) {
                 signHeader(
-                    daySign = viewModel.viewStates.daySign
+                    daySign = viewModel.viewStates.daySign,
+                    signClick = { viewModel.dispatch(SignViewAction.Sign)}
                 )
             }
         }
@@ -73,7 +83,8 @@ fun SignPage(
 
 @Composable
 private fun signHeader(
-    daySign: DaySignModel
+    daySign: DaySignModel,
+    signClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -93,7 +104,7 @@ private fun signHeader(
                     containerColor = color
                 ),
                 enabled = !daySign.isSign,
-                onClick = { /*TODO*/ },
+                onClick = signClick,
             ) {
                 Text(text = daySign.signText)
             }

@@ -108,4 +108,5 @@ object HTMLURL {
 
     const val LOGIN = BASE + "/member.php?mod=logging&action=login&loginsubmit=yes"
     const val PROFILE = BASE + "/home.php?mod=space&uid="
+    const val GETDAYSIGN = BASE + "/plugin.php?id=wq_sign"
 }
