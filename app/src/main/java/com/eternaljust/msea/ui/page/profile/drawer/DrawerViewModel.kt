@@ -17,7 +17,9 @@ class DrawerViewModel : ViewModel() {
         get() = listOf(
             DrawerNavigationItem.Topic,
             DrawerNavigationItem.Friend,
-            DrawerNavigationItem.Favorite
+            DrawerNavigationItem.Favorite,
+            DrawerNavigationItem.Credit,
+            DrawerNavigationItem.Group
         )
 
     val settingItems: List<DrawerNavigationItem>

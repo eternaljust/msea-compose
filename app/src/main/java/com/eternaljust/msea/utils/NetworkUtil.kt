@@ -30,6 +30,11 @@ class NetworkUtil private constructor() {
                                 println("cookie auth = $auth")
                                 UserInfo.instance.auth = auth
                             }
+                            if (it.name.contains("saltkey")) {
+                                val salt = "${it.name}=${it.value}"
+                                println("cookie salt = $salt")
+                                UserInfo.instance.salt = salt
+                            }
                         }
                     }
 
@@ -49,8 +54,8 @@ class NetworkUtil private constructor() {
             url: String
         ): Document {
             println("\ngetRequest.url=$url")
-            val cookie = DataStoreUtil.getData(UserInfoKey.AUTH, "")
-            println("cookie auth = $cookie")
+            val cookie = UserInfo.instance.salt + "; " + UserInfo.instance.auth
+            println("Cookie = $cookie")
 
             val document = Jsoup.connect(url)
                 .userAgent(userAgent)

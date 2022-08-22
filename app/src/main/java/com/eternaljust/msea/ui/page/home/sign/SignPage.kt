@@ -14,6 +14,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -74,7 +77,9 @@ fun SignPage(
             ) {
                 signHeader(
                     daySign = viewModel.viewStates.daySign,
-                    signClick = { viewModel.dispatch(SignViewAction.Sign)}
+                    signClick = { viewModel.dispatch(SignViewAction.Sign)},
+                    showRuleDialog = viewModel.viewStates.showRuleDialog,
+                    ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) }
                 )
             }
         }
@@ -84,13 +89,28 @@ fun SignPage(
 @Composable
 private fun signHeader(
     daySign: DaySignModel,
-    signClick: () -> Unit
+    signClick: () -> Unit,
+    showRuleDialog: Boolean,
+    ruleDialogClick: (Boolean) -> Unit
 ) {
     Surface(
         modifier = Modifier
             .height(180.dp)
             .fillMaxWidth()
     ) {
+        if (showRuleDialog) {
+            AlertDialog(
+                onDismissRequest = { ruleDialogClick(false) },
+                title = { Text(text = "每日福利规则")},
+                text = { Text(text = daySign.rule)},
+                confirmButton = {
+                    Button(onClick = { ruleDialogClick(false) }) {
+                        Text(text = "好的")
+                    }
+                }
+            )
+        }
+        
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -118,7 +138,14 @@ private fun signHeader(
                 ) {
                     Text(text = "连续签到")
 
-                    Text(text = "${daySign.days}天")
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append(daySign.days)
+                            }
+                            append("天")
+                        }
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(30.dp))
@@ -127,7 +154,7 @@ private fun signHeader(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { ruleDialogClick(true) }) {
                         Icon(
                             imageVector = Icons.Outlined.Help,
                             contentDescription = "每日福利规则",
@@ -144,7 +171,10 @@ private fun signHeader(
                 ) {
                     Text(text = "累计获得")
 
-                    Text(text = "${daySign.bits}Bit")
+                    Text(
+                        text = "${daySign.bits}Bit",
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
 

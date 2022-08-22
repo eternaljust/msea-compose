@@ -24,6 +24,7 @@ class SignViewModel : ViewModel() {
             is SignViewAction.GetDaySign -> getDaySign()
             is SignViewAction.Sign -> sign()
             is SignViewAction.PopBack -> popBack()
+            is SignViewAction.RuleShowDialog -> showDialog(action.isShow)
         }
     }
 
@@ -73,6 +74,16 @@ class SignViewModel : ViewModel() {
             daySign.signText = signText
             daySign.isSign = signText.contains("已签到")
 
+            var rule = ""
+            val p = document.selectXpath("//div[@class='wqc_sign_rule']/p")
+            p.forEach {
+                val text = it.text()
+                if (text.isNotEmpty()) {
+                    rule += text + "\n"
+                }
+            }
+            daySign.rule = rule
+
             viewStates = viewStates.copy(daySign = daySign)
         }
     }
@@ -87,6 +98,10 @@ class SignViewModel : ViewModel() {
         }
     }
 
+    private fun showDialog(isShow: Boolean) {
+        viewStates = viewStates.copy(showRuleDialog = isShow)
+    }
+
     private fun popBack() {
         viewModelScope.launch {
             _viewEvents.send(SignViewEvent.PopBack)
@@ -95,7 +110,8 @@ class SignViewModel : ViewModel() {
 }
 
 data class SignViewState(
-    val daySign: DaySignModel = DaySignModel()
+    val daySign: DaySignModel = DaySignModel(),
+    val showRuleDialog: Boolean = false
 )
 
 sealed class SignViewEvent {
@@ -108,6 +124,8 @@ sealed class SignViewAction {
     object GetDaySign : SignViewAction()
     object Sign : SignViewAction()
     object PopBack : SignViewAction()
+
+    data class RuleShowDialog(val isShow: Boolean) : SignViewAction()
 }
 
 class DaySignModel {
@@ -115,6 +133,7 @@ class DaySignModel {
     var signText: String = "请先登录"
     var days = "0"
     var bits = "0"
+    var rule = ""
 
     var today = "今日已签到 0 人"
     var yesterday = "昨日总签到 0 人"

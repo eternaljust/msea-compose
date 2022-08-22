@@ -269,6 +269,20 @@ private fun NavGraphBuilder.detailsNav(
         )
     }
 
+    composable(RouteName.PROFILE_CREDIT) {
+        ProfileCreditPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
+    }
+
+    composable(RouteName.PROFILE_GROUP) {
+        ProfileGroupPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
+    }
+
     composable(RouteName.SETTING) {
         SettingPage(
             scaffoldState = scaffoldState,

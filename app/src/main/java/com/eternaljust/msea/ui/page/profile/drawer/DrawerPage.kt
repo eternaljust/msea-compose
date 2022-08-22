@@ -48,6 +48,18 @@ sealed class DrawerNavigationItem(
         icon = Icons.Default.Favorite
     )
 
+    object Credit : DrawerNavigationItem(
+        route = RouteName.PROFILE_FAVORITE,
+        title = "积分",
+        icon = Icons.Default.Paid
+    )
+
+    object Group : DrawerNavigationItem(
+        route = RouteName.PROFILE_FAVORITE,
+        title = "用户组",
+        icon = Icons.Default.AdminPanelSettings
+    )
+
     object Setting : DrawerNavigationItem(
         route = RouteName.SETTING,
         title = "设置",
