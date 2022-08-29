@@ -1,8 +1,11 @@
 package com.eternaljust.msea.ui.page.profile.drawer
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eternaljust.msea.utils.*
@@ -166,4 +169,58 @@ sealed class DrawerViewAction {
     object GetProfile : DrawerViewAction()
 
     data class LogoutDialog(val show: Boolean) : DrawerViewAction()
+}
+
+sealed class DrawerNavigationItem(
+    val route: String,
+    val title: String,
+    val icon: ImageVector
+) {
+    object Topic : DrawerNavigationItem(
+        route = RouteName.PROFILE_TOPIC,
+        title = "主题",
+        icon = Icons.Default.Topic
+    )
+
+    object Friend : DrawerNavigationItem(
+        route = RouteName.PROFILE_FRIEND,
+        title = "好友",
+        icon = Icons.Default.Group
+    )
+
+    object Favorite : DrawerNavigationItem(
+        route = RouteName.PROFILE_FAVORITE,
+        title = "收藏",
+        icon = Icons.Default.Favorite
+    )
+
+    object Credit : DrawerNavigationItem(
+        route = RouteName.PROFILE_FAVORITE,
+        title = "积分",
+        icon = Icons.Default.Paid
+    )
+
+    object Group : DrawerNavigationItem(
+        route = RouteName.PROFILE_FAVORITE,
+        title = "用户组",
+        icon = Icons.Default.AdminPanelSettings
+    )
+
+    object Setting : DrawerNavigationItem(
+        route = RouteName.SETTING,
+        title = "设置",
+        icon = Icons.Default.Settings
+    )
+
+    object About : DrawerNavigationItem(
+        route = RouteName.ABOUT,
+        title = "关于",
+        icon = Icons.Default.Info
+    )
+
+    object Logout : DrawerNavigationItem(
+        route = RouteName.LOGOUT,
+        title = "退出登录",
+        icon = Icons.Default.Logout
+    )
 }

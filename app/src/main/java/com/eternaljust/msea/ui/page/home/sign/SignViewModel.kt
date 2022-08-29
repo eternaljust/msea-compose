@@ -24,13 +24,16 @@ class SignViewModel : ViewModel() {
             is SignViewAction.GetDaySign -> getDaySign()
             is SignViewAction.Sign -> sign()
             is SignViewAction.PopBack -> popBack()
-            is SignViewAction.RuleShowDialog -> showDialog(action.isShow)
+            is SignViewAction.RuleShowDialog -> ruleDialog(action.isShow)
+            is SignViewAction.SignShowDialog -> signDialog(action.isShow)
+            is SignViewAction.SignTextChange-> signChange(action.text)
+            is SignViewAction.SignConfirm -> signComfirm()
         }
     }
 
     private fun getDaySign() {
         viewModelScope.launch(Dispatchers.IO) {
-            val url = HTMLURL.GETDAYSIGN
+            val url = HTMLURL.GET_DAY_SIGN
             val document = NetworkUtil.getRequest(url)
 
             val daySign = DaySignModel()
@@ -91,14 +94,49 @@ class SignViewModel : ViewModel() {
     private fun sign() {
         viewModelScope.launch {
             if (UserInfo.instance.isLogin) {
-
+                viewStates = viewStates.copy(showSignDialog = true)
             } else {
                 _viewEvents.send(SignViewEvent.Login)
             }
         }
     }
 
-    private fun showDialog(isShow: Boolean) {
+    private fun signDialog(isShow: Boolean) {
+        viewStates = viewStates.copy(showSignDialog = isShow)
+    }
+
+    private fun signChange(text: String) {
+        viewStates = viewStates.copy(signText = text)
+    }
+
+    private fun signComfirm() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.SIGN_MESSAGE
+            val message = NetworkUtil.urlEncode(viewStates.signText)
+            val encodedParams = mapOf(
+                "message" to message
+            )
+            val document = NetworkUtil.postRequest(url, emptyMap(), encodedParams)
+            val text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
+            val script = document.selectXpath("//div[@id='messagetext']/p[1]/script").text()
+            println("text=${text}")
+            println("script=${script}")
+            if (text.isNotEmpty()) {
+                if (script.isNotEmpty() && text.contains(script)) {
+                    _viewEvents.send(SignViewEvent.Message(text.replace(script, "")))
+                } else {
+                    _viewEvents.send(SignViewEvent.Message(text))
+                }
+                viewStates = viewStates.copy(signText = "")
+            } else {
+                _viewEvents.send(SignViewEvent.Message("签到失败！"))
+            }
+            signDialog(false)
+            getDaySign()
+        }
+    }
+
+    private fun ruleDialog(isShow: Boolean) {
         viewStates = viewStates.copy(showRuleDialog = isShow)
     }
 
@@ -111,6 +149,8 @@ class SignViewModel : ViewModel() {
 
 data class SignViewState(
     val daySign: DaySignModel = DaySignModel(),
+    val showSignDialog: Boolean = false,
+    val signText: String = "",
     val showRuleDialog: Boolean = false
 )
 
@@ -124,8 +164,11 @@ sealed class SignViewAction {
     object GetDaySign : SignViewAction()
     object Sign : SignViewAction()
     object PopBack : SignViewAction()
+    object SignConfirm : SignViewAction()
 
     data class RuleShowDialog(val isShow: Boolean) : SignViewAction()
+    data class SignShowDialog(val isShow: Boolean) : SignViewAction()
+    data class SignTextChange(val text: String) : SignViewAction()
 }
 
 class DaySignModel {
@@ -134,6 +177,9 @@ class DaySignModel {
     var days = "0"
     var bits = "0"
     var rule = ""
+    var signTitle = "签到留言，你的心情随笔，愿望清单...今天吃啥？"
+    var signPlaceholder = "提倡沿袭古法的纯手工打卡，反对自动签到，" +
+            "自动签到每次将被扣除 10 倍于所得积分 :)"
 
     var today = "今日已签到 0 人"
     var yesterday = "昨日总签到 0 人"

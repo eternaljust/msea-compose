@@ -25,60 +25,6 @@ import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.UserInfo
 import kotlinx.coroutines.launch
 
-sealed class DrawerNavigationItem(
-    val route: String,
-    val title: String,
-    val icon: ImageVector
-) {
-    object Topic : DrawerNavigationItem(
-        route = RouteName.PROFILE_TOPIC,
-        title = "主题",
-        icon = Icons.Default.Topic
-    )
-
-    object Friend : DrawerNavigationItem(
-        route = RouteName.PROFILE_FRIEND,
-        title = "好友",
-        icon = Icons.Default.Group
-    )
-
-    object Favorite : DrawerNavigationItem(
-        route = RouteName.PROFILE_FAVORITE,
-        title = "收藏",
-        icon = Icons.Default.Favorite
-    )
-
-    object Credit : DrawerNavigationItem(
-        route = RouteName.PROFILE_FAVORITE,
-        title = "积分",
-        icon = Icons.Default.Paid
-    )
-
-    object Group : DrawerNavigationItem(
-        route = RouteName.PROFILE_FAVORITE,
-        title = "用户组",
-        icon = Icons.Default.AdminPanelSettings
-    )
-
-    object Setting : DrawerNavigationItem(
-        route = RouteName.SETTING,
-        title = "设置",
-        icon = Icons.Default.Settings
-    )
-
-    object About : DrawerNavigationItem(
-        route = RouteName.ABOUT,
-        title = "关于",
-        icon = Icons.Default.Info
-    )
-
-    object Logout : DrawerNavigationItem(
-        route = RouteName.LOGOUT,
-        title = "退出登录",
-        icon = Icons.Default.Logout
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawerPage(

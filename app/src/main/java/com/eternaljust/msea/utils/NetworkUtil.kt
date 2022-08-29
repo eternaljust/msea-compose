@@ -54,15 +54,14 @@ class NetworkUtil private constructor() {
             url: String
         ): Document {
             println("\ngetRequest.url=$url")
-            val cookie = UserInfo.instance.salt + "; " + UserInfo.instance.auth
-            println("Cookie = $cookie")
 
             val document = Jsoup.connect(url)
                 .userAgent(userAgent)
                 .header("Content-Type", contentType)
-                .header("Cookie", cookie)
+                .header("Cookie", getCookies())
                 .get()
             println(document.html())
+            getFormhash(document = document)
 
             return document
         }
@@ -77,7 +76,10 @@ class NetworkUtil private constructor() {
             println("encodedParams=$encodedParams")
 
             val builder = FormBody.Builder()
-            params.forEach { (t, u) -> builder.add(t, u) }
+            if (UserInfo.instance.formhash.isNotEmpty()) {
+                builder.add("formhash", UserInfo.instance.formhash)
+            }
+            if (params.isNotEmpty()) { params.forEach { (t, u) -> builder.add(t, u) } }
             if (encodedParams.isNotEmpty()) {
                 encodedParams.forEach { (t, u) ->
                     builder.addEncoded(t, u)
@@ -88,6 +90,7 @@ class NetworkUtil private constructor() {
             val reqBuilder = Request.Builder()
             val request = reqBuilder.url(url)
                 .post(requestBody)
+                .header("Cookie", getCookies())
                 .build()
             val response = httpClient.newCall(request).execute()
             val html = response.body?.string()
@@ -96,14 +99,55 @@ class NetworkUtil private constructor() {
             println(html)
             println("response html end!")
 
+            var document = Jsoup.parse("")
             html?.let {
-                return Jsoup.parse(it)
+               document = Jsoup.parse(it)
             }
-            return Jsoup.parse("")
+            getFormhash(document = document)
+
+            return document
         }
 
         fun urlEncode(param: String): String {
             return URLEncoder.encode(param, "UTF-8")
+        }
+
+        private fun getCookies(): String {
+            val cookie = UserInfo.instance.salt + "; " + UserInfo.instance.auth
+            println("Cookie = $cookie")
+            return cookie
+        }
+
+        private fun getFormhash(document: Document) {
+            val myinfo = document.selectXpath("//div[@id='myinfo']//a[4]").attr("href")
+            if (myinfo.isNotEmpty() && myinfo.contains("formhash") &&
+                myinfo.contains("&")) {
+                val components = myinfo.split("&")
+                val formhash = components.last()
+                val last = formhash.split("=").last()
+                if (last.isNotEmpty()) {
+                    println("formhash=${last}")
+                    UserInfo.instance.formhash = last
+                }
+            }
+
+            val formhash = document.selectXpath("//input[@id='formhash']")
+                .attr("value")
+            if (formhash.isNotEmpty()) {
+                println("formhash=${formhash}")
+                UserInfo.instance.formhash = formhash
+            }
+
+            val href = document.selectXpath("//div[@id='toptb']//a[6]")
+                .attr("href")
+            if (href.isNotEmpty() && href.contains("formhash")) {
+                val hash = href.split("&").last()
+                if (hash.contains("=")) {
+                    val formhash = hash.split("=").last()
+                    println("formhash=${formhash}")
+                    UserInfo.instance.formhash = formhash
+                }
+            }
         }
     }
 }
@@ -113,5 +157,7 @@ object HTMLURL {
 
     const val LOGIN = BASE + "/member.php?mod=logging&action=login&loginsubmit=yes"
     const val PROFILE = BASE + "/home.php?mod=space&uid="
-    const val GETDAYSIGN = BASE + "/plugin.php?id=wq_sign"
+    const val GET_DAY_SIGN = BASE + "/plugin.php?id=wq_sign"
+    const val SIGN_MESSAGE = GET_DAY_SIGN + "&mod=mood&infloat=yes&confirmsubmit=yes" +
+            "&handlekey=pc_click_wqsign"
 }

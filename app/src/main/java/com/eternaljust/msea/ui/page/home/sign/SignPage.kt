@@ -78,6 +78,11 @@ fun SignPage(
                 signHeader(
                     daySign = viewModel.viewStates.daySign,
                     signClick = { viewModel.dispatch(SignViewAction.Sign)},
+                    signText = viewModel.viewStates.signText,
+                    signTextChange = { viewModel.dispatch(SignViewAction.SignTextChange(it))},
+                    signConfirm = { viewModel.dispatch(SignViewAction.SignConfirm)},
+                    showSignDialog = viewModel.viewStates.showSignDialog,
+                    signDialogClick = { viewModel.dispatch(SignViewAction.SignShowDialog(it))},
                     showRuleDialog = viewModel.viewStates.showRuleDialog,
                     ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) }
                 )
@@ -90,6 +95,11 @@ fun SignPage(
 private fun signHeader(
     daySign: DaySignModel,
     signClick: () -> Unit,
+    signText: String,
+    signTextChange: (String) -> Unit,
+    signConfirm: () -> Unit,
+    showSignDialog: Boolean,
+    signDialogClick: (Boolean) -> Unit,
     showRuleDialog: Boolean,
     ruleDialogClick: (Boolean) -> Unit
 ) {
@@ -98,11 +108,39 @@ private fun signHeader(
             .height(180.dp)
             .fillMaxWidth()
     ) {
+        if (showSignDialog) {
+            AlertDialog(
+                onDismissRequest = { signDialogClick(false) },
+                title = { Text(text = daySign.signTitle) },
+                text = {
+                    TextField(
+                        modifier = Modifier.height(100.dp),
+                        value = signText,
+                        onValueChange = { signTextChange(it) },
+                        placeholder = { Text(text = daySign.signPlaceholder) }
+                    )
+                },
+                dismissButton = {
+                    Button(onClick = { signDialogClick(false) }) {
+                        Text(text = "取消")
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        enabled = signText.isNotEmpty(),
+                        onClick = { signConfirm() }
+                    ) {
+                        Text(text = "发表签到")
+                    }
+                }
+            )
+        }
+
         if (showRuleDialog) {
             AlertDialog(
                 onDismissRequest = { ruleDialogClick(false) },
-                title = { Text(text = "每日福利规则")},
-                text = { Text(text = daySign.rule)},
+                title = { Text(text = "每日福利规则") },
+                text = { Text(text = daySign.rule) },
                 confirmButton = {
                     Button(onClick = { ruleDialogClick(false) }) {
                         Text(text = "好的")

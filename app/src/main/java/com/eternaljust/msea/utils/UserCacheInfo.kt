@@ -16,6 +16,10 @@ class UserInfo {
         get() = DataStoreUtil.getData(UserInfoKey.SALT, "")
         set(value) = DataStoreUtil.syncSetData(UserInfoKey.SALT, value)
 
+    var formhash: String
+        get() = DataStoreUtil.getData(UserInfoKey.FORMHASH, "")
+        set(value) = DataStoreUtil.syncSetData(UserInfoKey.FORMHASH, value)
+
     var uid: String
         get() = DataStoreUtil.getData(UserInfoKey.UID, "")
         set(value) = DataStoreUtil.syncSetData(UserInfoKey.UID, value)
@@ -60,6 +64,7 @@ class UserInfo {
 object UserInfoKey {
     const val AUTH = "authKey"
     const val SALT = "saltKey"
+    const val FORMHASH = "formhashKey"
     const val UID = "uidKey"
     const val NAME = "nameKey"
     const val LEVEL = "levelKey"
