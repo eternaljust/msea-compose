@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.ui.page.home.TopicTab
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.UserInfo
@@ -18,6 +19,13 @@ class SignViewModel : ViewModel() {
         private set
     private val _viewEvents = Channel<SignViewEvent>(Channel.BUFFERED)
     val viewEvents = _viewEvents.receiveAsFlow()
+
+    val signItems: List<SignTabItem>
+        get() = listOf(
+            SignTabItem.DAY_SIGN,
+            SignTabItem.TOTAL_DAYS,
+            SignTabItem.TOTAL_REWARD
+        )
 
     fun dispatch(action: SignViewAction) {
         when (action) {
@@ -185,4 +193,35 @@ class DaySignModel {
     var yesterday = "昨日总签到 0 人"
     var month = "本月总签到 0 人"
     var total = "已有 0 人参与"
+}
+
+interface SignTab {
+    val id: String
+    val title: String
+}
+
+enum class SignTabItem : SignTab {
+    DAY_SIGN {
+        override val id: String
+            get() = "daysign"
+
+        override val title: String
+            get() = "今日签到列表(Bit)"
+    },
+
+    TOTAL_DAYS {
+        override val id: String
+            get() = "totaldays"
+
+        override val title: String
+            get() = "总天数排名(天)"
+    },
+
+    TOTAL_REWARD {
+        override val id: String
+            get() = "totalreward"
+
+        override val title: String
+            get() = "总奖励排名(天)"
+    }
 }

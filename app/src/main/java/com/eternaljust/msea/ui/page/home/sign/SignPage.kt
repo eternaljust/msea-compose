@@ -22,8 +22,10 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
-import okhttp3.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,17 +77,25 @@ fun SignPage(
                 modifier = Modifier
                     .padding(paddingValues)
             ) {
-                signHeader(
-                    daySign = viewModel.viewStates.daySign,
-                    signClick = { viewModel.dispatch(SignViewAction.Sign)},
-                    signText = viewModel.viewStates.signText,
-                    signTextChange = { viewModel.dispatch(SignViewAction.SignTextChange(it))},
-                    signConfirm = { viewModel.dispatch(SignViewAction.SignConfirm)},
-                    showSignDialog = viewModel.viewStates.showSignDialog,
-                    signDialogClick = { viewModel.dispatch(SignViewAction.SignShowDialog(it))},
-                    showRuleDialog = viewModel.viewStates.showRuleDialog,
-                    ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) }
-                )
+                Column {
+                    signHeader(
+                        daySign = viewModel.viewStates.daySign,
+                        signClick = { viewModel.dispatch(SignViewAction.Sign)},
+                        signText = viewModel.viewStates.signText,
+                        signTextChange = { viewModel.dispatch(SignViewAction.SignTextChange(it))},
+                        signConfirm = { viewModel.dispatch(SignViewAction.SignConfirm)},
+                        showSignDialog = viewModel.viewStates.showSignDialog,
+                        signDialogClick = { viewModel.dispatch(SignViewAction.SignShowDialog(it))},
+                        showRuleDialog = viewModel.viewStates.showRuleDialog,
+                        ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) }
+                    )
+
+                    signList(
+                        items = viewModel.signItems,
+                        scaffoldState = scaffoldState,
+                        navController = navController
+                    )
+                }
             }
         }
     )
@@ -272,6 +282,55 @@ private fun signHeader(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun signList(
+    items: List<SignTabItem>,
+    scaffoldState: SnackbarHostState,
+    navController: NavHostController
+) {
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
+
+    Column {
+        TabRow(selectedTabIndex = pagerState.currentPage) {
+            items.forEachIndexed { index, item ->
+                Tab(
+                    text = {
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    },
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        scope.launch {
+                            pagerState.scrollToPage(index)
+                        }
+                    }
+                )
+            }
+        }
+
+        HorizontalPager(count = items.size, state = pagerState) {
+            val item = items[pagerState.currentPage]
+            if (item == SignTabItem.DAY_SIGN) {
+                SignListPage(
+                    scaffoldState = scaffoldState,
+                    navController = navController,
+                    tabItem = item
+                )
+            } else {
+                SignDayListPage(
+                    scaffoldState = scaffoldState,
+                    navController = navController,
+                    tabItem = item
+                )
             }
         }
     }

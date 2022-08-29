@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'com.eternaljust.msea'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.eternaljust.msea"
         minSdk 29
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0.0"
 
@@ -70,6 +70,7 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
     implementation 'androidx.compose.material3:material3:1.0.0-alpha14'
     implementation 'com.google.accompanist:accompanist-pager:0.24.13-rc'
+    implementation 'com.google.accompanist:accompanist-swiperefresh:0.26.2-beta'
 
     // vendor
     implementation 'org.jsoup:jsoup:1.15.2'
