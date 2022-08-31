@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
         setTheme(R.style.Theme_Mseacompose)
         super.onCreate(savedInstanceState)
         setContent {
-            MseaComposeTheme(isDynamicColor = true) {
+            MseaComposeTheme(isDynamicColor = false) {
                 MyApp()
             }
         }

@@ -101,6 +101,7 @@ fun SignPage(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun signHeader(
     daySign: DaySignModel,
@@ -316,6 +317,8 @@ fun signList(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         HorizontalPager(count = items.size, state = pagerState) {
             val item = items[pagerState.currentPage]

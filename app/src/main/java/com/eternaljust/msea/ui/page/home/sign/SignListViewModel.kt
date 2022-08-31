@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.*
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,12 @@ class SignListViewModel : ViewModel() {
         private set
 
     private var page = 1
+
+    val pager = Pager(
+        PagingConfig(pageSize = 20)
+    ) {
+        SignListSource()
+    }.flow.cachedIn(viewModelScope)
 
     fun dispatch(action: SignListViewAction) {
         when (action) {
@@ -45,7 +52,7 @@ class SignListViewModel : ViewModel() {
                 var signModel = SignListModel()
                 val no = it.selectXpath("td[1]").text()
                 if (no.isNotEmpty() && no.contains("NO.")) {
-                    signModel.no = no
+                    signModel.no = no.replace("NO.", "")
 
                     val name = it.selectXpath("td[2]//a").text()
                     if (name.isNotEmpty()) {
@@ -108,4 +115,24 @@ class SignListModel {
     var content = ""
     var time = ""
     var bits = ""
+}
+
+class SignListSource : PagingSource<Int, SignListModel>() {
+    override fun getRefreshKey(state: PagingState<Int, SignListModel>): Int? =null
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SignListModel> {
+        return try {
+            val nextPage = params.key ?: 1
+            val datas = mutableListOf(
+                SignListModel()
+            )
+            LoadResult.Page(
+                data = datas,
+                prevKey = if (nextPage == 1) null else nextPage - 1,
+                nextKey = nextPage + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
+    }
 }

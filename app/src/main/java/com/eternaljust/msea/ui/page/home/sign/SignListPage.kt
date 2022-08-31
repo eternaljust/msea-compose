@@ -1,16 +1,22 @@
 package com.eternaljust.msea.ui.page.home.sign
 
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SignListPage(
     scaffoldState: SnackbarHostState,
@@ -28,19 +34,64 @@ fun SignListPage(
         onRefresh = { viewModel.dispatch(SignListViewAction.LoadList) },
     ) {
         LazyColumn {
+            stickyHeader {
+                signListHeader()
+            }
+
             items(viewModel.viewStates.list) { item ->
-                Row {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 13.dp, vertical = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(text = item.no)
 
-                    Text(text = item.name)
+                    Text(
+                        modifier = Modifier
+                            .width(60.dp),
+                        text = item.name
+                    )
 
-                    Text(text = item.content)
+                    Text(
+                        modifier = Modifier
+                            .width(80.dp),
+                        text = item.content
+                    )
 
                     Text(text = item.bits)
 
                     Text(text = item.time)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun signListHeader () {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "排名")
+
+            Text(text = "昵称")
+
+            Text(text = "签到内容")
+
+            Text(text = "奖励")
+
+            Text(text = "签到时间")
         }
     }
 }

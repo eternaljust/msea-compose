@@ -64,46 +64,51 @@ fun DrawerPage(
         )
     }
 
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        DrawerHeader(
-            isLogin = viewModel.viewStates.isLogin,
-            userInfo = viewModel.viewStates.userInfo,
-            onClick = {
-                scope.launch { drawerState.close() }
-                navController.navigate(route = RouteName.LOGIN) {
-                    popUpTo(navController.graph.findStartDestination().id)
-                }
-            },
-            levelClick = {}
-        )
+    ModalDrawerSheet {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            DrawerHeader(
+                isLogin = viewModel.viewStates.isLogin,
+                userInfo = viewModel.viewStates.userInfo,
+                onClick = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(route = RouteName.LOGIN) {
+                        popUpTo(navController.graph.findStartDestination().id)
+                    }
+                },
+                levelClick = {}
+            )
 
-        DrawerList(
-            items = viewModel.profileItems,
-            onClick = { item ->
-                onClick(item)
-            }
-        )
-
-        Divider(modifier = Modifier.padding(horizontal = 16.dp))
-
-        DrawerList(
-            items = viewModel.settingItems,
-            onClick = { item ->
-                onClick(item)
-            }
-        )
-
-        if (viewModel.viewStates.isLogin) {
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            Divider()
 
             DrawerList(
-                items = viewModel.logoutItems,
+                items = viewModel.profileItems,
                 onClick = { item ->
                     onClick(item)
                 }
             )
+
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            DrawerList(
+                items = viewModel.settingItems,
+                onClick = { item ->
+                    onClick(item)
+                }
+            )
+
+            if (viewModel.viewStates.isLogin) {
+                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+                DrawerList(
+                    items = viewModel.logoutItems,
+                    onClick = { item ->
+                        onClick(item)
+                    }
+                )
+            }
         }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
