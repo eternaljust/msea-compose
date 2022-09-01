@@ -332,7 +332,8 @@ fun signList(
                 SignDayListPage(
                     scaffoldState = scaffoldState,
                     navController = navController,
-                    tabItem = item
+                    viewModel = if (item == SignTabItem.TOTAL_DAYS) SignDayListViewModel.days else
+                        SignDayListViewModel.reward
                 )
             }
         }
