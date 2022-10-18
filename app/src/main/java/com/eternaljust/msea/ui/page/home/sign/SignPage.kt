@@ -20,7 +20,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
+import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -69,7 +69,7 @@ fun SignPage(
                         )
                     }
                 },
-                colors = mseaSmallTopAppBarColors()
+                colors = mseaTopAppBarColors()
             )
         },
         content = { paddingValues ->

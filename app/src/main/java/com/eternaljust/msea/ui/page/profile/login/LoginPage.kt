@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.page.profile.login.LoginViewModel
-import com.eternaljust.msea.ui.widget.mseaSmallTopAppBarColors
+import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.ui.page.profile.login.LoginQuestionItem
 import com.eternaljust.msea.ui.page.profile.login.LoginViewAction
@@ -68,7 +68,7 @@ fun LoginPage(
                         )
                     }
                 },
-                colors = mseaSmallTopAppBarColors()
+                colors = mseaTopAppBarColors()
             )
         },
         content = { paddingValues ->

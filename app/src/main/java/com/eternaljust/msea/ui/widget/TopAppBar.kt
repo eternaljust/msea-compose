@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mseaSmallTopAppBarColors(): TopAppBarColors {
+fun mseaTopAppBarColors(): TopAppBarColors {
     return TopAppBarDefaults.smallTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         titleContentColor = Color.White,
