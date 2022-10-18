@@ -31,7 +31,7 @@ fun HomePage(
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        Column() {
+        Column {
             val titles = listOf(TopicTabItem.NEW, TopicTabItem.HOT, TopicTabItem.NEWTHREAD, TopicTabItem.SOFA)
             val pagerState = rememberPagerState()
             val scope = rememberCoroutineScope()

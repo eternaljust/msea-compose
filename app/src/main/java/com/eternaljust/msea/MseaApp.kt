@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.eternaljust.msea.utils.DataStoreUtil
 
-class MseaApp : Application() {
+class MseaApp: Application() {
     companion object {
         lateinit var CONTEXT: Context
     }

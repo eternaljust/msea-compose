@@ -25,7 +25,7 @@ fun AboutPage(
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        Column() {
+        Column {
             Text(text = text)
 
             Button(onClick = {

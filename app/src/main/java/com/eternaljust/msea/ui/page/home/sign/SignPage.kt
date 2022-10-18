@@ -57,7 +57,7 @@ fun SignPage(
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = { Text("签到") },
                 navigationIcon = {
                     IconButton(
@@ -78,7 +78,7 @@ fun SignPage(
                     .padding(paddingValues)
             ) {
                 Column {
-                    signHeader(
+                    SignHeader(
                         daySign = viewModel.viewStates.daySign,
                         signClick = { viewModel.dispatch(SignViewAction.Sign)},
                         signText = viewModel.viewStates.signText,
@@ -90,7 +90,7 @@ fun SignPage(
                         ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) }
                     )
 
-                    signList(
+                    SignList(
                         items = viewModel.signItems,
                         scaffoldState = scaffoldState,
                         navController = navController
@@ -103,7 +103,7 @@ fun SignPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun signHeader(
+private fun SignHeader(
     daySign: DaySignModel,
     signClick: () -> Unit,
     signText: String,
@@ -290,7 +290,7 @@ private fun signHeader(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun signList(
+fun SignList(
     items: List<SignTabItem>,
     scaffoldState: SnackbarHostState,
     navController: NavHostController

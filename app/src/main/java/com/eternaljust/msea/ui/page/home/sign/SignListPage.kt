@@ -35,7 +35,7 @@ fun SignListPage(
     ) {
         LazyColumn {
             stickyHeader {
-                signListHeader()
+                SignListHeader()
             }
 
             items(viewModel.viewStates.list) { item ->
@@ -70,7 +70,7 @@ fun SignListPage(
 }
 
 @Composable
-private fun signListHeader () {
+private fun SignListHeader () {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,7 +114,7 @@ fun SignDayListPage(
     ) {
         LazyColumn {
             stickyHeader {
-                signDayListHeader()
+                SignDayListHeader()
             }
 
             items(viewModel.viewStates.list) { item ->
@@ -158,7 +158,7 @@ fun SignDayListPage(
 }
 
 @Composable
-private fun signDayListHeader () {
+private fun SignDayListHeader () {
     Card(
         modifier = Modifier
             .fillMaxWidth()

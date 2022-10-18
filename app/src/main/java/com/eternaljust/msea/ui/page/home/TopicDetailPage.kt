@@ -25,7 +25,7 @@ fun TopicDetailPage(
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        Column() {
+        Column {
             Text(text)
 
             Button(onClick = {

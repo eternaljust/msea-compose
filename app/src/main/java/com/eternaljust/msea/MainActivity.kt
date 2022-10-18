@@ -29,6 +29,7 @@ import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
+import com.eternaljust.msea.ui.page.profile.login.LoginPage
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.DataStoreUtil
@@ -117,7 +118,7 @@ fun MyApp() {
             Scaffold(
                 topBar = {
                     if (mainScreens.contains(currentDestination?.route)) {
-                        SmallTopAppBar(
+                        TopAppBar(
                             title = {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(

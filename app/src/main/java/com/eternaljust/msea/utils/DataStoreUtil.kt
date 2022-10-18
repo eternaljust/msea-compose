@@ -25,7 +25,7 @@ object DataStoreUtil {
             is String -> getStringData(key, default)
             is Int -> getIntData(key, default)
             is Boolean -> getBooleanData(key, default)
-            else -> throw IllegalArgumentException("This type can't be readed into DataStore")
+            else -> throw IllegalArgumentException("This type can't be readied into DataStore")
         }
         return res as U
     }

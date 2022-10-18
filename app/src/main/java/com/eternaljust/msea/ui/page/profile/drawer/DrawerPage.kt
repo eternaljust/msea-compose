@@ -5,14 +5,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,7 +36,7 @@ fun DrawerPage(
     LaunchedEffect(Unit) {
         snapshotFlow { drawerState.currentValue }
             .collect {
-                println("drawerState = ${it.toString()}")
+                println("drawerState = $it")
                 viewModel.dispatch(DrawerViewAction.Login)
                 if (it == DrawerValue.Open && viewModel.viewStates.isLogin) {
                     viewModel.dispatch(DrawerViewAction.GetProfile)

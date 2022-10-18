@@ -105,7 +105,7 @@ class DrawerViewModel : ViewModel() {
             val x = "//div[@class='bm_c u_profile']/div[@class='pbm mbm bbda cl'][last()]/ul[1]/li"
             val li = document.selectXpath(x)
             if (li.isNotEmpty()) {
-                var levels = mutableListOf<String>()
+                val levels = mutableListOf<String>()
                 li.forEach {
                     var name = it.selectXpath("//em[@class='xg1']").text()
                     name = name.trim()

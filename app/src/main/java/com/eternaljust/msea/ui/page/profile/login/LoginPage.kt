@@ -1,4 +1,4 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.login
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
@@ -20,12 +19,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.ui.page.profile.login.LoginViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.eternaljust.msea.ui.page.profile.login.LoginQuestionItem
-import com.eternaljust.msea.ui.page.profile.login.LoginViewAction
-import com.eternaljust.msea.ui.page.profile.login.LoginViewEvent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -56,7 +51,7 @@ fun LoginPage(
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
+            TopAppBar(
                 title = { Text("登录") },
                 navigationIcon = {
                     IconButton(
@@ -89,7 +84,7 @@ fun LoginPage(
             ) {
                 Box {
                     Row(
-                        modifier = loginModifier(),
+                        modifier = loginSpacer(),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -134,7 +129,7 @@ fun LoginPage(
                 }
 
                 OutlinedTextField(
-                    modifier = loginModifier(),
+                    modifier = loginSpacer(),
                     value = viewModel.viewStates.username,
                     singleLine = true,
                     onValueChange = { viewModel.dispatch(LoginViewAction.UpdateUsername(it)) },
@@ -142,7 +137,7 @@ fun LoginPage(
                 )
 
                 OutlinedTextField(
-                    modifier = loginModifier(),
+                    modifier = loginSpacer(),
                     value = viewModel.viewStates.password,
                     onValueChange = { viewModel.dispatch(LoginViewAction.UpdatePassword(it)) },
                     singleLine = true,
@@ -164,11 +159,11 @@ fun LoginPage(
                     }
                 )
 
-                loginSpacer()
+                LoginSpacer()
 
                 Box {
                     Row(
-                        modifier = loginModifier(),
+                        modifier = loginSpacer(),
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -216,7 +211,7 @@ fun LoginPage(
 
                 if (viewModel.viewStates.question != LoginQuestionItem.No) {
                     OutlinedTextField(
-                        modifier = loginModifier(),
+                        modifier = loginSpacer(),
                         value = viewModel.viewStates.answer,
                         singleLine = true,
                         onValueChange = { viewModel.dispatch(LoginViewAction.UpdateAnswer(it)) },
@@ -224,10 +219,10 @@ fun LoginPage(
                     )
                 }
 
-                loginSpacer()
+                LoginSpacer()
                 
                 Button(
-                    modifier = loginModifier(),
+                    modifier = loginSpacer(),
                     enabled = viewModel.viewStates.loginEnabled,
                     onClick = {
                         keyboardController?.hide()
@@ -242,12 +237,12 @@ fun LoginPage(
 }
 
 @Composable
-private fun loginModifier(): Modifier {
+private fun loginSpacer(): Modifier {
     return Modifier
         .width(300.dp)
 }
 
 @Composable
-private fun loginSpacer() {
+private fun LoginSpacer() {
     Spacer(modifier = Modifier.height(10.dp))
 }

@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
-import com.eternaljust.msea.utils.UserInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -47,10 +46,10 @@ class SignListViewModel : ViewModel() {
             val url = HTMLURL.SIGN_LIST + "&ac=daysign&page=${page}"
             val document = NetworkUtil.getRequest(url)
             val trs = document.selectXpath("//div[@class='wqpc_sign_table']/div/table//tr")
-            var list = mutableListOf<SignListModel>()
+            val list = mutableListOf<SignListModel>()
             trs.forEach {
                 println("tr=${it.html()}")
-                var signModel = SignListModel()
+                val signModel = SignListModel()
                 val no = it.selectXpath("td[1]").text()
                 if (no.isNotEmpty() && no.contains("NO.")) {
                     signModel.no = no.replace("NO.", "")
@@ -88,10 +87,10 @@ class SignListViewModel : ViewModel() {
 
                 list.add(signModel)
             }
-            if (page == 1) {
-                viewStates = viewStates.copy(list = list)
+            viewStates = if (page == 1) {
+                viewStates.copy(list = list)
             } else {
-                viewStates = viewStates.copy(list = viewStates.list + list)
+                viewStates.copy(list = viewStates.list + list)
             }
 
             viewStates = viewStates.copy(isRefreshing = false)
@@ -139,10 +138,10 @@ class SignDayListViewModel(
             val url = HTMLURL.SIGN_LIST + "&ac=${tabItem.id}&page=${page}"
             val document = NetworkUtil.getRequest(url)
             val trs = document.selectXpath("//div[@class='wqpc_sign_table']/div/table//tr")
-            var list = mutableListOf<SignDayListModel>()
+            val list = mutableListOf<SignDayListModel>()
             trs.forEach {
                 println("tr=${it.html()}")
-                var signModel = SignDayListModel()
+                val signModel = SignDayListModel()
                 val no = it.selectXpath("td[1]").text()
                 if (no.isNotEmpty() && no.contains("NO.")) {
                     signModel.no = no.replace("NO.", "")
@@ -190,10 +189,10 @@ class SignDayListViewModel(
 
                 list.add(signModel)
             }
-            if (page == 1) {
-                viewStates = viewStates.copy(list = list)
+            viewStates = if (page == 1) {
+                viewStates.copy(list = list)
             } else {
-                viewStates = viewStates.copy(list = viewStates.list + list)
+                viewStates.copy(list = viewStates.list + list)
             }
 
             viewStates = viewStates.copy(isRefreshing = false)

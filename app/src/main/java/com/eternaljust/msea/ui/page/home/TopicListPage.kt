@@ -27,7 +27,7 @@ fun TopicListPage(
         modifier = Modifier
             .padding().fillMaxSize()
     ) {
-        Column() {
+        Column {
             Text(text)
 
             Button(onClick = {
