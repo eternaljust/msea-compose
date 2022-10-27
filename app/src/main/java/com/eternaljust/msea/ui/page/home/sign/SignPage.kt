@@ -325,8 +325,7 @@ fun SignList(
             if (item == SignTabItem.DAY_SIGN) {
                 SignListPage(
                     scaffoldState = scaffoldState,
-                    navController = navController,
-                    tabItem = item
+                    navController = navController
                 )
             } else {
                 SignDayListPage(
