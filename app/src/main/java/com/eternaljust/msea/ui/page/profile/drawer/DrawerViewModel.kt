@@ -150,7 +150,7 @@ class DrawerViewModel : ViewModel() {
     }
 
     private fun login() {
-        viewStates = viewStates.copy(isLogin = UserInfo.instance.isLogin)
+        viewStates = viewStates.copy(isLogin = UserInfo.instance.auth.isNotEmpty())
     }
 
     private fun updaterLogoutDialog(show: Boolean) {
@@ -159,7 +159,7 @@ class DrawerViewModel : ViewModel() {
 }
 
 data class DrawerViewState(
-    val isLogin: Boolean = UserInfo.instance.isLogin,
+    val isLogin: Boolean = UserInfo.instance.auth.isNotEmpty(),
     val showLogout: Boolean = false,
     val userInfo: UserInfo = UserInfo.instance
 )

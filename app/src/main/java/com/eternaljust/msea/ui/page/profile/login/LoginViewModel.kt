@@ -92,27 +92,27 @@ class LoginViewModel : ViewModel() {
                 val xpath = "//div[@id='myinfo']/p//a[@target='_blank']"
                 val name = document.selectXpath(xpath).text()
                 val href = document.selectXpath(xpath).attr("href")
-                if (href.isNotEmpty()) {
-                    val ids = href.split("&")
+                if (href.isNotEmpty() && href.contains("-")) {
+                    val ids = href.split("-")
                     val last = ids.last()
-                    if (last.contains("uid")) {
-                        val uid = last.split("=")[1]
+                    if (last.contains(".html")) {
+                        val uid = last.replace(".html", "")
                         println("uid=$uid")
-                        DataStoreUtil.syncSetData(UserInfoKey.UID, uid)
+                        UserInfo.instance.uid = uid
                     }
                 }
                 if (name.isNotEmpty()) {
                     println("name=$name")
-                    DataStoreUtil.syncSetData(UserInfoKey.NAME, name)
+                    UserInfo.instance.name = name
                 }
                 if (level != null && level.isNotEmpty()) {
                     println("level=$level")
-                    DataStoreUtil.syncSetData(UserInfoKey.LEVEL, level)
+                    UserInfo.instance.level = level
                 }
                 if (src.isNotEmpty()) {
                     val avatar = src.replace("&size=small", "" )
                     println("avatar=$avatar")
-                    DataStoreUtil.syncSetData(UserInfoKey.AVATAR, avatar)
+                    UserInfo.instance.avatar = avatar
                 }
                 popBack("欢迎您回来，$level $name")
             }

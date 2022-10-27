@@ -55,9 +55,22 @@ fun DrawerPage(
             onDismissRequest = {
                 viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
             },
+            dismissButton = {
+                Button(
+                    onClick = { viewModel.dispatch(DrawerViewAction.LogoutDialog(false)) }
+                ) {
+                    Text(text = "取消")
+                }
+            },
             confirmButton = {
-                viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
-                onClick(DrawerNavigationItem.Logout)
+                Button(
+                    onClick = {
+                        viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
+                        onClick(DrawerNavigationItem.Logout)
+                    }
+                ) {
+                    Text(text = "确认退出")
+                }
             }
         )
     }
@@ -99,14 +112,13 @@ fun DrawerPage(
 
                 DrawerList(
                     items = viewModel.logoutItems,
-                    onClick = { item ->
-                        onClick(item)
+                    onClick = {
+                        viewModel.dispatch(DrawerViewAction.LogoutDialog(show = true))
                     }
                 )
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

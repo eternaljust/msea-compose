@@ -5,8 +5,6 @@ class UserInfo {
         val instance by lazy { UserInfo() }
     }
 
-    val isLogin: Boolean = auth.isNotEmpty()
-
     var auth: String
         get() = DataStoreUtil.getData(UserInfoKey.AUTH, "")
         set(value) = DataStoreUtil.syncSetData(UserInfoKey.AUTH, value)

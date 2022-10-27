@@ -100,7 +100,7 @@ class SignViewModel : ViewModel() {
 
     private fun sign() {
         viewModelScope.launch {
-            if (UserInfo.instance.isLogin) {
+            if (UserInfo.instance.auth.isNotEmpty()) {
                 viewStates = viewStates.copy(showSignDialog = true)
             } else {
                 _viewEvents.send(SignViewEvent.Login)
