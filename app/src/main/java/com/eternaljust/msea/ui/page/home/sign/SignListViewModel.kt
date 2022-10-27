@@ -95,7 +95,7 @@ class SignListSource: PagingSource<Int, SignListModel>() {
         return list
     }
 
-    override fun getRefreshKey(state: PagingState<Int, SignListModel>): Int? =null
+    override fun getRefreshKey(state: PagingState<Int, SignListModel>): Int? = null
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SignListModel> {
         return try {
@@ -218,7 +218,7 @@ class SignDayListSource(
         return list
     }
 
-    override fun getRefreshKey(state: PagingState<Int, SignDayListModel>): Int? =null
+    override fun getRefreshKey(state: PagingState<Int, SignDayListModel>): Int? = null
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SignDayListModel> {
         return try {

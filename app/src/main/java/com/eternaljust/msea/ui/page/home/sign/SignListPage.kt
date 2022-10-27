@@ -27,7 +27,7 @@ fun SignListPage(
 
     RefreshList(
         lazyPagingItems = lazyPagingItems,
-        noMoreDataText = "没有更多人签到哦！",
+        noMoreDataText = "没有更多人签到哦！"
     ) {
         stickyHeader {
             SignListHeader()
@@ -112,7 +112,7 @@ fun SignDayListPage(
 
     RefreshList(
         lazyPagingItems = lazyPagingItems,
-        noMoreDataText = "没有更多人签到哦！",
+        noMoreDataText = "没有更多人签到哦！"
     ) {
         stickyHeader {
             SignDayListHeader()
