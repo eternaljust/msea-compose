@@ -1,8 +1,15 @@
 package com.eternaljust.msea.ui.page.home.topic
 
+import android.graphics.drawable.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
@@ -84,17 +91,52 @@ class TopicListSource(
                 if (time.isNotEmpty()) {
                     topic.time = time
                 }
-                val examine = it.selectXpath("tr/td[@class='num']/a").text()
-                if (examine.isNotEmpty()) {
-                    topic.examine = examine
-                }
-                val reply = it.selectXpath("tr/td[@class='num']/em").text()
+                val reply = it.selectXpath("tr/td[@class='num']/a").text()
                 if (reply.isNotEmpty()) {
                     topic.reply = reply
+                }
+                val examine = it.selectXpath("tr/td[@class='num']/em").text()
+                if (examine.isNotEmpty()) {
+                    topic.examine = examine
                 }
                 val title = it.selectXpath("tr/th[@class='common']/a").text()
                 if (title.isNotEmpty()) {
                     topic.title = title
+                }
+                val icon1 = it.selectXpath("tr/th[@class='common']/span[1]").attr("class")
+                if (icon1.isNotEmpty()) {
+                    topic.icon1 = getIcon(icon1)
+                }
+                val icon2 = it.selectXpath("tr/th[@class='common']/span[2]").attr("class")
+                if (icon2.isNotEmpty()) {
+                    topic.icon2 = getIcon(icon2)
+                }
+                val icon3 = it.selectXpath("tr/th[@class='common']/span[3]").attr("class")
+                if (icon3.isNotEmpty()) {
+                    topic.icon3 = getIcon(icon3)
+                }
+                val icon4 = it.selectXpath("tr/th[@class='common']/span[4]").attr("class")
+                if (icon4.isNotEmpty()) {
+                    topic.icon4 = getIcon(icon4)
+                }
+
+                var attachment = it.selectXpath("tr/th[@class='common']/span[@class='xi1']").text()
+                var text = it.selectXpath("tr/th[@class='common']").text()
+                if (text.count() != topic.title.count()) {
+                    text = text.replace("\r\n", "")
+                    var attachment1 = text.replace(title, "")
+                    val num = it.selectXpath("tr/th[@class='common']/span[@class='tps']").text()
+                    if (num.isNotEmpty()) {
+                        attachment1 = attachment1.replace(num, "")
+                    }
+                    attachment1 = attachment1.replace(" ", "")
+                    attachment = attachment1
+                }
+                if (attachment.isNotEmpty()) {
+                    topic.attachment = attachment.replace("-", "")
+                    topic.attachment = " - ${topic.attachment}"
+                    topic.attachmentColorRed = topic.attachment.contains("回帖")
+                            || topic.attachment.contains("悬赏")
                 }
 
                 list.add(topic)
@@ -102,6 +144,15 @@ class TopicListSource(
         }
 
         return list
+    }
+
+    private fun getIcon(name: String): String = when (name) {
+        "iconfont icon-image" -> "image"
+        "iconfont icon-fire" -> "fire"
+        "iconfont icon-guzhang1" -> "hand"
+        "iconfont icon-attachment1" -> "link"
+        "iconfont icon-jinghua" -> "premium"
+        else -> ""
     }
 
     override fun getRefreshKey(state: PagingState<Int, TopicListModel>): Int? = null
