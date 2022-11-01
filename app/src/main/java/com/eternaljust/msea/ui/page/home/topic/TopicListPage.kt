@@ -1,3 +1,5 @@
+@file:Suppress("IMPLICIT_CAST_TO_ANY")
+
 package com.eternaljust.msea.ui.page.home
 
 import androidx.compose.foundation.background

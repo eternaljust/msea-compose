@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 class SignListViewModel : ViewModel() {
     private val pager by lazy {
         Pager(
-            PagingConfig(pageSize = 14)
+            PagingConfig(pageSize = 7, initialLoadSize = 14, prefetchDistance = 1)
         ) {
             SignListSource()
         }.flow.cachedIn(viewModelScope)
@@ -43,7 +43,7 @@ class SignListModel {
 typealias PagingSignList = Flow<PagingData<SignListModel>>
 
 class SignListSource: PagingSource<Int, SignListModel>() {
-    private suspend fun loadData(page: Int = 1) : List<SignListModel> {
+    private suspend fun loadData(page: Int) : List<SignListModel> {
         val list = mutableListOf<SignListModel>()
 
         withContext(Dispatchers.IO) {
@@ -51,7 +51,7 @@ class SignListSource: PagingSource<Int, SignListModel>() {
             val document = NetworkUtil.getRequest(url)
             val trs = document.selectXpath("//div[@class='wqpc_sign_table']/div/table//tr")
             trs.forEach {
-                println("tr=${it.html()}")
+                println("---tr=${it.html()}")
                 val signModel = SignListModel()
                 val no = it.selectXpath("td[1]").text()
                 if (no.isNotEmpty() && no.contains("NO.")) {
@@ -156,7 +156,7 @@ typealias PagingSignDayList = Flow<PagingData<SignDayListModel>>
 class SignDayListSource(
     val tabItem: SignTabItem
 ) : PagingSource<Int, SignDayListModel>() {
-    private suspend fun loadData(page: Int = 1) : List<SignDayListModel> {
+    private suspend fun loadData(page: Int) : List<SignDayListModel> {
         val list = mutableListOf<SignDayListModel>()
 
         withContext(Dispatchers.IO) {

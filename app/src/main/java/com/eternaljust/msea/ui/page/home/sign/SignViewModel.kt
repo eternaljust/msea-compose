@@ -31,6 +31,7 @@ class SignViewModel : ViewModel() {
             is SignViewAction.GetDaySign -> getDaySign()
             is SignViewAction.Sign -> sign()
             is SignViewAction.PopBack -> popBack()
+            is SignViewAction.CalendarShowDialog -> calendarDialog(action.isShow)
             is SignViewAction.RuleShowDialog -> ruleDialog(action.isShow)
             is SignViewAction.SignShowDialog -> signDialog(action.isShow)
             is SignViewAction.SignTextChange-> signChange(action.text)
@@ -94,6 +95,46 @@ class SignViewModel : ViewModel() {
             }
             daySign.rule = rule
 
+            val title = document.selectXpath("//h3[@class='wqpc_title']").text()
+            if (title.isNotEmpty()) {
+                daySign.monthTitle = title
+            }
+
+            var list = mutableListOf<CalendarDayModel>()
+            val weeks = document.selectXpath("//ul[@class='wq_week']/li")
+            weeks.forEach {
+                var model = CalendarDayModel()
+                val text = it.text()
+                if (text.isNotEmpty()) {
+                    model.title = text
+                }
+                model.isWeek = true
+                val style = it.attr("style")
+                if (style.isNotEmpty()) {
+                    model.isWeekend = true
+                }
+                list.add(model)
+            }
+            val dates = document.selectXpath("//ul[@class='wq_date']/li")
+            dates.forEach {
+                var model = CalendarDayModel()
+                val text = it.text()
+                if (text.isNotEmpty()) {
+                    model.title = text
+                }
+                val liClassText = it.selectXpath("span/i").attr("class")
+                if (liClassText == "wqsign_dot_red" || liClassText == "wqsign_dot_white") {
+                    model.isSign = true
+                }
+                val classText = it.selectXpath("span").attr("class")
+                if (classText == "wq_sign_today") {
+                    model.isToday = true
+                }
+
+                list.add(model)
+            }
+            daySign.calendars = list
+
             viewStates = viewStates.copy(daySign = daySign)
         }
     }
@@ -147,6 +188,10 @@ class SignViewModel : ViewModel() {
         viewStates = viewStates.copy(showRuleDialog = isShow)
     }
 
+    private fun calendarDialog(isShow: Boolean) {
+        viewStates = viewStates.copy(showCalendarDialog = isShow)
+    }
+
     private fun popBack() {
         viewModelScope.launch {
             _viewEvents.send(SignViewEvent.PopBack)
@@ -158,7 +203,8 @@ data class SignViewState(
     val daySign: DaySignModel = DaySignModel(),
     val showSignDialog: Boolean = false,
     val signText: String = "",
-    val showRuleDialog: Boolean = false
+    val showRuleDialog: Boolean = false,
+    val showCalendarDialog: Boolean = false
 )
 
 sealed class SignViewEvent {
@@ -173,6 +219,7 @@ sealed class SignViewAction {
     object PopBack : SignViewAction()
     object SignConfirm : SignViewAction()
 
+    data class CalendarShowDialog(val isShow: Boolean) : SignViewAction()
     data class RuleShowDialog(val isShow: Boolean) : SignViewAction()
     data class SignShowDialog(val isShow: Boolean) : SignViewAction()
     data class SignTextChange(val text: String) : SignViewAction()
@@ -192,6 +239,17 @@ class DaySignModel {
     var yesterday = "昨日总签到 0 人"
     var month = "本月总签到 0 人"
     var total = "已有 0 人参与"
+
+    var monthTitle = ""
+    var calendars: List<CalendarDayModel> = emptyList()
+}
+
+class CalendarDayModel {
+    var title = ""
+    var isWeek = false
+    var isWeekend = false
+    var isSign = false
+    var isToday = false
 }
 
 interface SignTab {

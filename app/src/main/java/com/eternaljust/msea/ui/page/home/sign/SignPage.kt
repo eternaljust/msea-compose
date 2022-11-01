@@ -1,18 +1,25 @@
 package com.eternaljust.msea.ui.page.home.sign
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.EnergySavingsLeaf
-import androidx.compose.material.icons.outlined.EventAvailable
-import androidx.compose.material.icons.outlined.Help
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -87,7 +94,9 @@ fun SignPage(
                         showSignDialog = viewModel.viewStates.showSignDialog,
                         signDialogClick = { viewModel.dispatch(SignViewAction.SignShowDialog(it))},
                         showRuleDialog = viewModel.viewStates.showRuleDialog,
-                        ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) }
+                        ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) },
+                        showCalendarDialog = viewModel.viewStates.showCalendarDialog,
+                        calendarDialogClick = { viewModel.dispatch(SignViewAction.CalendarShowDialog(it))}
                     )
 
                     SignList(
@@ -112,7 +121,9 @@ private fun SignHeader(
     showSignDialog: Boolean,
     signDialogClick: (Boolean) -> Unit,
     showRuleDialog: Boolean,
-    ruleDialogClick: (Boolean) -> Unit
+    ruleDialogClick: (Boolean) -> Unit,
+    showCalendarDialog: Boolean,
+    calendarDialogClick: (Boolean) -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -159,6 +170,57 @@ private fun SignHeader(
                 }
             )
         }
+
+        if (showCalendarDialog) {
+            AlertDialog(
+                onDismissRequest = { calendarDialogClick(false) },
+                title = { Text(text = daySign.monthTitle) },
+                text = {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 35.dp),
+                        content = {
+                            items(daySign.calendars) {
+                                val backgroundColor = if (it.isToday)
+                                    MaterialTheme.colorScheme.primary else
+                                    if (isSystemInDarkTheme()) Color.Black else Color.White
+                                Column(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(3.dp)
+                                        .clip(shape = RoundedCornerShape(5.dp))
+                                        .background(backgroundColor),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    val color = if (it.isToday) Color.White else
+                                        if (it.isWeekend) MaterialTheme.colorScheme.primary else
+                                            if (isSystemInDarkTheme()) Color.White else Color.Black
+                                    Text(
+                                        text = it.title,
+                                        color = color
+                                    )
+
+                                    if (it.isSign) {
+                                        Row(
+                                            modifier = Modifier.size(5.dp)
+                                                .clip(CircleShape)
+                                                .background (
+                                                    if (it.isToday) Color.White else
+                                                    MaterialTheme.colorScheme.primary
+                                                )
+                                        ) {}
+                                    }
+                                }
+                            }
+                        })
+                },
+                confirmButton = {
+                    Button(onClick = { calendarDialogClick(false) }) {
+                        Text(text = "好的")
+                    }
+                }
+            )
+        }
         
         Column(
             verticalArrangement = Arrangement.Top,
@@ -180,7 +242,9 @@ private fun SignHeader(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -200,13 +264,26 @@ private fun SignHeader(
                 Spacer(modifier = Modifier.width(30.dp))
 
                 Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    IconButton(onClick = { ruleDialogClick(true) }) {
+                    IconButton(
+                        modifier = Modifier.size(30.dp),
+                        onClick = { ruleDialogClick(true) }
+                    ) {
                         Icon(
                             imageVector = Icons.Outlined.Help,
                             contentDescription = "每日福利规则",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    IconButton(
+                        modifier = Modifier.size(30.dp),
+                        onClick = { calendarDialogClick(true) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.CalendarMonth,
+                            contentDescription = "签到日历",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -234,6 +311,7 @@ private fun SignHeader(
             ) {
                 Row {
                     Icon(
+                        modifier = Modifier.size(20.dp),
                         imageVector = Icons.Outlined.EnergySavingsLeaf,
                         contentDescription = "今日已签到人数",
                         tint = MaterialTheme.colorScheme.primary
@@ -247,6 +325,7 @@ private fun SignHeader(
                     Spacer(modifier = Modifier.width(20.dp))
 
                     Icon(
+                        modifier = Modifier.size(20.dp),
                         imageVector = Icons.Outlined.EnergySavingsLeaf,
                         contentDescription = "昨日已签到人数",
                         tint = MaterialTheme.colorScheme.secondary
@@ -260,6 +339,7 @@ private fun SignHeader(
 
                 Row {
                     Icon(
+                        modifier = Modifier.size(20.dp),
                         imageVector = Icons.Outlined.CheckCircle,
                         contentDescription = "本月总签到人数",
                         tint = MaterialTheme.colorScheme.secondary
@@ -273,6 +353,7 @@ private fun SignHeader(
                     Spacer(modifier = Modifier.width(20.dp))
 
                     Icon(
+                        modifier = Modifier.size(20.dp),
                         imageVector = Icons.Outlined.EventAvailable,
                         contentDescription = "已参与人数",
                         tint = MaterialTheme.colorScheme.primary
