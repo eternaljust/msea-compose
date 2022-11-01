@@ -116,7 +116,7 @@ class NetworkUtil private constructor() {
             var avatar = url.replace("&size=small", "")
             avatar = avatar.replace("&size=middle", "")
             avatar = avatar.replace("&size=big", "")
-            if (avatar.contains(HTMLURL.BASE)) {
+            if (!avatar.contains(HTMLURL.BASE)) {
                 avatar = HTMLURL.BASE + "/" + avatar
             }
             return avatar
@@ -182,4 +182,5 @@ object HTMLURL {
     const val SIGN_LIST = "$BASE/plugin.php?id=wq_sign&mod=info"
     const val TOPIC_LIST = "$BASE/forum.php?mod=guide"
     const val MY_POST_LIST = "$BASE/home.php?mod=space&do=notice&view=mypost"
+    const val SYSTEM_LIST = "$BASE/home.php?mod=space&do=notice&view=system"
 }

@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.page.notice.post.MyPostPage
+import com.eternaljust.msea.ui.page.notice.system.SystemPage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -49,6 +50,8 @@ fun NoticePage(
                 val tabItem = items[pagerState.currentPage]
                 if (tabItem == NoticeTabItem.MYPOST) {
                     MyPostPage(scaffoldState = scaffoldState, navController = navController)
+                } else if (tabItem == NoticeTabItem.SYSTEM) {
+                    SystemPage(scaffoldState = scaffoldState, navController = navController)
                 } else {
                     Text(text = tabItem.title)
                 }
