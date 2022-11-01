@@ -112,6 +112,25 @@ class NetworkUtil private constructor() {
             return URLEncoder.encode(param, "UTF-8")
         }
 
+        fun getAvatar(url: String): String {
+            var avatar = url.replace("&size=small", "")
+            avatar = avatar.replace("&size=middle", "")
+            avatar = avatar.replace("&size=big", "")
+            if (avatar.contains(HTMLURL.BASE)) {
+                avatar = HTMLURL.BASE + "/" + avatar
+            }
+            return avatar
+        }
+
+        fun getUid(text: String): String {
+            if (text.contains("uid-") && text.contains(".html")) {
+                val uids = text.split("uid-")
+                val uid = uids.last().replace(".html", "")
+                return uid
+            }
+            return ""
+        }
+
         private fun getCookies(): String {
             val cookie = UserInfo.instance.salt + "; " + UserInfo.instance.auth
             println("Cookie = $cookie")
@@ -162,4 +181,5 @@ object HTMLURL {
             "&handlekey=pc_click_wqsign"
     const val SIGN_LIST = "$BASE/plugin.php?id=wq_sign&mod=info"
     const val TOPIC_LIST = "$BASE/forum.php?mod=guide"
+    const val MY_POST_LIST = "$BASE/home.php?mod=space&do=notice&view=mypost"
 }

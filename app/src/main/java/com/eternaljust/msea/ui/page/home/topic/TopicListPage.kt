@@ -158,27 +158,32 @@ private fun TopicAttachmentIcon(icon: String) = when (icon) {
     "image" -> Icon(
         imageVector = Icons.Default.Image,
         contentDescription = "帖子包含图片",
-        tint = MaterialTheme.colorScheme.primary
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(20.dp)
     )
     "fire" -> Icon(
         imageVector = Icons.Default.LocalFireDepartment,
         contentDescription = "帖子高热度",
-        tint = Color.Red
+        tint = Color.Red,
+        modifier = Modifier.size(20.dp)
     )
     "hand" -> Icon(
         imageVector = Icons.Default.WavingHand,
         contentDescription = "帖子评价指数",
-        tint = MaterialTheme.colorScheme.secondary
+        tint = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier.size(20.dp)
     )
     "link" -> Icon(
         imageVector = Icons.Default.Link,
         contentDescription = "帖子包含链接",
-        tint = Color.Blue
+        tint = Color.Blue,
+        modifier = Modifier.size(20.dp)
     )
     "premium" -> Icon(
         imageVector = Icons.Default.WorkspacePremium,
         contentDescription = "帖子精华",
-        tint = Color.Yellow
+        tint = Color.Yellow,
+        modifier = Modifier.size(20.dp)
     )
     else -> Color.Unspecified
 }

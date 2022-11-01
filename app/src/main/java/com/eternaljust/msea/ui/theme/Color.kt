@@ -1,5 +1,7 @@
 package com.eternaljust.msea.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF006E26)
@@ -64,3 +66,11 @@ val md_theme_dark_surfaceTintColor = Color(0xFF5CE071)
 
 
 val seed = Color(0xFF53D769)
+
+@Composable
+fun ColorTheme(
+    light: Color,
+    dark: Color
+): Color {
+    return if (isSystemInDarkTheme()) dark else light
+}

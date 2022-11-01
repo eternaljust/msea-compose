@@ -3,7 +3,6 @@ package com.eternaljust.msea
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -30,6 +29,7 @@ import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.page.profile.login.LoginPage
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.DataStoreUtil
@@ -173,7 +173,7 @@ fun MyApp() {
                 bottomBar = {
                     if (mainScreens.contains(currentDestination?.route)) {
                         NavigationBar(
-                            containerColor = if (isSystemInDarkTheme()) Color.Black else Color.White
+                            containerColor = ColorTheme(light = Color.White, dark = Color.Black)
                         )
                         {
                             screens.forEach { screen ->
@@ -223,7 +223,10 @@ fun MyApp() {
                         }
 
                         composable(RouteName.NOTICE) {
-                            NoticePage(scaffoldState = snackbarHostState)
+                            NoticePage(
+                                scaffoldState = snackbarHostState,
+                                navController = navController
+                            )
                         }
 
                         composable(RouteName.NODE) {

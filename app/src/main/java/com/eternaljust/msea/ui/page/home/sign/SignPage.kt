@@ -1,11 +1,8 @@
 package com.eternaljust.msea.ui.page.home.sign
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +24,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -182,7 +180,7 @@ private fun SignHeader(
                             items(daySign.calendars) {
                                 val backgroundColor = if (it.isToday)
                                     MaterialTheme.colorScheme.primary else
-                                    if (isSystemInDarkTheme()) Color.Black else Color.White
+                                    ColorTheme(light = Color.White, dark = Color.Black)
                                 Column(
                                     modifier = Modifier
                                         .size(40.dp)
@@ -194,7 +192,7 @@ private fun SignHeader(
                                 ) {
                                     val color = if (it.isToday) Color.White else
                                         if (it.isWeekend) MaterialTheme.colorScheme.primary else
-                                            if (isSystemInDarkTheme()) Color.White else Color.Black
+                                            ColorTheme(light = Color.Black, dark = Color.White)
                                     Text(
                                         text = it.title,
                                         color = color
@@ -202,11 +200,12 @@ private fun SignHeader(
 
                                     if (it.isSign) {
                                         Row(
-                                            modifier = Modifier.size(5.dp)
+                                            modifier = Modifier
+                                                .size(5.dp)
                                                 .clip(CircleShape)
-                                                .background (
+                                                .background(
                                                     if (it.isToday) Color.White else
-                                                    MaterialTheme.colorScheme.primary
+                                                        MaterialTheme.colorScheme.primary
                                                 )
                                         ) {}
                                     }
