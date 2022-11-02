@@ -4,43 +4,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class MyPostViewModel : ViewModel() {
     private val pager by lazy {
-        Pager(
-            PagingConfig(pageSize = 30, prefetchDistance = 1)
-        ) {
-            MyPostListSource()
-        }.flow.cachedIn(viewModelScope)
+        configPager(PagingConfig(pageSize = 30, prefetchDistance = 1)) {
+            loadData(page = it)
+        }
     }
 
     var viewStates by mutableStateOf(MyPostListViewState(pagingData = pager))
         private set
-}
 
-data class MyPostListViewState(
-    val pagingData: PagingPostList
-)
-
-class PostListModel {
-    var pid = ""
-    var uid = ""
-    var avatar = ""
-    var name = ""
-    var time = ""
-    var title = ""
-}
-
-typealias PagingPostList = Flow<PagingData<PostListModel>>
-
-class MyPostListSource : PagingSource<Int, PostListModel>() {
     private suspend fun loadData(page: Int) : List<PostListModel> {
         val list = mutableListOf<PostListModel>()
 
@@ -87,21 +68,17 @@ class MyPostListSource : PagingSource<Int, PostListModel>() {
 
         return list
     }
+}
 
-    override fun getRefreshKey(state: PagingState<Int, PostListModel>): Int? = null
+data class MyPostListViewState(
+    val pagingData: Flow<PagingData<PostListModel>>
+)
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostListModel> {
-        return try {
-            val nextPage = params.key ?: 1
-            val data = loadData(page = nextPage)
-
-            LoadResult.Page(
-                data = data,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = if (data.isEmpty()) null else nextPage + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
-    }
+class PostListModel {
+    var pid = ""
+    var uid = ""
+    var avatar = ""
+    var name = ""
+    var time = ""
+    var title = ""
 }

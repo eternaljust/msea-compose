@@ -3,6 +3,7 @@ package com.eternaljust.msea.utils
 import okhttp3.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.lang.Exception
 import java.net.URLEncoder
 
 class NetworkUtil private constructor() {
@@ -183,4 +184,9 @@ object HTMLURL {
     const val TOPIC_LIST = "$BASE/forum.php?mod=guide"
     const val MY_POST_LIST = "$BASE/home.php?mod=space&do=notice&view=mypost"
     const val SYSTEM_LIST = "$BASE/home.php?mod=space&do=notice&view=system"
+}
+
+sealed class HttpResult<out T> {
+    data class Success<T>(val result: T): HttpResult<T>()
+    data class Error(val exception: Exception): HttpResult<Nothing>()
 }

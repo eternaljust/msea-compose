@@ -4,17 +4,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.eternaljust.msea.ui.page.home.TopicTabItem
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class TopicListViewModel(
-    tabItem: TopicTabItem
+    val tabItem: TopicTabItem
 ) : ViewModel() {
     companion object {
         val new by lazy { TopicListViewModel(tabItem = TopicTabItem.NEW) }
@@ -24,43 +24,14 @@ class TopicListViewModel(
     }
 
     private val pager by lazy {
-        Pager(
-            PagingConfig(pageSize = 50, prefetchDistance = 1)
-        ) {
-            TopicListSource(tabItem = tabItem)
-        }.flow.cachedIn(viewModelScope)
+        configPager(PagingConfig(pageSize = 50, prefetchDistance = 1)) {
+            loadData(page = it)
+        }
     }
 
     var viewStates by mutableStateOf(TopicListViewState(pagingData = pager))
         private set
-}
 
-data class TopicListViewState(
-    val pagingData: PagingTopicList
-)
-
-class TopicListModel {
-    var uid = ""
-    var tid = ""
-    var name = ""
-    var avatar = ""
-    var title = ""
-    var time = ""
-    var icon1 = ""
-    var icon2 = ""
-    var icon3 = ""
-    var icon4 = ""
-    var attachment = ""
-    var attachmentColorRed = false
-    var examine = ""
-    var reply = ""
-}
-
-typealias PagingTopicList = Flow<PagingData<TopicListModel>>
-
-class TopicListSource(
-    val tabItem: TopicTabItem
-) : PagingSource<Int, TopicListModel>() {
     private suspend fun loadData(page: Int) : List<TopicListModel> {
         val list = mutableListOf<TopicListModel>()
 
@@ -149,21 +120,25 @@ class TopicListSource(
         "iconfont icon-jinghua" -> "premium"
         else -> ""
     }
+}
 
-    override fun getRefreshKey(state: PagingState<Int, TopicListModel>): Int? = null
+data class TopicListViewState(
+    val pagingData: Flow<PagingData<TopicListModel>>
+)
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TopicListModel> {
-        return try {
-            val nextPage = params.key ?: 1
-            val data = loadData(page = nextPage)
-
-            LoadResult.Page(
-                data = data,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = if (data.isEmpty()) null else nextPage + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
-    }
+class TopicListModel {
+    var uid = ""
+    var tid = ""
+    var name = ""
+    var avatar = ""
+    var title = ""
+    var time = ""
+    var icon1 = ""
+    var icon2 = ""
+    var icon3 = ""
+    var icon4 = ""
+    var attachment = ""
+    var attachmentColorRed = false
+    var examine = ""
+    var reply = ""
 }

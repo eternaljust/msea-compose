@@ -4,39 +4,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class SystemViewModel : ViewModel() {
     private val pager by lazy {
-        Pager(
-            PagingConfig(pageSize = 30, prefetchDistance = 1)
-        ) {
-            SystemListSource()
-        }.flow.cachedIn(viewModelScope)
+        configPager(PagingConfig(pageSize = 30, prefetchDistance = 1)) {
+            loadData(page = it)
+        }
     }
 
     var viewStates by mutableStateOf(SystemListViewState(pagingData = pager))
         private set
-}
 
-data class SystemListViewState(
-    val pagingData: SystemPostList
-)
-
-class SystemListModel {
-    var time = ""
-    var content = ""
-}
-
-typealias SystemPostList = Flow<PagingData<SystemListModel>>
-
-class SystemListSource : PagingSource<Int, SystemListModel>() {
     private suspend fun loadData(page: Int) : List<SystemListModel> {
         val list = mutableListOf<SystemListModel>()
 
@@ -64,21 +49,13 @@ class SystemListSource : PagingSource<Int, SystemListModel>() {
 
         return list
     }
+}
 
-    override fun getRefreshKey(state: PagingState<Int, SystemListModel>): Int? = null
+data class SystemListViewState(
+    val pagingData: Flow<PagingData<SystemListModel>>
+)
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SystemListModel> {
-        return try {
-            val nextPage = params.key ?: 1
-            val data = loadData(page = nextPage)
-
-            LoadResult.Page(
-                data = data,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = if (data.isEmpty()) null else nextPage + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
-    }
+class SystemListModel {
+    var time = ""
+    var content = ""
 }

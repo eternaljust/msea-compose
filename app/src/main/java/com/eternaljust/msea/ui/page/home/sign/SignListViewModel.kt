@@ -4,10 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 
@@ -16,33 +16,14 @@ import kotlinx.coroutines.flow.Flow
  */
 class SignListViewModel : ViewModel() {
     private val pager by lazy {
-        Pager(
-            PagingConfig(pageSize = 7, initialLoadSize = 14, prefetchDistance = 1)
-        ) {
-            SignListSource()
-        }.flow.cachedIn(viewModelScope)
+        configPager(PagingConfig(pageSize = 7, prefetchDistance = 1)) {
+            loadData(page = it)
+        }
     }
 
     var viewStates by mutableStateOf(SignListViewState(pagingData = pager))
         private set
-}
 
-data class SignListViewState(
-    val pagingData: PagingSignList
-)
-
-class SignListModel {
-    var uid = ""
-    var no = ""
-    var name = ""
-    var content = ""
-    var time = ""
-    var bits = ""
-}
-
-typealias PagingSignList = Flow<PagingData<SignListModel>>
-
-class SignListSource: PagingSource<Int, SignListModel>() {
     private suspend fun loadData(page: Int) : List<SignListModel> {
         val list = mutableListOf<SignListModel>()
 
@@ -94,23 +75,19 @@ class SignListSource: PagingSource<Int, SignListModel>() {
 
         return list
     }
+}
 
-    override fun getRefreshKey(state: PagingState<Int, SignListModel>): Int? = null
+data class SignListViewState(
+    val pagingData: Flow<PagingData<SignListModel>>
+)
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SignListModel> {
-        return try {
-            val nextPage = params.key ?: 1
-            val data = loadData(page = nextPage)
-
-            LoadResult.Page(
-                data = data,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = if (data.isEmpty()) null else nextPage + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
-    }
+class SignListModel {
+    var uid = ""
+    var no = ""
+    var name = ""
+    var content = ""
+    var time = ""
+    var bits = ""
 }
 
 /**
@@ -125,37 +102,14 @@ class SignDayListViewModel(
     }
 
     private val pager by lazy {
-        Pager(
-            PagingConfig(pageSize = 14)
-        ) {
-            SignDayListSource(tabItem = tabItem)
-        }.flow.cachedIn(viewModelScope)
+        configPager(PagingConfig(pageSize = 7, initialLoadSize = 1)) {
+            loadData(page = it)
+        }
     }
 
     var viewStates by mutableStateOf(SignDayListViewState(pagingData = pager))
         private set
-}
 
-data class SignDayListViewState(
-    val pagingData: PagingSignDayList
-)
-
-class SignDayListModel {
-    var uid = ""
-    var no = ""
-    var name = ""
-    var time = ""
-    var bits = ""
-    var continuous = ""
-    var month = ""
-    var total = ""
-}
-
-typealias PagingSignDayList = Flow<PagingData<SignDayListModel>>
-
-class SignDayListSource(
-    val tabItem: SignTabItem
-) : PagingSource<Int, SignDayListModel>() {
     private suspend fun loadData(page: Int) : List<SignDayListModel> {
         val list = mutableListOf<SignDayListModel>()
 
@@ -217,21 +171,19 @@ class SignDayListSource(
 
         return list
     }
+}
 
-    override fun getRefreshKey(state: PagingState<Int, SignDayListModel>): Int? = null
+data class SignDayListViewState(
+    val pagingData: Flow<PagingData<SignDayListModel>>
+)
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SignDayListModel> {
-        return try {
-            val nextPage = params.key ?: 1
-            val data = loadData(page = nextPage)
-
-            LoadResult.Page(
-                data = data,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = if (data.isEmpty()) null else nextPage + 1
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
-    }
+class SignDayListModel {
+    var uid = ""
+    var no = ""
+    var name = ""
+    var time = ""
+    var bits = ""
+    var continuous = ""
+    var month = ""
+    var total = ""
 }
