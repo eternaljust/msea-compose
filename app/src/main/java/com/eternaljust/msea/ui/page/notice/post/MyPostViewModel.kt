@@ -31,8 +31,6 @@ class MyPostViewModel : ViewModel() {
             val dl = document.selectXpath("//dl[@class='cl ']")
 
             dl.forEach {
-                println("mypost----")
-                println(it.html())
                 var post = PostListModel()
                 val time = it.selectXpath("dt/span[@class='xg1 xw0']").text()
                 if (time.isNotEmpty()) {
@@ -56,7 +54,6 @@ class MyPostViewModel : ViewModel() {
                 if (title.isNotEmpty()) {
                     post.title = title
                 }
-                // forum.php?mod=redirect&goto=findpost&ptid=11825&pid=183809
                 val thread = it.selectXpath("dd[@class='ntc_body']/a[2]").attr("href")
                 if (thread.isNotEmpty() && thread.contains("&pid=")) {
                     post.pid = thread.split("&pid=").last()
