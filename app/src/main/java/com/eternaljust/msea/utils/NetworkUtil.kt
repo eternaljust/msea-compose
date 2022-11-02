@@ -185,6 +185,7 @@ object HTMLURL {
     const val MY_POST_LIST = "$BASE/home.php?mod=space&do=notice&view=mypost"
     const val SYSTEM_LIST = "$BASE/home.php?mod=space&do=notice&view=system"
     const val INTERACTIVE_LIST = "$BASE/home.php?mod=space&do=notice&view=interactive&type=friend"
+    const val NODE_LIST = "$BASE/forum.php?mod=index"
 }
 
 sealed class HttpResult<out T> {

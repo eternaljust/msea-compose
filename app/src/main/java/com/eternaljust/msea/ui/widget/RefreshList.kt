@@ -3,8 +3,6 @@ package com.eternaljust.msea.ui.widget
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -25,9 +23,10 @@ fun <T : Any> RefreshList(
     noMoreDataText: String = "没有更多了",
     isRefreshing: Boolean = false,
     onRefresh: (() -> Unit) = {},
-    itemContent: LazyListScope.() -> Unit,
+    itemContent: LazyListScope.() -> Unit
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+
     SwipeRefresh(
         state = swipeRefreshState,
         onRefresh = {
@@ -40,7 +39,7 @@ fun <T : Any> RefreshList(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             itemContent()
 

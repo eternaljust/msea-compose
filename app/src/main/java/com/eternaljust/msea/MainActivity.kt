@@ -230,10 +230,16 @@ fun MyApp() {
                         }
 
                         composable(RouteName.NODE) {
-                            NodePage(scaffoldState = snackbarHostState)
+                            NodePage(
+                                scaffoldState = snackbarHostState,
+                                navController = navController
+                            )
                         }
 
-                        detailsNav(scaffoldState = snackbarHostState, navController = navController)
+                        detailsNav(
+                            scaffoldState = snackbarHostState,
+                            navController = navController
+                        )
                     }
                 }
             )

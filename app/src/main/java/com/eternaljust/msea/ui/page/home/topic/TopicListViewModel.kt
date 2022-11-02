@@ -41,7 +41,6 @@ class TopicListViewModel(
             withContext(Dispatchers.Default) {
                 val tbody = document.selectXpath("//div[@id='threadlist']//table/tbody")
                 tbody.forEach {
-                    println("tbody----${it.html()}")
                     var topic = TopicListModel()
 
                     val avatar = it.selectXpath("tr/td[@class='icn']/a/img").attr("src")
