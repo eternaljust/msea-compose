@@ -37,7 +37,9 @@ fun MyPostPage(
         lazyPagingItems = lazyPagingItems
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
-            MyPostListItemContent(item!!)
+            item?.let {
+                MyPostListItemContent(it)
+            }
         }
     }
 }

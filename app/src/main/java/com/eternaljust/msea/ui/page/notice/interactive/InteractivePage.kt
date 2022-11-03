@@ -37,7 +37,9 @@ fun InteractivePage(
         lazyPagingItems = lazyPagingItems
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
-            InteractiveListItemContent(item!!)
+            item?.let {
+                InteractiveListItemContent(it)
+            }
         }
     }
 }

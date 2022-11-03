@@ -38,12 +38,14 @@ fun NodePage(
             lazyPagingItems = lazyPagingItems
         ) {
             lazyPagingItems.itemSnapshotList.forEach {
-                stickyHeader {
-                    NodeListHeader(it!!)
-                }
+                it?.let {
+                    stickyHeader {
+                        NodeListHeader(it)
+                    }
 
-                items(it!!.list) { item ->
-                    NodeListItemContent(item)
+                    items(it.list) { item ->
+                        NodeListItemContent(item)
+                    }
                 }
             }
         }

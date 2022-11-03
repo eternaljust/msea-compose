@@ -34,7 +34,9 @@ fun SignListPage(
         }
 
         itemsIndexed(lazyPagingItems) { _, item ->
-            SignListItemContent(item!!)
+            item?.let {
+                SignListItemContent(it)
+            }
         }
     }
 }
@@ -119,7 +121,9 @@ fun SignDayListPage(
         }
 
         itemsIndexed(lazyPagingItems) { _, item ->
-            SignDayListItemContent(item!!)
+            item?.let {
+                SignDayListItemContent(it)
+            }
         }
     }
 }

@@ -28,7 +28,9 @@ fun SystemPage(
         lazyPagingItems = lazyPagingItems
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
-            SystemListItemContent(item!!)
+            item?.let {
+                SystemListItemContent(it)
+            }
         }
     }
 }

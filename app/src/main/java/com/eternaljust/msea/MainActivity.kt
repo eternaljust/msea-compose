@@ -6,8 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.EnergySavingsLeaf
-import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -25,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
+import com.eternaljust.msea.ui.page.node.tag.TagPage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
@@ -126,10 +125,14 @@ fun MyApp() {
                                         style = MaterialTheme.typography.titleMedium
                                     )
 
-                                    Text(
-                                        text = "Make search easier / 让搜索更简单",
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
+                                    currentDestination?.route?.let {
+                                        if (it != BottomBarScreen.Home.route) {
+                                            Text(
+                                                text = "Make search easier / 让搜索更简单",
+                                                style = MaterialTheme.typography.labelSmall
+                                            )
+                                        }
+                                    }
                                 }
                             },
                             navigationIcon = {
@@ -138,31 +141,15 @@ fun MyApp() {
                                 }) {
                                     Icon(
                                         imageVector = Icons.Filled.Menu,
-                                        contentDescription = "我的"
+                                        contentDescription = "我的个人中心"
                                     )
                                 }
                             },
                             actions = {
-                                IconButton(
-                                    onClick = { navController.navigate(route = RouteName.Sign) }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.EnergySavingsLeaf,
-                                        contentDescription = "签到"
-                                    )
-                                }
-
-                                IconButton(onClick = { /* doSomething() */ }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.FormatListNumbered,
-                                        contentDescription = "排行榜"
-                                    )
-                                }
-
-                                IconButton(onClick = { /* doSomething() */ }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Search,
-                                        contentDescription = "搜索"
+                                currentDestination?.route?.let {
+                                    TopAppBarAcitons(
+                                        route = it,
+                                        navController = navController
                                     )
                                 }
                             },
@@ -247,6 +234,48 @@ fun MyApp() {
     )
 }
 
+@Composable
+fun TopAppBarAcitons(
+    route: String,
+    navController: NavHostController
+) {
+    when (route) {
+        BottomBarScreen.Home.route -> {
+            IconButton(
+                onClick = { navController.navigate(route = RouteName.Sign) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.EnergySavingsLeaf,
+                    contentDescription = "签到"
+                )
+            }
+
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    imageVector = Icons.Default.FormatListNumbered,
+                    contentDescription = "排行榜"
+                )
+            }
+
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "搜索"
+                )
+            }
+        }
+        BottomBarScreen.Node.route -> {
+            IconButton(onClick = { navController.navigate(route = RouteName.Tag) }) {
+                Icon(
+                    imageVector = Icons.Default.Tag,
+                    contentDescription = "标签"
+                )
+            }
+        }
+        else -> {}
+    }
+}
+
 private fun NavGraphBuilder.detailsNav(
     scaffoldState: SnackbarHostState,
     navController: NavHostController
@@ -320,6 +349,13 @@ private fun NavGraphBuilder.detailsNav(
 
     composable(RouteName.Sign) {
         SignPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
+    }
+
+    composable(RouteName.Tag) {
+        TagPage(
             scaffoldState = scaffoldState,
             navController = navController
         )

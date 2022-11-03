@@ -42,7 +42,9 @@ fun TopicListPage(
         lazyPagingItems = lazyPagingItems
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
-            TopicListItemContent(item!!)
+            item?.let {
+                TopicListItemContent(item)
+            }
         }
     }
 }
