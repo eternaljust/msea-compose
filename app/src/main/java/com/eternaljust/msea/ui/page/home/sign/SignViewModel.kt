@@ -34,7 +34,7 @@ class SignViewModel : ViewModel() {
             is SignViewAction.CalendarShowDialog -> calendarDialog(action.isShow)
             is SignViewAction.RuleShowDialog -> ruleDialog(action.isShow)
             is SignViewAction.SignShowDialog -> signDialog(action.isShow)
-            is SignViewAction.SignTextChange-> signChange(action.text)
+            is SignViewAction.SignTextChange -> signChange(action.text)
             is SignViewAction.SignConfirm -> signComfirm()
         }
     }

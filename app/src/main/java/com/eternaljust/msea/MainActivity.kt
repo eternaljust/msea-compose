@@ -16,13 +16,18 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
+import com.eternaljust.msea.ui.page.node.tag.TagItemModel
+import com.eternaljust.msea.ui.page.node.tag.TagListPage
+import com.eternaljust.msea.ui.page.node.tag.TagListViewModel
 import com.eternaljust.msea.ui.page.node.tag.TagPage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
@@ -33,6 +38,7 @@ import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.DataStoreUtil
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.fromJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -242,7 +248,7 @@ fun TopAppBarAcitons(
     when (route) {
         BottomBarScreen.Home.route -> {
             IconButton(
-                onClick = { navController.navigate(route = RouteName.Sign) }
+                onClick = { navController.navigate(route = RouteName.SIGN) }
             ) {
                 Icon(
                     imageVector = Icons.Default.EnergySavingsLeaf,
@@ -265,7 +271,7 @@ fun TopAppBarAcitons(
             }
         }
         BottomBarScreen.Node.route -> {
-            IconButton(onClick = { navController.navigate(route = RouteName.Tag) }) {
+            IconButton(onClick = { navController.navigate(route = RouteName.TAG) }) {
                 Icon(
                     imageVector = Icons.Default.Tag,
                     contentDescription = "标签"
@@ -347,17 +353,31 @@ private fun NavGraphBuilder.detailsNav(
             })
     }
 
-    composable(RouteName.Sign) {
+    composable(RouteName.SIGN) {
         SignPage(
             scaffoldState = scaffoldState,
             navController = navController
         )
     }
 
-    composable(RouteName.Tag) {
+    composable(RouteName.TAG) {
         TagPage(
             scaffoldState = scaffoldState,
             navController = navController
         )
+    }
+
+    composable(
+        RouteName.TAG_LIST + "/{tagItem}",
+        arguments = listOf(navArgument("tagItem") { type = NavType.StringType})
+    ) {
+        val tagItem = it.arguments?.getString("tagItem")?.fromJson<TagItemModel>()
+        tagItem?.let {
+            TagListPage(
+                scaffoldState = scaffoldState,
+                navController = navController,
+                tagItem = it
+            )
+        }
     }
 }
