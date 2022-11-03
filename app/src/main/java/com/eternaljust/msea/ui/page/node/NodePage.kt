@@ -1,20 +1,15 @@
 package com.eternaljust.msea.ui.page.node
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.sharp.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -167,25 +162,25 @@ private fun NodeCategoryIcon(fid: String) = when (fid) {
         modifier = Modifier.size(40.dp)
     )
     "93" -> Icon(
-        imageVector = Icons.Default.HourglassTop,
+        imageVector = Icons.Default.ZoomIn,
         contentDescription = "Keyword",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "98" -> Icon(
-        imageVector = Icons.Default.Work,
+        imageVector = Icons.Default.Web,
         contentDescription = "Wiki",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "112" -> Icon(
-        imageVector = Icons.Default.Analytics,
+        imageVector = Icons.Default.CurrencyExchange,
         contentDescription = "问答",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "113" -> Icon(
-        imageVector = Icons.Default.Light,
+        imageVector = Icons.Default.Lightbulb,
         contentDescription = "方法论",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
@@ -203,25 +198,25 @@ private fun NodeCategoryIcon(fid: String) = when (fid) {
         modifier = Modifier.size(40.dp)
     )
     "119" -> Icon(
-        imageVector = Icons.Default.PanoramaFishEye,
+        imageVector = Icons.Default.Visibility,
         contentDescription = "发现创造",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "120" -> Icon(
-        imageVector = Icons.Default.WbSunny,
+        imageVector = Icons.Sharp.WbSunny,
         contentDescription = "生活",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "121" -> Icon(
-        imageVector = Icons.Default.Build,
+        imageVector = Icons.Default.BusinessCenter,
         contentDescription = "职场",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "122" -> Icon(
-        imageVector = Icons.Default.Highlight,
+        imageVector = Icons.Default.Light,
         contentDescription = "学途",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
@@ -233,32 +228,32 @@ private fun NodeCategoryIcon(fid: String) = when (fid) {
         modifier = Modifier.size(40.dp)
     )
     "125" -> Icon(
-        imageVector = Icons.Default.RemoveRedEye,
+        imageVector = Icons.Default.VisibilityOff,
         contentDescription = "石沉大海",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "126" -> Icon(
-        imageVector = Icons.Default.Gesture,
+        imageVector = Icons.Default.GTranslate,
         contentDescription = "Google",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "127" -> Icon(
-        imageVector = Icons.Default.Apps,
+        imageVector = Icons.Default.DesktopMac,
         contentDescription = "Apple",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "128" -> Icon(
-        imageVector = Icons.Default.Psychology,
+        imageVector = Icons.Default.SportsSoccer,
         contentDescription = "探索杂谈",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     else -> Icon(
         imageVector = Icons.Default.Image,
-        contentDescription = "帖子包含图片",
+        contentDescription = "默认",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )

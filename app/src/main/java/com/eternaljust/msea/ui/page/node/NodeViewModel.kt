@@ -36,15 +36,15 @@ class NodeViewModel : ViewModel() {
             if (category.isEmpty()) {
                 category = document.selectXpath("//div[@class='bm bmw  cl']")
             }
-            category.forEach {
+            category.forEach { ct ->
                 var node = NodeModel()
 
-                val title = it.selectXpath("div[@class='bm_h cl']/h2/a").text()
+                val title = ct.selectXpath("div[@class='bm_h cl']/h2/a").text()
                 if (title.isNotEmpty()) {
                     node.title = title
                 }
 
-                val span = it.selectXpath("div[@class='bm_h cl']/span/a")
+                val span = ct.selectXpath("div[@class='bm_h cl']/span/a")
                 var users = mutableListOf<String>()
                 span.forEach { a ->
                     val text = a.text()
@@ -54,8 +54,7 @@ class NodeViewModel : ViewModel() {
                 }
                 node.moderators = users
 
-                val td = it.selectXpath("//td[@class='fl_g']")
-                println("fl_g---${td.html()}")
+                val td = ct.selectXpath("div[@class='bm_c']/table/tbody/tr/td[@class='fl_g']")
                 var models = mutableListOf<NodeListModel>()
                 td.forEach { dl ->
                     var model = NodeListModel()
