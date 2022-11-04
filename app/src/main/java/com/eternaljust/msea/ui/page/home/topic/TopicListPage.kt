@@ -50,7 +50,7 @@ fun TopicListPage(
 }
 
 @Composable
-private fun TopicListItemContent(item: TopicListModel) {
+fun TopicListItemContent(item: TopicListModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,7 +156,7 @@ private fun TopicListItemContent(item: TopicListModel) {
 }
 
 @Composable
-private fun TopicAttachmentIcon(icon: String) = when (icon) {
+fun TopicAttachmentIcon(icon: String) = when (icon) {
     "image" -> Icon(
         imageVector = Icons.Default.Image,
         contentDescription = "帖子包含图片",

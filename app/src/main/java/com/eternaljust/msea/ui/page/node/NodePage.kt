@@ -1,8 +1,11 @@
 package com.eternaljust.msea.ui.page.node
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.sharp.WbSunny
@@ -10,6 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.utils.RouteName
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -44,7 +50,12 @@ fun NodePage(
                     }
 
                     items(it.list) { item ->
-                        NodeListItemContent(item)
+                        NodeListItemContent(
+                            item = item,
+                            nodeClick = {
+                                navController.navigate(RouteName.NODE_LIST + "/${item.fid}")
+                            }
+                        )
                     }
                 }
             }
@@ -86,23 +97,52 @@ fun NodeListHeader(item: NodeModel) {
 }
 
 @Composable
-fun NodeListItemContent(item: NodeListModel) {
+fun NodeListItemContent(
+    item: NodeListModel,
+    nodeClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
     ) {
-        Row {
+        Row(
+            modifier = Modifier.clickable { nodeClick() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             NodeCategoryIcon(item.fid)
 
             Spacer(modifier = Modifier.width(10.dp))
 
             Column {
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    if (item.today.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(Color.Red),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = item.today,
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(5.dp))
 

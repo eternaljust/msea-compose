@@ -110,15 +110,6 @@ class TopicListViewModel(
 
         return list
     }
-
-    private fun getIcon(name: String): String = when (name) {
-        "iconfont icon-image" -> "image"
-        "iconfont icon-fire" -> "fire"
-        "iconfont icon-guzhang1" -> "hand"
-        "iconfont icon-attachment1" -> "link"
-        "iconfont icon-jinghua" -> "premium"
-        else -> ""
-    }
 }
 
 data class TopicListViewState(
@@ -140,4 +131,13 @@ class TopicListModel {
     var attachmentColorRed = false
     var examine = ""
     var reply = ""
+}
+
+fun getIcon(name: String): String = when (name) {
+    "iconfont icon-image" -> "image"
+    "iconfont icon-fire" -> "fire"
+    "iconfont icon-guzhang1" -> "hand"
+    "iconfont icon-attachment1" -> "link"
+    "iconfont icon-jinghua" -> "premium"
+    else -> ""
 }

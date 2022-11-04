@@ -17,4 +17,5 @@ object RouteName {
     const val SIGN = "sign"
     const val TAG = "tag"
     const val TAG_LIST = "tag_list"
+    const val NODE_LIST = "node_list"
 }

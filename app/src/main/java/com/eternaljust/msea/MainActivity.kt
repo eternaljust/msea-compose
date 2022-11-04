@@ -25,6 +25,7 @@ import androidx.navigation.navArgument
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
+import com.eternaljust.msea.ui.page.node.list.NodeListPage
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.page.node.tag.TagListPage
 import com.eternaljust.msea.ui.page.node.tag.TagListViewModel
@@ -377,6 +378,20 @@ private fun NavGraphBuilder.detailsNav(
                 scaffoldState = scaffoldState,
                 navController = navController,
                 tagItem = it
+            )
+        }
+    }
+
+    composable(
+        RouteName.NODE_LIST + "/{fid}",
+        arguments = listOf(navArgument("fid") { type = NavType.StringType})
+    ) {
+        val fid = it.arguments?.getString("fid")
+        fid?.let {
+            NodeListPage(
+                scaffoldState = scaffoldState,
+                navController = navController,
+                fid = it
             )
         }
     }
