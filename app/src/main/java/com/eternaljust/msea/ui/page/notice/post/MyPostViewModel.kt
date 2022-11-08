@@ -37,10 +37,8 @@ class MyPostViewModel : ViewModel() {
                     post.time = time
                 }
                 val avatar = it.selectXpath("dd[@class='m avt mbn']/a/img").attr("src")
-                println("avatar---${avatar}")
                 if (avatar.isNotEmpty()) {
                     post.avatar = NetworkUtil.getAvatar(avatar)
-                    println("post.avatar---${post.avatar}")
                 }
                 val name = it.selectXpath("dd[@class='ntc_body']/a[1]").text()
                 if (name.isNotEmpty()) {

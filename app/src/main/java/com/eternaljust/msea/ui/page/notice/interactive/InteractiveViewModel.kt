@@ -38,7 +38,6 @@ class InteractiveViewModel : ViewModel() {
                     friend.time = time
                 }
                 val avatar = it.selectXpath("dd[@class='m avt mbn']/a/img").attr("src")
-                println("avatar---${avatar}")
                 if (avatar.isNotEmpty()) {
                     friend.avatar = NetworkUtil.getAvatar(avatar)
                 }

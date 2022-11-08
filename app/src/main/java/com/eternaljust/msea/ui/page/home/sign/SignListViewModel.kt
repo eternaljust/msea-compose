@@ -32,7 +32,6 @@ class SignListViewModel : ViewModel() {
             val document = NetworkUtil.getRequest(url)
             val trs = document.selectXpath("//div[@class='wqpc_sign_table']/div/table//tr")
             trs.forEach {
-                println("---tr=${it.html()}")
                 val signModel = SignListModel()
                 val no = it.selectXpath("td[1]").text()
                 if (no.isNotEmpty() && no.contains("NO.")) {
@@ -118,7 +117,6 @@ class SignDayListViewModel(
             val document = NetworkUtil.getRequest(url)
             val trs = document.selectXpath("//div[@class='wqpc_sign_table']/div/table//tr")
             trs.forEach {
-                println("tr=${it.html()}")
                 val signModel = SignDayListModel()
                 val no = it.selectXpath("td[1]").text()
                 if (no.isNotEmpty() && no.contains("NO.")) {

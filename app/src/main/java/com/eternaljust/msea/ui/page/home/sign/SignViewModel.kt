@@ -167,8 +167,6 @@ class SignViewModel : ViewModel() {
             val document = NetworkUtil.postRequest(url, emptyMap(), encodedParams)
             val text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
             val script = document.selectXpath("//div[@id='messagetext']/p[1]/script").text()
-            println("text=${text}")
-            println("script=${script}")
             if (text.isNotEmpty()) {
                 if (script.isNotEmpty() && text.contains(script)) {
                     _viewEvents.send(SignViewEvent.Message(text.replace(script, "")))

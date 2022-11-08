@@ -51,7 +51,6 @@ class TagListViewModel : ViewModel() {
             val document = NetworkUtil.getRequest(url)
             var tr = document.selectXpath("//div[@class='bm_c']/table/tbody/tr")
             tr.forEach {
-                println("td---${it.html()}")
                 var tag = TagListModel()
 
                 val gif = it.selectXpath("td[@class='icn']/a/img").attr("src")

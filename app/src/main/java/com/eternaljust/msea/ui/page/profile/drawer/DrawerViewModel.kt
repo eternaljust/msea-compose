@@ -113,12 +113,10 @@ class DrawerViewModel : ViewModel() {
                     if (name.isNotEmpty()) {
                         var lv = ""
                         val text = it.selectXpath("/span/a").text()
-                        println("text=$text")
                         if (text.isNotEmpty()) {
                             lv = text.trim()
                         } else {
                             val text1 = it.text()
-                            println("text1=$text1")
                             if (text1.isNotEmpty()) {
                                 lv = text1.replace(name, "").trim()
                             }
