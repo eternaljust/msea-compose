@@ -28,7 +28,6 @@ import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.node.list.NodeListPage
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.page.node.tag.TagListPage
-import com.eternaljust.msea.ui.page.node.tag.TagListViewModel
 import com.eternaljust.msea.ui.page.node.tag.TagPage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
