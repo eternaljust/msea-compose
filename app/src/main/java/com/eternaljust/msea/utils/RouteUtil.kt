@@ -5,7 +5,7 @@ object RouteName {
     const val NOTICE = "notice"
     const val NODE = "node"
     const val TOPIC_DETAIL = "topic_detail"
-    const val PROFILE_TOPIC = "profile_Topic"
+    const val PROFILE_TOPIC = "profile_topic"
     const val PROFILE_FRIEND = "profile_friend"
     const val PROFILE_FAVORITE = "profile_favorite"
     const val PROFILE_CREDIT = "profile_credit"

@@ -286,12 +286,12 @@ private fun NavGraphBuilder.detailsNav(
     scaffoldState: SnackbarHostState,
     navController: NavHostController
 ) {
-    composable(RouteName.TOPIC_DETAIL) {
-        ProfileTopicPage(
-            scaffoldState = scaffoldState,
-            navController = navController
-        )
-    }
+//    composable(RouteName.TOPIC_DETAIL) {
+//        ProfileTopicPage(
+//            scaffoldState = scaffoldState,
+//            navController = navController
+//        )
+//    }
 
     composable(RouteName.PROFILE_TOPIC) {
         ProfileTopicPage(

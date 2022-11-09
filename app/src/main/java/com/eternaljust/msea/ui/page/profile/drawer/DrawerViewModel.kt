@@ -193,13 +193,13 @@ sealed class DrawerNavigationItem(
     )
 
     object Credit : DrawerNavigationItem(
-        route = RouteName.PROFILE_FAVORITE,
+        route = RouteName.PROFILE_CREDIT,
         title = "积分",
         icon = Icons.Default.Paid
     )
 
     object Group : DrawerNavigationItem(
-        route = RouteName.PROFILE_FAVORITE,
+        route = RouteName.PROFILE_GROUP,
         title = "用户组",
         icon = Icons.Default.AdminPanelSettings
     )
