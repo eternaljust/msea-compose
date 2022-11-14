@@ -167,18 +167,21 @@ fun MyApp() {
                     if (mainScreens.contains(currentDestination?.route)) {
                         NavigationBar(
                             containerColor = ColorTheme(light = Color.White, dark = Color.Black)
-                        )
-                        {
+                        ) {
                             screens.forEach { screen ->
                                 NavigationBarItem(
                                     icon = { Icon(screen.icon, contentDescription = null) },
                                     label = { Text(screen.title) },
                                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                     onClick = {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id)
-                                            launchSingleTop = true
-                                            restoreState = true
+                                        if (currentDestination?.route != screen.route) {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
                                     },
                                     colors = NavigationBarItemDefaults.colors(
