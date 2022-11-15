@@ -188,7 +188,8 @@ object HTMLURL {
     const val NODE_LIST = "$BASE/forum.php?mod=index"
     const val TAG_LIST = "$BASE/misc.php?mod=tag"
     const val PROFILE_TOPIC_LIST = "$BASE/home.php?mod=space&do=thread&view=me&order=dateline&from=space"
-    const val PROFILE_FARVORITE_LIST = "$BASE/home.php?mod=space&do=favorite&type=thread"
+    const val PROFILE_FAVORITE_LIST = "$BASE/home.php?mod=space&do=favorite&type=thread"
+    const val CREDIT_LIST = "$BASE/home.php?mod=spacecp&ac=credit"
 }
 
 sealed class HttpResult<out T> {

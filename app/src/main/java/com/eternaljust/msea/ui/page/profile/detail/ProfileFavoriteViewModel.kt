@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.eternaljust.msea.ui.page.node.tag.TagListViewAction
-import com.eternaljust.msea.ui.page.node.tag.TagListViewEvent
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.configPager
@@ -42,7 +40,7 @@ class ProfileFavoriteViewModel : ViewModel() {
         val list = mutableListOf<ProfileFavoriteListModel>()
 
         withContext(Dispatchers.IO) {
-            val url = HTMLURL.PROFILE_FARVORITE_LIST + "&page=${page}"
+            val url = HTMLURL.PROFILE_FAVORITE_LIST + "&page=${page}"
             val document = NetworkUtil.getRequest(url)
             val li = document.selectXpath("//ul[@id='favorite_ul']/li")
 
