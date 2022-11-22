@@ -2,6 +2,7 @@ package com.eternaljust.msea.ui.page.profile
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,9 +51,6 @@ fun AboutPage(
         }
     }
 
-    val scope = rememberCoroutineScope()
-    val text = "关于"
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -70,49 +69,38 @@ fun AboutPage(
             )
         },
         content = { paddingValues ->
-            Surface(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                LazyColumn {
-                    stickyHeader {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Image(
-                                modifier = Modifier
-                                    .clip(shape = RoundedCornerShape(6)),
-                                painter = painterResource(id = R.drawable.icon),
-                                contentDescription = null
-                            )
-                            
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            val versionName = BuildConfig.VERSION_NAME
-                            val versionCode = BuildConfig.VERSION_CODE
-              
-                            Text(text = "$versionName ($versionCode)")
-                        }
-                    }
-
-                    items(viewModel.items) {
-                        Row(
+            LazyColumn(contentPadding = paddingValues) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Image(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 4.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(text = it.title)
+                                .clip(shape = RoundedCornerShape(6)),
+                            painter = painterResource(id = R.drawable.icon),
+                            contentDescription = null
+                        )
 
-                            ListArrowForward()
-                        }
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                        Divider()
+                        val versionName = BuildConfig.VERSION_NAME
+                        val versionCode = BuildConfig.VERSION_CODE
+
+                        Text(text = "$versionName ($versionCode)")
                     }
+                }
+
+                items(viewModel.items) {
+                    ListItem(
+                        headlineText = { Text(text = it.title) },
+                        trailingContent = { ListArrowForward() }
+                    )
+
+                    Divider()
                 }
             }
         }
