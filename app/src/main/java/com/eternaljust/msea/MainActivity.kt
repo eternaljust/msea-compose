@@ -397,4 +397,10 @@ private fun NavGraphBuilder.detailsNav(
             )
         }
     }
+
+    composable(RouteName.TERMS_OF_SERVICE) {
+        TermsOfServicePage(
+            navController = navController
+        )
+    }
 }

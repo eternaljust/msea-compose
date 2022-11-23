@@ -21,4 +21,5 @@ object RouteName {
     const val TAG = "tag"
     const val TAG_LIST = "tag_list"
     const val NODE_LIST = "node_list"
+    const val TERMS_OF_SERVICE = "terms_of_service"
 }

@@ -106,3 +106,7 @@ fun AboutPage(
         }
     )
 }
+// 使用SDK名称：友盟+SDK
+//服务类型：请根据SDK提供功能填写
+//收集个人信息类型：设备信息（IMEI/MAC/Android ID/IDFA/OpenUDID/GUID/SIM卡IMSI/ICCID/地理位置等）
+//隐私权政策链接：https://www.umeng.com/page/policy

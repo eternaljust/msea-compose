@@ -48,13 +48,13 @@ sealed class SettingViewAction {
 }
 
 interface SettingList {
-    val id: String
+    val route: String
     val title: String
 }
 
 enum class SettingListItem : SettingList {
     COLOR_SCHEME {
-        override val id: String
+        override val route: String
             get() = "color_scheme"
 
         override val title: String
@@ -62,7 +62,7 @@ enum class SettingListItem : SettingList {
     },
 
     FEEDBACK {
-        override val id: String
+        override val route: String
             get() = "feedback"
 
         override val title: String
@@ -70,7 +70,7 @@ enum class SettingListItem : SettingList {
     },
 
     CONTACT_US {
-        override val id: String
+        override val route: String
             get() = "contact_us"
 
         override val title: String
@@ -78,7 +78,7 @@ enum class SettingListItem : SettingList {
     },
 
     SHARE {
-        override val id: String
+        override val route: String
             get() = "share"
 
         override val title: String
@@ -86,7 +86,7 @@ enum class SettingListItem : SettingList {
     },
 
     CLEAN_CACHE {
-        override val id: String
+        override val route: String
             get() = "clean_cache"
 
         override val title: String
@@ -94,7 +94,7 @@ enum class SettingListItem : SettingList {
     },
 
     TERMS_OF_SERVICE {
-        override val id: String
+        override val route: String
             get() = "terms_of_service"
 
         override val title: String
