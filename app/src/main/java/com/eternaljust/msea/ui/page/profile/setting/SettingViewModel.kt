@@ -2,6 +2,7 @@ package com.eternaljust.msea.ui.page.profile.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -95,7 +96,7 @@ enum class SettingListItem : SettingList {
 
     TERMS_OF_SERVICE {
         override val route: String
-            get() = "terms_of_service"
+            get() = RouteName.TERMS_OF_SERVICE
 
         override val title: String
             get() = "使用条款"

@@ -22,4 +22,8 @@ object RouteName {
     const val TAG_LIST = "tag_list"
     const val NODE_LIST = "node_list"
     const val TERMS_OF_SERVICE = "terms_of_service"
+    const val WEBVIEW = "webview"
+    const val LICENSE = "license"
+    const val SOURCE_CODE = "source_code"
+    const val SDK_LIST = "sdk_list"
 }

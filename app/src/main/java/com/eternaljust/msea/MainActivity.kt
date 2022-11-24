@@ -35,6 +35,8 @@ import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.page.profile.login.LoginPage
 import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.DataStoreUtil
 import com.eternaljust.msea.utils.RouteName
@@ -371,8 +373,8 @@ private fun NavGraphBuilder.detailsNav(
     }
 
     composable(
-        RouteName.TAG_LIST + "/{tagItem}",
-        arguments = listOf(navArgument("tagItem") { type = NavType.StringType})
+        route = RouteName.TAG_LIST + "/{tagItem}",
+        arguments = listOf(navArgument("tagItem") { type = NavType.StringType })
     ) {
         val tagItem = it.arguments?.getString("tagItem")?.fromJson<TagItemModel>()
         tagItem?.let {
@@ -385,8 +387,8 @@ private fun NavGraphBuilder.detailsNav(
     }
 
     composable(
-        RouteName.NODE_LIST + "/{fid}",
-        arguments = listOf(navArgument("fid") { type = NavType.StringType})
+        route = RouteName.NODE_LIST + "/{fid}",
+        arguments = listOf(navArgument("fid") { type = NavType.StringType })
     ) {
         val fid = it.arguments?.getString("fid")
         fid?.let {
@@ -402,5 +404,18 @@ private fun NavGraphBuilder.detailsNav(
         TermsOfServicePage(
             navController = navController
         )
+    }
+
+    composable(
+        route = RouteName.WEBVIEW + "/{web}",
+        arguments = listOf(navArgument("web") { type = NavType.StringType })
+    ) {
+        val web = it.arguments?.getString("web")?.fromJson<WebViewModel>()
+        web?.let {
+            WebViewPage(
+                web = web,
+                navController = navController
+            )
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.eternaljust.msea.ui.page.profile.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.utils.RouteName
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -39,30 +40,30 @@ sealed class AboutViewAction {
 }
 
 interface AboutList {
-    val id: String
+    val route: String
     val title: String
 }
 
 enum class AboutListItem : AboutList {
     LICENSE {
-        override val id: String
-            get() = "license"
+        override val route: String
+            get() = RouteName.LICENSE
 
         override val title: String
             get() = "开源协议"
     },
 
     SOURCE_CODE {
-        override val id: String
-            get() = "source_code"
+        override val route: String
+            get() = RouteName.SOURCE_CODE
 
         override val title: String
             get() = "源代码"
     },
 
     SDK_LIST {
-        override val id: String
-            get() = "sdk_list"
+        override val route: String
+            get() = RouteName.SDK_LIST
 
         override val title: String
             get() = "SDK 目录"

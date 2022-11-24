@@ -1,25 +1,21 @@
 package com.eternaljust.msea.ui.page.profile
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,9 +26,12 @@ import com.eternaljust.msea.ui.page.profile.setting.AboutViewAction
 import com.eternaljust.msea.ui.page.profile.setting.AboutViewEvent
 import com.eternaljust.msea.ui.page.profile.setting.AboutViewModel
 import com.eternaljust.msea.ui.widget.ListArrowForward
+import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
-import kotlinx.coroutines.launch
-
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
+import com.google.accompanist.web.WebView
+import com.google.accompanist.web.rememberWebViewState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -96,6 +95,15 @@ fun AboutPage(
 
                 items(viewModel.items) {
                     ListItem(
+                        modifier = Modifier
+                            .clickable {
+                                if (it.route == RouteName.SOURCE_CODE) {
+                                    val url = "https://github.com/eternaljust/msea-compose"
+                                    val web = WebViewModel(url = url)
+                                    val args = String.format("/%s", Uri.encode(web.toJson()))
+                                    navController.navigate(RouteName.WEBVIEW + args)
+                                }
+                            },
                         headlineText = { Text(text = it.title) },
                         trailingContent = { ListArrowForward() }
                     )
@@ -106,7 +114,3 @@ fun AboutPage(
         }
     )
 }
-// 使用SDK名称：友盟+SDK
-//服务类型：请根据SDK提供功能填写
-//收集个人信息类型：设备信息（IMEI/MAC/Android ID/IDFA/OpenUDID/GUID/SIM卡IMSI/ICCID/地理位置等）
-//隐私权政策链接：https://www.umeng.com/page/policy
