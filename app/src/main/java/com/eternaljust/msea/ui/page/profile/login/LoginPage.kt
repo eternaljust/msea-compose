@@ -58,7 +58,7 @@ fun LoginPage(
                         onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Localized description"
                         )
                     }

@@ -45,7 +45,7 @@ fun ProfileCreditPage(
                         onClick = { viewModel.dispatch(ProfileCreditViewAction.PopBack) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }

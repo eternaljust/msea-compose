@@ -30,8 +30,6 @@ import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
-import com.google.accompanist.web.WebView
-import com.google.accompanist.web.rememberWebViewState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -59,7 +57,7 @@ fun AboutPage(
                         onClick = { viewModel.dispatch(AboutViewAction.PopBack) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }
@@ -102,7 +100,63 @@ fun AboutPage(
                                     val web = WebViewModel(url = url)
                                     val args = String.format("/%s", Uri.encode(web.toJson()))
                                     navController.navigate(RouteName.WEBVIEW + args)
+                                } else {
+                                    navController.navigate(it.route)
                                 }
+                            },
+                        headlineText = { Text(text = it.title) },
+                        trailingContent = { ListArrowForward() }
+                    )
+
+                    Divider()
+                }
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LicensePage(
+    scaffoldState: SnackbarHostState,
+    navController: NavHostController
+) {
+    val items: List<WebViewModel> = listOf(
+        WebViewModel(title = "jsoup", url = "https://jsoup.org/"),
+        WebViewModel(title = "okhttp", url = "https://square.github.io/okhttp/"),
+        WebViewModel(title = "coil-compose", url = "https://coil-kt.github.io/coil/compose/")
+    )
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("开源协议") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "返回"
+                        )
+                    }
+                },
+                colors = mseaTopAppBarColors()
+            )
+        },
+        content = { paddingValues ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                contentPadding = paddingValues
+            ) {
+                items(items) {
+                    ListItem(
+                        modifier = Modifier
+                            .clickable {
+                                val args = String.format("/%s", Uri.encode(it.toJson()))
+                                navController.navigate(RouteName.WEBVIEW + args)
                             },
                         headlineText = { Text(text = it.title) },
                         trailingContent = { ListArrowForward() }

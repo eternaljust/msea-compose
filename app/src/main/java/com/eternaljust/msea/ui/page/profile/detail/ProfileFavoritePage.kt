@@ -50,7 +50,7 @@ fun ProfileFavoritePage(
                         onClick = { viewModel.dispatch(ProfileFavoriteListViewAction.PopBack) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }

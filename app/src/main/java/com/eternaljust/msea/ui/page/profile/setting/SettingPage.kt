@@ -51,7 +51,7 @@ fun SettingPage(
                         onClick = { viewModel.dispatch(SettingViewAction.PopBack) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }
@@ -132,7 +132,7 @@ fun TermsOfServicePage(
                         onClick = { navController.popBackStack() }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }

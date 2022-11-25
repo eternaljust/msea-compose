@@ -53,7 +53,7 @@ fun TagListPage(
                         onClick = { viewModel.dispatch(TagListViewAction.PopBack) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }

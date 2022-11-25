@@ -418,4 +418,11 @@ private fun NavGraphBuilder.detailsNav(
             )
         }
     }
+
+    composable(RouteName.LICENSE) {
+        LicensePage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
+    }
 }

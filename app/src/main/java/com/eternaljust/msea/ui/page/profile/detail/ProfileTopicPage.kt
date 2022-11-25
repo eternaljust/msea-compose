@@ -54,7 +54,7 @@ fun ProfileTopicPage(
                         onClick = { viewModel.dispatch(ProfileTopicViewAction.PopBack) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "返回"
                         )
                     }
