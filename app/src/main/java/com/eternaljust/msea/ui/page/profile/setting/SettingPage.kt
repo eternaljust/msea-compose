@@ -23,6 +23,7 @@ import com.eternaljust.msea.ui.page.profile.setting.SettingViewAction
 import com.eternaljust.msea.ui.page.profile.setting.SettingViewEvent
 import com.eternaljust.msea.ui.page.profile.setting.SettingViewModel
 import com.eternaljust.msea.ui.widget.ListArrowForward
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,19 +45,9 @@ fun SettingPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("设置") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(SettingViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "设置",
+                onClick = { viewModel.dispatch(SettingViewAction.PopBack) }
             )
         },
         content = { paddingValues ->
@@ -125,19 +116,9 @@ fun TermsOfServicePage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("使用条款") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "使用条款",
+                onClick = { navController.popBackStack() }
             )
         },
         content = { paddingValues ->

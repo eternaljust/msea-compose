@@ -26,6 +26,7 @@ import com.eternaljust.msea.ui.page.profile.setting.AboutViewAction
 import com.eternaljust.msea.ui.page.profile.setting.AboutViewEvent
 import com.eternaljust.msea.ui.page.profile.setting.AboutViewModel
 import com.eternaljust.msea.ui.widget.ListArrowForward
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
@@ -50,19 +51,9 @@ fun AboutPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("关于 Msea") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(AboutViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "关于 Msea",
+                onClick = { viewModel.dispatch(AboutViewAction.PopBack) }
             )
         },
         content = { paddingValues ->
@@ -129,19 +120,9 @@ fun LicensePage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("开源协议") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "开源协议",
+                onClick = { navController.popBackStack() }
             )
         },
         content = { paddingValues ->

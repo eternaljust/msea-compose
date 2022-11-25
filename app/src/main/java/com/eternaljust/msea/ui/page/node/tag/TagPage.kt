@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
@@ -46,19 +47,9 @@ fun TagPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("标签") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(TagViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "标签",
+                onClick = { viewModel.dispatch(TagViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

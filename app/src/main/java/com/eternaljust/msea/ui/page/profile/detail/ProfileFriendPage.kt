@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.page.profile.detail.*
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -38,19 +39,9 @@ fun ProfileFriendPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("我的好友") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(ProfileFriendViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "我的好友",
+                onClick = { viewModel.dispatch(ProfileFriendViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

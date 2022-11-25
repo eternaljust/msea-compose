@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.ui.theme.ColorTheme
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -62,19 +61,9 @@ fun SignPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("签到") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(SignViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "签到",
+                onClick = { viewModel.dispatch(SignViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

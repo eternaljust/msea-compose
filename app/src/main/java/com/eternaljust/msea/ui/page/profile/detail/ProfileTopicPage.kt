@@ -25,6 +25,7 @@ import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicListModel
 import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicViewAction
 import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicViewEvent
 import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicViewModel
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 
@@ -47,19 +48,9 @@ fun ProfileTopicPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("主题列表") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(ProfileTopicViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "主题列表",
+                onClick = { viewModel.dispatch(ProfileTopicViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

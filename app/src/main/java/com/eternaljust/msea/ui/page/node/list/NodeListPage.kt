@@ -29,6 +29,7 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.TopicListItemContent
 import com.eternaljust.msea.ui.page.home.topic.TopicListModel
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 
@@ -53,19 +54,9 @@ fun NodeListPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("节点：${viewModel.viewStates.title}") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(NodeListViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "节点：${viewModel.viewStates.title}",
+                onClick = { viewModel.dispatch(NodeListViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

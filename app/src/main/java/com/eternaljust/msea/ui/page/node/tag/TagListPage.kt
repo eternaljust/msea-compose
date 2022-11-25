@@ -22,6 +22,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 
@@ -46,19 +47,9 @@ fun TagListPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("标签：${tagItem.title}") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(TagListViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "标签：${tagItem.title}",
+                onClick = { viewModel.dispatch(TagListViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

@@ -22,6 +22,7 @@ import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteListModel
 import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteListViewAction
 import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteListViewEvent
 import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteViewModel
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 
@@ -43,19 +44,9 @@ fun ProfileFavoritePage(
     }
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("收藏列表") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(ProfileFavoriteListViewAction.PopBack) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "收藏列表",
+                onClick = { viewModel.dispatch(ProfileFavoriteListViewAction.PopBack) }
             )
         },
         content = { paddingValues ->

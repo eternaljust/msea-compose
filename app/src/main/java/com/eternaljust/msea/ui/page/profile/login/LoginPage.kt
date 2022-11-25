@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -51,19 +52,9 @@ fun LoginPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("登录") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                colors = mseaTopAppBarColors()
+            NormalTopAppBar(
+                title = "登录",
+                onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
             )
         },
         content = { paddingValues ->
