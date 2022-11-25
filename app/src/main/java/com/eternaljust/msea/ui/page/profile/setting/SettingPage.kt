@@ -24,7 +24,8 @@ import com.eternaljust.msea.ui.page.profile.setting.SettingViewEvent
 import com.eternaljust.msea.ui.page.profile.setting.SettingViewModel
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.utils.SettingInfo
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +34,11 @@ fun SettingPage(
     navController: NavHostController,
     viewModel: SettingViewModel = viewModel()
 ) {
+    val scope = rememberCoroutineScope()
+    var colorSchemeChecked by remember {
+        mutableStateOf(SettingInfo.instance.colorScheme)
+    }
+
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             when (it) {
@@ -57,8 +63,30 @@ fun SettingPage(
                         ListItem(
                             modifier = Modifier.clickable { navController.navigate(item.route) },
                             headlineText = { Text(text = item.title) },
+                            supportingText = {
+                                if (item == SettingListItem.COLOR_SCHEME) {
+                                    Text(text = "开启后将根据您的桌面壁纸颜色来生成动态调色板方案")
+                                }
+                            },
                             leadingContent = { SettingListIcon(item = item) },
-                            trailingContent = { ListArrowForward() }
+                            trailingContent = {
+                                if (item == SettingListItem.COLOR_SCHEME) {
+                                    Switch(
+                                        checked = colorSchemeChecked,
+                                        onCheckedChange = {
+                                            SettingInfo.instance.colorScheme = it
+                                            colorSchemeChecked = it
+                                            scope.launch {
+                                                scaffoldState.showSnackbar(
+                                                    message = "重启 App 后生效"
+                                                )
+                                            }
+                                        }
+                                    )
+                                } else {
+                                    ListArrowForward()
+                                }
+                            }
                         )
 
                         if (item == items.last()) {
@@ -73,6 +101,7 @@ fun SettingPage(
 
 @Composable
 private fun SettingListIcon(item: SettingListItem) = when (item) {
+    SettingListItem.DARK_MODE -> GetIcon(imageVector = Icons.Default.DarkMode)
     SettingListItem.COLOR_SCHEME -> GetIcon(imageVector = Icons.Default.SettingsBrightness)
     SettingListItem.FEEDBACK -> GetIcon(imageVector = Icons.Default.Feedback)
     SettingListItem.CONTACT_US -> GetIcon(imageVector = Icons.Default.Contacts)

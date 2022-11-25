@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.setting
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eternaljust.msea.utils.RouteName
@@ -9,20 +10,27 @@ import kotlinx.coroutines.launch
 
 class SettingViewModel : ViewModel() {
     val itemGroups: List<List<SettingListItem>>
-        get() = listOf(
-            listOf(
-                SettingListItem.COLOR_SCHEME
-            ),
-            listOf(
-                SettingListItem.FEEDBACK,
-                SettingListItem.CONTACT_US,
-                SettingListItem.SHARE,
-                SettingListItem.CLEAN_CACHE,
-            ),
-            listOf(
-                SettingListItem.TERMS_OF_SERVICE
+        get() {
+            val isDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+            var themeList = mutableListOf<SettingListItem>(
+                SettingListItem.DARK_MODE
             )
-        )
+            if (isDynamic) {
+                themeList.add(SettingListItem.COLOR_SCHEME)
+            }
+            return listOf(
+                themeList,
+                listOf(
+                    SettingListItem.FEEDBACK,
+                    SettingListItem.CONTACT_US,
+                    SettingListItem.SHARE,
+                    SettingListItem.CLEAN_CACHE,
+                ),
+                listOf(
+                    SettingListItem.TERMS_OF_SERVICE
+                )
+            )
+        }
 
     private val _viewEvents = Channel<SettingViewEvent>(Channel.BUFFERED)
     val viewEvents = _viewEvents.receiveAsFlow()
@@ -54,12 +62,20 @@ interface SettingList {
 }
 
 enum class SettingListItem : SettingList {
+    DARK_MODE {
+        override val route: String
+            get() = "dark_mode"
+
+        override val title: String
+            get() = "深色模式"
+    },
+
     COLOR_SCHEME {
         override val route: String
             get() = "color_scheme"
 
         override val title: String
-            get() = "主题风格"
+            get() = "主题壁纸动态配色(Android 12 +)"
     },
 
     FEEDBACK {

@@ -74,10 +74,11 @@ private val DarkColorScheme = darkColorScheme(
     inversePrimary = md_theme_dark_inversePrimary,
     surfaceTint = md_theme_dark_surfaceTint,
 )
+
 @Composable
 fun MseaComposeTheme(
         darkTheme: Boolean = isSystemInDarkTheme(),
-        isDynamicColor: Boolean = true,
+        isDynamicColor: Boolean = false,
         content: @Composable () -> Unit
 ) {
     // Dynamic color is available on Android 12+

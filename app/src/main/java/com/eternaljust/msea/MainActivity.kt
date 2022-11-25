@@ -40,6 +40,7 @@ import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.DataStoreUtil
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.SettingInfo
 import com.eternaljust.msea.utils.fromJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -74,7 +75,9 @@ class MainActivity : ComponentActivity() {
         setTheme(R.style.Theme_Mseacompose)
         super.onCreate(savedInstanceState)
         setContent {
-            MseaComposeTheme(isDynamicColor = false) {
+            MseaComposeTheme(
+                isDynamicColor = SettingInfo.instance.colorScheme
+            ) {
                 MyApp()
             }
         }
