@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
+import com.eternaljust.msea.utils.SettingInfo
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -103,4 +104,12 @@ fun MseaComposeTheme(
             typography = AppTypography,
             content = content
     )
+}
+
+@Composable
+fun themeStyleDark(): Boolean {
+    val themeStyle = SettingInfo.instance.themeStyle
+    return if (themeStyle == 0) {
+        isSystemInDarkTheme()
+    } else themeStyle != 1
 }

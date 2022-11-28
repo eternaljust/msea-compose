@@ -33,8 +33,11 @@ import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.page.profile.login.LoginPage
+import com.eternaljust.msea.ui.page.profile.setting.SettingPage
+import com.eternaljust.msea.ui.page.profile.setting.TermsOfServicePage
 import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
+import com.eternaljust.msea.ui.theme.themeStyleDark
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
@@ -73,6 +76,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MseaComposeTheme(
+                darkTheme = themeStyleDark(),
                 isDynamicColor = SettingInfo.instance.colorScheme
             ) {
                 MyApp()

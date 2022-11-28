@@ -1,10 +1,7 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.setting
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -18,10 +15,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.ui.page.profile.setting.SettingListItem
-import com.eternaljust.msea.ui.page.profile.setting.SettingViewAction
-import com.eternaljust.msea.ui.page.profile.setting.SettingViewEvent
-import com.eternaljust.msea.ui.page.profile.setting.SettingViewModel
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.SettingInfo
@@ -37,6 +30,10 @@ fun SettingPage(
     val scope = rememberCoroutineScope()
     var colorSchemeChecked by remember {
         mutableStateOf(SettingInfo.instance.colorScheme)
+    }
+    val themeStyleItems = listOf("自动", "浅色", "深色")
+    var themeStyleIndex by remember {
+        mutableStateOf(SettingInfo.instance.themeStyle)
     }
 
     LaunchedEffect(Unit) {
@@ -70,21 +67,46 @@ fun SettingPage(
                             },
                             leadingContent = { SettingListIcon(item = item) },
                             trailingContent = {
-                                if (item == SettingListItem.COLOR_SCHEME) {
-                                    Switch(
-                                        checked = colorSchemeChecked,
-                                        onCheckedChange = {
-                                            SettingInfo.instance.colorScheme = it
-                                            colorSchemeChecked = it
-                                            scope.launch {
-                                                scaffoldState.showSnackbar(
-                                                    message = "重启 App 后生效"
+                                when (item) {
+                                    SettingListItem.COLOR_SCHEME -> {
+                                        Switch(
+                                            checked = colorSchemeChecked,
+                                            onCheckedChange = {
+                                                SettingInfo.instance.colorScheme = it
+                                                colorSchemeChecked = it
+                                                scope.launch {
+                                                    scaffoldState.showSnackbar(
+                                                        message = "重启 App 后生效"
+                                                    )
+                                                }
+                                            }
+                                        )
+                                    }
+                                    SettingListItem.DARK_MODE -> {
+                                        TabRow(
+                                            modifier = Modifier.width(180.dp),
+                                            selectedTabIndex = themeStyleIndex
+                                        ) {
+                                            themeStyleItems.forEachIndexed { index, text ->
+                                                Tab(
+                                                    text = { Text(text) },
+                                                    selected = themeStyleIndex == index,
+                                                    onClick = {
+                                                        SettingInfo.instance.themeStyle = index
+                                                        themeStyleIndex = index
+                                                        scope.launch {
+                                                            scaffoldState.showSnackbar(
+                                                                message = "重启 App 后生效"
+                                                            )
+                                                        }
+                                                    }
                                                 )
                                             }
                                         }
-                                    )
-                                } else {
-                                    ListArrowForward()
+                                    }
+                                    else -> {
+                                        ListArrowForward()
+                                    }
                                 }
                             }
                         )
