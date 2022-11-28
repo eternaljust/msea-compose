@@ -38,10 +38,7 @@ import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
-import com.eternaljust.msea.utils.DataStoreUtil
-import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.SettingInfo
-import com.eternaljust.msea.utils.fromJson
+import com.eternaljust.msea.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -100,16 +97,21 @@ fun MyApp() {
                 drawerState = drawerState,
                 onClick = { item ->
                     scope.launch { drawerState.close() }
-                    if (item.route == RouteName.LOGOUT) {
-                        GlobalScope.launch { DataStoreUtil.clear() }
-                        scope.launch {
-                            snackbarHostState.showSnackbar(message = "已退出登录")
-                        }
+                    if (UserInfo.instance.auth.isEmpty() && item.route != RouteName.SETTING &&
+                                item.route != RouteName.ABOUT) {
+                        navController.navigate((RouteName.LOGIN))
                     } else {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id)
-                            launchSingleTop = true
-                            restoreState = true
+                        if (item.route == RouteName.LOGOUT) {
+                            GlobalScope.launch { DataStoreUtil.clear() }
+                            scope.launch {
+                                snackbarHostState.showSnackbar(message = "已退出登录")
+                            }
+                        } else {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.findStartDestination().id)
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     }
                 }
@@ -264,19 +266,19 @@ fun TopAppBarAcitons(
                 )
             }
 
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(
-                    imageVector = Icons.Default.FormatListNumbered,
-                    contentDescription = "排行榜"
-                )
-            }
-
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "搜索"
-                )
-            }
+//            IconButton(onClick = { /* doSomething() */ }) {
+//                Icon(
+//                    imageVector = Icons.Default.FormatListNumbered,
+//                    contentDescription = "排行榜"
+//                )
+//            }
+//
+//            IconButton(onClick = { /* doSomething() */ }) {
+//                Icon(
+//                    imageVector = Icons.Default.Search,
+//                    contentDescription = "搜索"
+//                )
+//            }
         }
         BottomBarScreen.Node.route -> {
             IconButton(onClick = { navController.navigate(route = RouteName.TAG) }) {
