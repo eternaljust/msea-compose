@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.setting
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -36,6 +38,8 @@ fun SettingPage(
         mutableStateOf(SettingInfo.instance.themeStyle)
     }
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             when (it) {
@@ -58,7 +62,20 @@ fun SettingPage(
                 viewModel.itemGroups.forEach { items ->
                     items(items) { item ->
                         ListItem(
-                            modifier = Modifier.clickable { navController.navigate(item.route) },
+                            modifier = Modifier.clickable {
+                                if (item == SettingListItem.SHARE) {
+                                    val sendIntent: Intent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, "https://github.com/eternaljust/msea-compose")
+                                        putExtra(Intent.EXTRA_TITLE, "msea-compose github 源码")
+                                        type = "text/plain"
+                                    }
+                                    val shareIntent = Intent.createChooser(sendIntent, null)
+                                    context.startActivity(shareIntent)
+                                } else {
+                                    navController.navigate(item.route)
+                                }
+                            },
                             headlineText = { Text(text = item.title) },
                             supportingText = {
                                 if (item == SettingListItem.COLOR_SCHEME) {
