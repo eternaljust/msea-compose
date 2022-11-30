@@ -1,7 +1,5 @@
 package com.eternaljust.msea.ui.widget
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -12,11 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.LoadingState
 import com.google.accompanist.web.WebView
 import com.google.accompanist.web.rememberWebViewState
 import kotlinx.android.parcel.Parcelize
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,9 +43,10 @@ fun WebViewPage(
                 actions = {
                     IconButton(
                         onClick = {
-                            val uri: Uri = Uri.parse(web.url)
-                            val intent = Intent(Intent.ACTION_VIEW, uri)
-                            context.startActivity(intent)
+                            openSystemBrowser(
+                                url = web.url,
+                                context = context
+                            )
                         }
                     ) {
                         Icon(

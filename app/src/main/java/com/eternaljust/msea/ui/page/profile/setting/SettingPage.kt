@@ -1,6 +1,5 @@
 package com.eternaljust.msea.ui.page.profile.setting
 
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -19,7 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
-import com.eternaljust.msea.utils.SettingInfo
+import com.eternaljust.msea.utils.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +39,9 @@ fun SettingPage(
     }
 
     val context = LocalContext.current
+    var isContactUs by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -58,22 +61,71 @@ fun SettingPage(
             )
         },
         content = { paddingValues ->
+            if (isContactUs) {
+                AlertDialog(
+                    onDismissRequest = { isContactUs = false },
+                    title = { Text(text = "联系我们") },
+                    text = {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Divider()
+
+                            TextButton(onClick = {
+                                if (isAppInstalled(packageName = "com.sina.weibo", context = context)) {
+                                    openApp(
+                                        url = "sinaweibo://userinfo?uid=3266569590",
+                                        context = context
+                                    )
+                                } else {
+                                    openSystemBrowser(
+                                        url = "https://weibo.com/eternaljust",
+                                        context = context
+                                    )
+                                }
+
+                                isContactUs = false
+                            }) {
+                                Text(text = "微博：@远恒之义")
+                            }
+
+                            Divider()
+
+                            TextButton(onClick = { /*TODO*/ }) {
+                                Text(text = "加微信：eternaljust 发送：安卓加群")
+                            }
+
+                            Divider()
+                        }
+                    },
+                    confirmButton = {
+                        Button(onClick = { isContactUs = false }) {
+                            Text(text = "取消")
+                        }
+                    }
+                )
+            }
+
             LazyColumn(contentPadding = paddingValues) {
                 viewModel.itemGroups.forEach { items ->
                     items(items) { item ->
                         ListItem(
                             modifier = Modifier.clickable {
-                                if (item == SettingListItem.SHARE) {
-                                    val sendIntent: Intent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_TEXT, "https://github.com/eternaljust/msea-compose")
-                                        putExtra(Intent.EXTRA_TITLE, "msea-compose github 源码")
-                                        type = "text/plain"
+                                when (item) {
+                                    SettingListItem.SHARE -> {
+                                        openSystemShare(
+                                            text = "https://github.com/eternaljust/msea-compose",
+                                            title = "msea-compose github 源码",
+                                            context = context
+                                        )
                                     }
-                                    val shareIntent = Intent.createChooser(sendIntent, null)
-                                    context.startActivity(shareIntent)
-                                } else {
-                                    navController.navigate(item.route)
+                                    SettingListItem.CONTACT_US -> {
+                                        isContactUs = true
+                                    }
+                                    else -> {
+                                        navController.navigate(item.route)
+                                    }
                                 }
                             },
                             headlineText = { Text(text = item.title) },
