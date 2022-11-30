@@ -415,6 +415,12 @@ private fun NavGraphBuilder.detailsNav(
         )
     }
 
+    composable(RouteName.SDK_LIST) {
+        SDKListPage(
+            navController = navController
+        )
+    }
+
     composable(
         route = RouteName.WEBVIEW + "/{web}",
         arguments = listOf(navArgument("web") { type = NavType.StringType })

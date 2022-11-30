@@ -1,9 +1,7 @@
 package com.eternaljust.msea.ui.page.profile
 
 import android.net.Uri
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -145,6 +143,44 @@ fun LicensePage(
 
                     Divider()
                 }
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SDKListPage(
+    navController: NavHostController
+) {
+    val text = """
+友盟+（umeng）SDK
+
+使用目的：统计分析、性能监控
+
+数据类型：设备Mac地址、唯一设备识别码（IMEI/android ID/IDFA/OPENUDID/IP地址/GUID、SIM 卡 IMSI 信息）以提供统计分析服务，并通过地理位置校准报表数据准确性，提供基础反作弊能力。
+
+隐私政策/官网链接：https://www.umeng.com/policy
+
+公司全称：友盟同欣（北京）科技有限公司
+"""
+
+    Scaffold(
+        topBar = {
+            NormalTopAppBar(
+                title = "SDK 目录",
+                onClick = { navController.popBackStack() }
+            )
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues = paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(text = text)
             }
         }
     )
