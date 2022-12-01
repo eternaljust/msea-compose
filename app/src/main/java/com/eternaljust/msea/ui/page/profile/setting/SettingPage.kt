@@ -73,7 +73,13 @@ fun SettingPage(
                             Divider()
 
                             TextButton(onClick = {
-                                if (isAppInstalled(packageName = "com.sina.weibo", context = context)) {
+                                isContactUs = false
+                                if (isAppInstalled
+                                        (
+                                        packageName = "com.sina.weibo",
+                                        context = context
+                                    )
+                                ) {
                                     openApp(
                                         url = "sinaweibo://userinfo?uid=3266569590",
                                         context = context
@@ -84,16 +90,33 @@ fun SettingPage(
                                         context = context
                                     )
                                 }
-
-                                isContactUs = false
                             }) {
                                 Text(text = "微博：@远恒之义")
                             }
 
                             Divider()
 
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Text(text = "加微信：eternaljust 发送：安卓加群")
+                            val weixin = "eternaljust"
+                            TextButton(onClick = {
+                                isContactUs = false
+
+                                textCopyThenPost(
+                                    textCopied = weixin,
+                                    context = context
+                                )
+
+                                openApp(
+                                    url = "weixin://",
+                                    context = context
+                                )
+
+                                scope.launch {
+                                    scaffoldState.showSnackbar(
+                                        message = "微信号已复制到剪贴板"
+                                    )
+                                }
+                            }) {
+                                Text(text = "加微信：${weixin} 发送：安卓加群")
                             }
 
                             Divider()

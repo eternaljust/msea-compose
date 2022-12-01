@@ -1,9 +1,14 @@
 package com.eternaljust.msea.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.net.Uri
-
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.core.content.ContextCompat.getSystemService
 
 object RouteName {
     const val HOME = "home"
@@ -37,14 +42,6 @@ fun isAppInstalled(
     packageName: String,
     context: Context
 ) : Boolean {
-//    val packageManager = context.packageManager
-//    val packageInfoList = packageManager.getInstalledPackages(0)
-//    for (packageInfo in packageInfoList) {
-//        if (packageInfo.packageName == packageName) {
-//            return true
-//        }
-//    }
-//    return false
     val pm = context.packageManager
     // 系统应用uid从1000开始，用户应用uid从10000(FIRST_APPLICATION_UID)开始，直接合并查询
     for (i in 10000..11000) {
@@ -98,4 +95,14 @@ fun openSystemShare(
     }
     val shareIntent = Intent.createChooser(sendIntent, null)
     context.startActivity(shareIntent)
+}
+
+fun textCopyThenPost(
+    textCopied: String,
+    context: Context
+) {
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    // When setting the clip board text.
+    clipboardManager.setPrimaryClip(ClipData.newPlainText("", textCopied))
+    // Only show a toast for Android 12 and lower.
 }
