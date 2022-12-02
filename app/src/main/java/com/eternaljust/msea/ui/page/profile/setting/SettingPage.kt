@@ -146,6 +146,9 @@ fun SettingPage(
                                     SettingListItem.CONTACT_US -> {
                                         isContactUs = true
                                     }
+                                    SettingListItem.FEEDBACK -> {
+                                        sendEmail(context = context)
+                                    }
                                     else -> {
                                         navController.navigate(item.route)
                                     }

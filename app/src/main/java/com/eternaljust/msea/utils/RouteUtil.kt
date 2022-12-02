@@ -3,12 +3,10 @@ package com.eternaljust.msea.utils
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.core.content.ContextCompat.getSystemService
+import android.os.Build
+import com.eternaljust.msea.BuildConfig
 
 object RouteName {
     const val HOME = "home"
@@ -105,4 +103,27 @@ fun textCopyThenPost(
     // When setting the clip board text.
     clipboardManager.setPrimaryClip(ClipData.newPlainText("", textCopied))
     // Only show a toast for Android 12 and lower.
+}
+
+fun sendEmail(context: Context) {
+    val toRecipient = Uri.parse("mailto:eternal.just@gmail.com")
+    val title = "Msea ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) 问题反馈"
+    val content = """
+设备来自：${Build.BRAND} ${Build.MODEL} / Android ${Build.VERSION.RELEASE}
+
+1.描述遇到的问题，方便的话添加错误页面截图。
+
+
+2.能否复现问题？可以的话给出具体的步骤。
+
+
+3.非 bug 反馈，有其他的想法。
+
+"""
+
+    val intent = Intent(Intent.ACTION_SENDTO)
+    intent.data = toRecipient
+    intent.putExtra(Intent.EXTRA_SUBJECT, title)
+    intent.putExtra(Intent.EXTRA_TEXT, content)
+    context.startActivity(intent)
 }
