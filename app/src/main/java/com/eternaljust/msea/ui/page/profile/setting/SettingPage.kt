@@ -20,9 +20,12 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.*
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun SettingPage(
     scaffoldState: SnackbarHostState,
@@ -30,6 +33,12 @@ fun SettingPage(
     viewModel: SettingViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    var daysignChecked by remember {
+        mutableStateOf(SettingInfo.instance.daysignSwitch)
+    }
+    val notificatonPermissionState = rememberPermissionState(
+        android.Manifest.permission.POST_NOTIFICATIONS
+    )
     var colorSchemeChecked by remember {
         mutableStateOf(SettingInfo.instance.colorScheme)
     }
@@ -163,6 +172,19 @@ fun SettingPage(
                             leadingContent = { SettingListIcon(item = item) },
                             trailingContent = {
                                 when (item) {
+                                    SettingListItem.DAY_SIGN -> {
+                                        Switch(
+                                            checked = daysignChecked,
+                                            onCheckedChange = {
+                                                if (notificatonPermissionState.status.isGranted) {
+                                                    SettingInfo.instance.daysignSwitch = it
+                                                    daysignChecked = it
+                                                } else {
+                                                    notificatonPermissionState.launchPermissionRequest()
+                                                }
+                                            }
+                                        )
+                                    }
                                     SettingListItem.COLOR_SCHEME -> {
                                         Switch(
                                             checked = colorSchemeChecked,
@@ -218,6 +240,7 @@ fun SettingPage(
 
 @Composable
 private fun SettingListIcon(item: SettingListItem) = when (item) {
+    SettingListItem.DAY_SIGN -> GetIcon(imageVector = Icons.Default.Alarm)
     SettingListItem.DARK_MODE -> GetIcon(imageVector = Icons.Default.DarkMode)
     SettingListItem.COLOR_SCHEME -> GetIcon(imageVector = Icons.Default.SettingsBrightness)
     SettingListItem.FEEDBACK -> GetIcon(imageVector = Icons.Default.Feedback)

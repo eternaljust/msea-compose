@@ -1,5 +1,8 @@
 package com.eternaljust.msea
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
@@ -82,6 +86,21 @@ class MainActivity : ComponentActivity() {
                 MyApp()
             }
         }
+
+        if (SettingInfo.instance.daysignSwitch) {
+            createNotificationsChannels()
+            RemindersManager.startReminder(this)
+        }
+    }
+
+    private fun createNotificationsChannels() {
+        val channel = NotificationChannel(
+            "reminders_notification_channel_id",
+            "reminders_notification_channel_name",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        ContextCompat.getSystemService(this, NotificationManager::class.java)
+            ?.createNotificationChannel(channel)
     }
 }
 

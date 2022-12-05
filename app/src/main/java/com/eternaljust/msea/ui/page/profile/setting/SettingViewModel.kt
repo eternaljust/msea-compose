@@ -12,19 +12,20 @@ class SettingViewModel : ViewModel() {
     val itemGroups: List<List<SettingListItem>>
         get() {
             val isDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            var themeList = mutableListOf<SettingListItem>(
+            var themeList = mutableListOf(
                 SettingListItem.DARK_MODE
             )
             if (isDynamic) {
                 themeList.add(SettingListItem.COLOR_SCHEME)
             }
+            themeList.add(SettingListItem.DAY_SIGN)
             return listOf(
                 themeList,
                 listOf(
                     SettingListItem.FEEDBACK,
                     SettingListItem.CONTACT_US,
                     SettingListItem.SHARE,
-                    SettingListItem.CLEAN_CACHE,
+//                    SettingListItem.CLEAN_CACHE,
                 ),
                 listOf(
                     SettingListItem.TERMS_OF_SERVICE
@@ -62,6 +63,14 @@ interface SettingList {
 }
 
 enum class SettingListItem : SettingList {
+    DAY_SIGN {
+        override val route: String
+            get() = "day_sign"
+
+        override val title: String
+            get() = "签到提醒"
+    },
+
     DARK_MODE {
         override val route: String
             get() = "dark_mode"

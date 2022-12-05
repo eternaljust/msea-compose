@@ -22,7 +22,7 @@ class DrawerViewModel : ViewModel() {
             DrawerNavigationItem.Friend,
             DrawerNavigationItem.Favorite,
             DrawerNavigationItem.Credit,
-            DrawerNavigationItem.Group
+//            DrawerNavigationItem.Group
         )
 
     val settingItems: List<DrawerNavigationItem>
