@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.setting
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -23,7 +25,13 @@ import com.eternaljust.msea.utils.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.marosseleng.compose.material3.datetimepickers.time.domain.noSeconds
+import com.marosseleng.compose.material3.datetimepickers.time.ui.dialog.TimePickerDialog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -33,24 +41,11 @@ fun SettingPage(
     viewModel: SettingViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
-    var daysignChecked by remember {
-        mutableStateOf(SettingInfo.instance.daysignSwitch)
-    }
+    val context = LocalContext.current
+
     val notificatonPermissionState = rememberPermissionState(
         android.Manifest.permission.POST_NOTIFICATIONS
     )
-    var colorSchemeChecked by remember {
-        mutableStateOf(SettingInfo.instance.colorScheme)
-    }
-    val themeStyleItems = listOf("自动", "浅色", "深色")
-    var themeStyleIndex by remember {
-        mutableStateOf(SettingInfo.instance.themeStyle)
-    }
-
-    val context = LocalContext.current
-    var isContactUs by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -70,72 +65,26 @@ fun SettingPage(
             )
         },
         content = { paddingValues ->
-            if (isContactUs) {
-                AlertDialog(
-                    onDismissRequest = { isContactUs = false },
-                    title = { Text(text = "联系我们") },
-                    text = {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Divider()
+            if (viewModel.viewStates.isContactUsShow) {
+                ContactUsDialog(
+                    scaffoldState = scaffoldState,
+                    scope = scope,
+                    context = context,
+                    onDismiss = { viewModel.dispatch(SettingViewAction.UpdateContactUsShow(false)) }
+                )
+            }
 
-                            TextButton(onClick = {
-                                isContactUs = false
-                                if (isAppInstalled
-                                        (
-                                        packageName = "com.sina.weibo",
-                                        context = context
-                                    )
-                                ) {
-                                    openApp(
-                                        url = "sinaweibo://userinfo?uid=3266569590",
-                                        context = context
-                                    )
-                                } else {
-                                    openSystemBrowser(
-                                        url = "https://weibo.com/eternaljust",
-                                        context = context
-                                    )
-                                }
-                            }) {
-                                Text(text = "微博：@远恒之义")
-                            }
-
-                            Divider()
-
-                            val weixin = "eternaljust"
-                            TextButton(onClick = {
-                                isContactUs = false
-
-                                textCopyThenPost(
-                                    textCopied = weixin,
-                                    context = context
-                                )
-
-                                openApp(
-                                    url = "weixin://",
-                                    context = context
-                                )
-
-                                scope.launch {
-                                    scaffoldState.showSnackbar(
-                                        message = "微信号已复制到剪贴板"
-                                    )
-                                }
-                            }) {
-                                Text(text = "加微信：${weixin} 发送：安卓加群")
-                            }
-
-                            Divider()
-                        }
+            if (viewModel.viewStates.isTimePickerShow) {
+                TimePickerDialog(
+                    onDismissRequest = {
+                        viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
                     },
-                    confirmButton = {
-                        Button(onClick = { isContactUs = false }) {
-                            Text(text = "取消")
-                        }
-                    }
+                    initialTime = viewModel.viewStates.daysignTime,
+                    onTimeChange = {
+                        viewModel.dispatch(SettingViewAction.UpdateDaysginTime(it))
+                        viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
+                    },
+                    title = { Text(text = "选择签到提醒时间") }
                 )
             }
 
@@ -153,78 +102,77 @@ fun SettingPage(
                                         )
                                     }
                                     SettingListItem.CONTACT_US -> {
-                                        isContactUs = true
+                                        viewModel.dispatch(SettingViewAction.UpdateContactUsShow(true))
                                     }
                                     SettingListItem.FEEDBACK -> {
                                         sendEmail(context = context)
                                     }
-                                    else -> {
+                                    SettingListItem.TERMS_OF_SERVICE -> {
                                         navController.navigate(item.route)
                                     }
+                                    else -> { }
                                 }
                             },
-                            headlineText = { Text(text = item.title) },
+                            headlineText = {
+                                SettingListItemTitle(
+                                    item = item,
+                                    daysignTime = viewModel.viewStates.daysignTime,
+                                    timePickerClick = {
+                                        viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(true))
+                                    }
+                                )
+                            },
                             supportingText = {
                                 if (item == SettingListItem.COLOR_SCHEME) {
                                     Text(text = "开启后将根据您的桌面壁纸颜色来生成动态调色板方案")
                                 }
                             },
-                            leadingContent = { SettingListIcon(item = item) },
+                            leadingContent = {
+                                SettingListItemIcon(item = item)
+                            },
                             trailingContent = {
-                                when (item) {
-                                    SettingListItem.DAY_SIGN -> {
-                                        Switch(
-                                            checked = daysignChecked,
-                                            onCheckedChange = {
-                                                if (notificatonPermissionState.status.isGranted) {
-                                                    SettingInfo.instance.daysignSwitch = it
-                                                    daysignChecked = it
-                                                } else {
-                                                    notificatonPermissionState.launchPermissionRequest()
-                                                }
-                                            }
-                                        )
-                                    }
-                                    SettingListItem.COLOR_SCHEME -> {
-                                        Switch(
-                                            checked = colorSchemeChecked,
-                                            onCheckedChange = {
-                                                SettingInfo.instance.colorScheme = it
-                                                colorSchemeChecked = it
-                                                scope.launch {
-                                                    scaffoldState.showSnackbar(
-                                                        message = "重启 App 后生效"
-                                                    )
-                                                }
-                                            }
-                                        )
-                                    }
-                                    SettingListItem.DARK_MODE -> {
-                                        TabRow(
-                                            modifier = Modifier.width(180.dp),
-                                            selectedTabIndex = themeStyleIndex
-                                        ) {
-                                            themeStyleItems.forEachIndexed { index, text ->
-                                                Tab(
-                                                    text = { Text(text) },
-                                                    selected = themeStyleIndex == index,
-                                                    onClick = {
-                                                        SettingInfo.instance.themeStyle = index
-                                                        themeStyleIndex = index
-                                                        scope.launch {
-                                                            scaffoldState.showSnackbar(
-                                                                message = "重启 App 后生效"
-                                                            )
-                                                        }
-                                                    }
+                                SettingListItemAction(
+                                    item = item,
+                                    daysignChecked = viewModel.viewStates.daysignChecked,
+                                    daysignCheckedChange = {
+                                        if (it) {
+                                            if (notificatonPermissionState.status.isGranted) {
+                                                viewModel.dispatch(
+                                                    SettingViewAction.UpdateDaysignChecked(it)
                                                 )
+                                            } else {
+                                                notificatonPermissionState.launchPermissionRequest()
                                             }
+                                        } else {
+                                            viewModel.dispatch(
+                                                SettingViewAction.UpdateDaysignChecked(it)
+                                            )
+                                        }
+                                    },
+                                    colorSchemeChecked = viewModel.viewStates.colorSchemeChecked,
+                                    colorSchemeCheckedChange = {
+                                        viewModel.dispatch(
+                                            SettingViewAction.UpdateColorSchemeChecked(it)
+                                        )
+                                        scope.launch {
+                                            scaffoldState.showSnackbar(
+                                                message = "重启 App 后生效"
+                                            )
+                                        }
+                                    },
+                                    themeStyleItems = viewModel.themeStyleItems,
+                                    themeStyleIndex = viewModel.viewStates.themeStyleIndex,
+                                    themeStyleTabClick = {
+                                        viewModel.dispatch(
+                                            SettingViewAction.UpdateThemeStyleIndex(it)
+                                        )
+                                        scope.launch {
+                                            scaffoldState.showSnackbar(
+                                                message = "重启 App 后生效"
+                                            )
                                         }
                                     }
-                                    else -> {
-                                        ListArrowForward()
-                                    }
-                                }
+                                )
                             }
                         )
 
@@ -239,7 +187,83 @@ fun SettingPage(
 }
 
 @Composable
-private fun SettingListIcon(item: SettingListItem) = when (item) {
+private fun ContactUsDialog(
+    scaffoldState: SnackbarHostState,
+    scope: CoroutineScope,
+    context: Context,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "联系我们") },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Divider()
+
+                TextButton(onClick = {
+                    if (isAppInstalled
+                            (
+                            packageName = "com.sina.weibo",
+                            context = context
+                        )
+                    ) {
+                        openApp(
+                            url = "sinaweibo://userinfo?uid=3266569590",
+                            context = context
+                        )
+                    } else {
+                        openSystemBrowser(
+                            url = "https://weibo.com/eternaljust",
+                            context = context
+                        )
+                    }
+
+                    onDismiss()
+                }) {
+                    Text(text = "微博：@远恒之义")
+                }
+
+                Divider()
+
+                val weixin = "eternaljust"
+                TextButton(onClick = {
+                    textCopyThenPost(
+                        textCopied = weixin,
+                        context = context
+                    )
+
+                    openApp(
+                        url = "weixin://",
+                        context = context
+                    )
+
+                    scope.launch {
+                        scaffoldState.showSnackbar(
+                            message = "微信号已复制到剪贴板"
+                        )
+                    }
+
+                    onDismiss()
+                }) {
+                    Text(text = "加微信：${weixin} 发送：安卓加群")
+                }
+
+                Divider()
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text(text = "确定")
+            }
+        }
+    )
+}
+
+@Composable
+private fun SettingListItemIcon(item: SettingListItem) = when (item) {
     SettingListItem.DAY_SIGN -> GetIcon(imageVector = Icons.Default.Alarm)
     SettingListItem.DARK_MODE -> GetIcon(imageVector = Icons.Default.DarkMode)
     SettingListItem.COLOR_SCHEME -> GetIcon(imageVector = Icons.Default.SettingsBrightness)
@@ -257,6 +281,73 @@ private fun GetIcon(imageVector: ImageVector) = Icon(
     tint = MaterialTheme.colorScheme.primary,
     contentDescription = null
 )
+
+@Composable
+fun SettingListItemTitle(
+    item: SettingListItem,
+    daysignTime: LocalTime,
+    timePickerClick: () -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(text = item.title)
+
+        if (item == SettingListItem.DAY_SIGN) {
+            Spacer(modifier = Modifier.width(16.dp))
+
+            OutlinedButton(onClick = timePickerClick) {
+                Text(
+                    text = daysignTime.format(
+                        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingListItemAction(
+    item: SettingListItem,
+    daysignChecked: Boolean,
+    daysignCheckedChange: (Boolean) -> Unit,
+    colorSchemeChecked: Boolean,
+    colorSchemeCheckedChange: (Boolean) -> Unit,
+    themeStyleItems: List<String>,
+    themeStyleIndex: Int,
+    themeStyleTabClick: (Int) -> Unit,
+) {
+    when (item) {
+        SettingListItem.DAY_SIGN -> {
+            Switch(
+                checked = daysignChecked,
+                onCheckedChange = { daysignCheckedChange(it) }
+            )
+        }
+        SettingListItem.COLOR_SCHEME -> {
+            Switch(
+                checked = colorSchemeChecked,
+                onCheckedChange = { colorSchemeCheckedChange(it) }
+            )
+        }
+        SettingListItem.DARK_MODE -> {
+            TabRow(
+                modifier = Modifier.width(180.dp),
+                selectedTabIndex = themeStyleIndex
+            ) {
+                themeStyleItems.forEachIndexed { index, text ->
+                    Tab(
+                        text = { Text(text) },
+                        selected = themeStyleIndex == index,
+                        onClick = { themeStyleTabClick(index) }
+                    )
+                }
+            }
+        }
+        else -> {
+            ListArrowForward()
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
