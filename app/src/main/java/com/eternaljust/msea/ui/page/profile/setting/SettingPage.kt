@@ -83,6 +83,7 @@ fun SettingPage(
                     onTimeChange = {
                         viewModel.dispatch(SettingViewAction.UpdateDaysginTime(it))
                         viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
+                        RemindersManager.startReminder(context)
                     },
                     title = { Text(text = "选择签到提醒时间") }
                 )
@@ -140,6 +141,7 @@ fun SettingPage(
                                                 viewModel.dispatch(
                                                     SettingViewAction.UpdateDaysignChecked(it)
                                                 )
+                                                RemindersManager.startReminder(context)
                                             } else {
                                                 notificatonPermissionState.launchPermissionRequest()
                                             }
@@ -147,6 +149,7 @@ fun SettingPage(
                                             viewModel.dispatch(
                                                 SettingViewAction.UpdateDaysignChecked(it)
                                             )
+                                            RemindersManager.startReminder(context)
                                         }
                                     },
                                     colorSchemeChecked = viewModel.viewStates.colorSchemeChecked,

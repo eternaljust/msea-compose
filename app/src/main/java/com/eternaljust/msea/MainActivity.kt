@@ -2,7 +2,6 @@ package com.eternaljust.msea
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -90,17 +89,23 @@ class MainActivity : ComponentActivity() {
         if (SettingInfo.instance.daysignSwitch) {
             createNotificationsChannels()
             RemindersManager.startReminder(this)
+        } else {
+            RemindersManager.stopReminder(this)
         }
     }
 
     private fun createNotificationsChannels() {
-        val channel = NotificationChannel(
-            "reminders_notification_channel_id",
-            "reminders_notification_channel_name",
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        ContextCompat.getSystemService(this, NotificationManager::class.java)
-            ?.createNotificationChannel(channel)
+        // Create the NotificationChannel
+        val name = "每日签到提醒"
+        val descriptionText = "定时通知打开 Msea 完成签到"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val id = this.getString(R.string.reminder_notification_channel_id_day_sign)
+        val mChannel = NotificationChannel(id, name, importance)
+        mChannel.description = descriptionText
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
     }
 }
 

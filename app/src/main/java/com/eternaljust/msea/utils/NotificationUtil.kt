@@ -7,18 +7,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.eternaljust.msea.MainActivity
 import com.eternaljust.msea.R
 import java.util.*
 
-
 object RemindersManager {
     // https://blog.protein.tech/android-repeat-notification-daily-on-specific-time-c2b0f7788f93
-    const val REMINDER_NOTIFICATION_REQUEST_CODE = 123
     fun startReminder(
         context: Context,
-        reminderId: Int = REMINDER_NOTIFICATION_REQUEST_CODE
+        reminderId: Int = R.integer.reminder_alarm_request_id_1
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val hour = SettingInfo.instance.daysignHour
@@ -29,7 +28,7 @@ object RemindersManager {
                     context,
                     reminderId,
                     intent,
-                    PendingIntent.FLAG_MUTABLE
+                    PendingIntent.FLAG_IMMUTABLE
                 )
             }
         // https://developer.android.com/about/versions/12/behavior-changes-12#create-immutable-pending-intents
@@ -57,7 +56,7 @@ object RemindersManager {
 
     fun stopReminder(
         context: Context,
-        reminderId: Int = REMINDER_NOTIFICATION_REQUEST_CODE
+        reminderId: Int = R.integer.reminder_alarm_request_id_1
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).let { intent ->
@@ -65,7 +64,7 @@ object RemindersManager {
                 context,
                 reminderId,
                 intent,
-                0
+                PendingIntent.FLAG_IMMUTABLE
             )
         }
         alarmManager.cancel(intent)
@@ -73,7 +72,6 @@ object RemindersManager {
 }
 
 class AlarmReceiver : BroadcastReceiver() {
-
     /**
      * sends notification when receives alarm
      * and then reschedule the reminder again
@@ -83,10 +81,11 @@ class AlarmReceiver : BroadcastReceiver() {
             context,
             NotificationManager::class.java
         ) as NotificationManager
+        val channelId = context.getString(R.string.reminder_notification_channel_id_day_sign)
 
         notificationManager.sendReminderNotification(
             applicationContext = context,
-            channelId = "reminders_notification_channel_id"
+            channelId = channelId
         )
         // Remove this line if you don't want to reschedule the reminder
         RemindersManager.startReminder(context.applicationContext)
@@ -97,32 +96,41 @@ fun NotificationManager.sendReminderNotification(
     applicationContext: Context,
     channelId: String,
 ) {
-    val contentIntent = Intent(applicationContext, MainActivity::class.java)
-    val pendingIntent = PendingIntent.getActivity(
+    // Create an explicit intent for an Activity in your app
+    val intent = Intent(applicationContext, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    }
+    val requestCode = 0
+    val pendingIntent: PendingIntent = PendingIntent.getActivity(
         applicationContext,
-        1,
-        contentIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT
+        requestCode,
+        intent,
+        PendingIntent.FLAG_IMMUTABLE
     )
     val text = "打开 Msea 签到，立即获取虫部落 Bit 奖励！"
     val builder = NotificationCompat.Builder(applicationContext, channelId)
+        .setSmallIcon(R.drawable.icon)
         .setContentTitle("每日签到")
         .setContentText(text)
-        .setSmallIcon(R.drawable.icon)
         .setStyle(
             NotificationCompat.BigTextStyle()
                 .bigText(text)
         )
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setCategory(NotificationCompat.CATEGORY_ALARM)
+        // Set the intent that will fire when the user taps the notification
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
 
-    notify(NOTIFICATION_ID, builder.build())
+    with(NotificationManagerCompat.from(applicationContext)) {
+        // notificationId is a unique int for each notification that you must define
+        val notificationId = 1
+        notify(notificationId, builder.build())
+    }
 }
 
-const val NOTIFICATION_ID = 1
-
 class BootReceiver : BroadcastReceiver() {
-    /*
+    /**
     * restart reminders alarms when user's device reboots
     * */
     override fun onReceive(context: Context, intent: Intent) {

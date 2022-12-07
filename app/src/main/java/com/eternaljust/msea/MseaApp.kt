@@ -21,6 +21,6 @@ class MseaApp: Application() {
         // 友盟预初始化
         UMConfigure.preInit(this, appkey, channel)
         // 友盟正式初始化
-        UMConfigure.init(this, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, "");
+        UMConfigure.init(this, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, "")
     }
 }
