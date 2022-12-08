@@ -1,7 +1,5 @@
 package com.eternaljust.msea
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,17 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
@@ -75,8 +69,11 @@ sealed class BottomBarScreen(
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Mseacompose)
         super.onCreate(savedInstanceState)
+
+        println("onCreate-----")
+
+        setTheme(R.style.Theme_Mseacompose)
         setContent {
             MseaComposeTheme(
                 darkTheme = themeStyleDark(),
@@ -87,25 +84,40 @@ class MainActivity : ComponentActivity() {
         }
 
         if (SettingInfo.instance.daysignSwitch) {
-            createNotificationsChannels()
             RemindersManager.startReminder(this)
         } else {
             RemindersManager.stopReminder(this)
         }
     }
 
-    private fun createNotificationsChannels() {
-        // Create the NotificationChannel
-        val name = "每日签到提醒"
-        val descriptionText = "定时通知打开 Msea 完成签到"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val id = this.getString(R.string.reminder_notification_channel_id_day_sign)
-        val mChannel = NotificationChannel(id, name, importance)
-        mChannel.description = descriptionText
-        // Register the channel with the system; you can't change the importance
-        // or other notification behaviors after this
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(mChannel)
+    override fun onStart() {
+        super.onStart()
+
+        println("onStart-----")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+        println("onRestart-----")
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        println("onResume-----")
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        println("onPause-----")
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        println("onStop-----")
     }
 }
 
@@ -391,7 +403,12 @@ private fun NavGraphBuilder.detailsNav(
             })
     }
 
-    composable(RouteName.SIGN) {
+    composable(
+        route = RouteName.SIGN,
+        deepLinks = listOf(
+            navDeepLink { uriPattern = "msea://${RouteName.SIGN}" }
+        )
+    ) {
         SignPage(
             scaffoldState = scaffoldState,
             navController = navController

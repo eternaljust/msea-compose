@@ -118,6 +118,7 @@ fun SettingPage(
                                 SettingListItemTitle(
                                     item = item,
                                     daysignTime = viewModel.viewStates.daysignTime,
+                                    timePickerEnbled = viewModel.viewStates.daysignChecked,
                                     timePickerClick = {
                                         viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(true))
                                     }
@@ -143,13 +144,14 @@ fun SettingPage(
                                                 )
                                                 RemindersManager.startReminder(context)
                                             } else {
+                                                SettingViewAction.UpdateDaysignChecked(false)
                                                 notificatonPermissionState.launchPermissionRequest()
                                             }
                                         } else {
                                             viewModel.dispatch(
                                                 SettingViewAction.UpdateDaysignChecked(it)
                                             )
-                                            RemindersManager.startReminder(context)
+                                            RemindersManager.stopReminder(context)
                                         }
                                     },
                                     colorSchemeChecked = viewModel.viewStates.colorSchemeChecked,
@@ -289,6 +291,7 @@ private fun GetIcon(imageVector: ImageVector) = Icon(
 fun SettingListItemTitle(
     item: SettingListItem,
     daysignTime: LocalTime,
+    timePickerEnbled: Boolean,
     timePickerClick: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -297,7 +300,10 @@ fun SettingListItemTitle(
         if (item == SettingListItem.DAY_SIGN) {
             Spacer(modifier = Modifier.width(16.dp))
 
-            OutlinedButton(onClick = timePickerClick) {
+            OutlinedButton(
+                enabled = timePickerEnbled,
+                onClick = timePickerClick
+            ) {
                 Text(
                     text = daysignTime.format(
                         DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)

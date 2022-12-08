@@ -1,24 +1,57 @@
 package com.eternaljust.msea.utils
 
-import android.app.AlarmManager
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import androidx.activity.ComponentActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.eternaljust.msea.MainActivity
 import com.eternaljust.msea.R
 import java.util.*
 
 object RemindersManager {
+    private fun createNotificationsChannel(context: Context) {
+        // Create the NotificationChannel
+        val name = "每日签到提醒"
+        val descriptionText = "定时通知打开 Msea 完成签到"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val id = context.getString(R.string.reminder_notification_channel_id_sign)
+        val channel = NotificationChannel(id, name, importance)
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .build()
+        channel.description = descriptionText
+        channel.setSound(null, audioAttributes)
+        channel.setShowBadge(true)
+        channel.enableLights(true)
+        channel.enableVibration(true)
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun deleteNotificationChannel(context: Context) {
+        // The id of the channel.
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager
+        val id = context.getString(R.string.reminder_notification_channel_id_sign)
+        notificationManager.deleteNotificationChannel(id)
+    }
+
     // https://blog.protein.tech/android-repeat-notification-daily-on-specific-time-c2b0f7788f93
     fun startReminder(
         context: Context,
         reminderId: Int = R.integer.reminder_alarm_request_id_1
     ) {
+        createNotificationsChannel(context)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val hour = SettingInfo.instance.daysignHour
         val minute = SettingInfo.instance.daysignMinute
@@ -58,6 +91,8 @@ object RemindersManager {
         context: Context,
         reminderId: Int = R.integer.reminder_alarm_request_id_1
     ) {
+        deleteNotificationChannel(context)
+
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(
@@ -81,7 +116,7 @@ class AlarmReceiver : BroadcastReceiver() {
             context,
             NotificationManager::class.java
         ) as NotificationManager
-        val channelId = context.getString(R.string.reminder_notification_channel_id_day_sign)
+        val channelId = context.getString(R.string.reminder_notification_channel_id_sign)
 
         notificationManager.sendReminderNotification(
             applicationContext = context,
@@ -96,17 +131,20 @@ fun NotificationManager.sendReminderNotification(
     applicationContext: Context,
     channelId: String,
 ) {
-    // Create an explicit intent for an Activity in your app
-    val intent = Intent(applicationContext, MainActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    }
     val requestCode = 0
-    val pendingIntent: PendingIntent = PendingIntent.getActivity(
+    // Create an explicit intent for an Activity in your app
+    val deepLinkIntent = Intent(
+        Intent.ACTION_VIEW,
+        "msea://${RouteName.SIGN}".toUri(),
         applicationContext,
-        requestCode,
-        intent,
-        PendingIntent.FLAG_IMMUTABLE
+        MainActivity::class.java
     )
+    val deepLinkPendingIntent: PendingIntent =
+        TaskStackBuilder.create(applicationContext!!).run {
+            addNextIntentWithParentStack(deepLinkIntent)
+            getPendingIntent(requestCode, PendingIntent.FLAG_IMMUTABLE)!!
+        }
+
     val text = "打开 Msea 签到，立即获取虫部落 Bit 奖励！"
     val builder = NotificationCompat.Builder(applicationContext, channelId)
         .setSmallIcon(R.drawable.icon)
@@ -116,10 +154,10 @@ fun NotificationManager.sendReminderNotification(
             NotificationCompat.BigTextStyle()
                 .bigText(text)
         )
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//        .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setCategory(NotificationCompat.CATEGORY_ALARM)
         // Set the intent that will fire when the user taps the notification
-        .setContentIntent(pendingIntent)
+        .setContentIntent(deepLinkPendingIntent)
         .setAutoCancel(true)
 
     with(NotificationManagerCompat.from(applicationContext)) {

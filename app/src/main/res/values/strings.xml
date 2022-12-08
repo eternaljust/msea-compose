@@ -3,6 +3,6 @@
     <string name="bottom_navigation_home">虫部落</string>
     <string name="bottom_navigation_notice">通知</string>
     <string name="bottom_navigation_node">节点</string>
-    <string name="reminder_notification_channel_id_day_sign">day_sign</string>
+    <string name="reminder_notification_channel_id_sign">sign</string>
     <integer name="reminder_alarm_request_id_1">1</integer>
 </resources>
