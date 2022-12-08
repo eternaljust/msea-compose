@@ -20,7 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
-import com.eternaljust.msea.ui.page.home.TopicDetailPage
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailPage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.node.list.NodeListPage
@@ -130,8 +130,10 @@ fun MyApp() {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
+    var isDrawerGesturesEnabled by remember { mutableStateOf(true) }
 
     ModalNavigationDrawer(
+        gesturesEnabled = isDrawerGesturesEnabled,
         drawerState = drawerState,
         drawerContent = {
             DrawerPage(
@@ -172,6 +174,8 @@ fun MyApp() {
             Scaffold(
                 topBar = {
                     if (mainScreens.contains(currentDestination?.route)) {
+                        isDrawerGesturesEnabled = true
+
                         TopAppBar(
                             title = {
                                 Column(modifier = Modifier.padding(16.dp)) {
@@ -210,6 +214,8 @@ fun MyApp() {
                             },
                             colors = mseaTopAppBarColors()
                         )
+                    } else {
+                        isDrawerGesturesEnabled = false
                     }
                 },
                 bottomBar = {

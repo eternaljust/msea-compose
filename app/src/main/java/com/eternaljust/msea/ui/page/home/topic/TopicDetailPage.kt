@@ -1,4 +1,4 @@
-package com.eternaljust.msea.ui.page.home
+package com.eternaljust.msea.ui.page.home.topic
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,14 +65,13 @@ fun TopicDetailPage(
             Box(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .fillMaxWidth()
             ) {
                 WebView(
-                    state = state
+                    state = state,
+                    captureBackPresses = false
                 )
 
-                val loading = state.loadingState
-                when (loading) {
+                when (val loading = state.loadingState) {
                     is LoadingState.Loading -> {
                         println("loading.progress---${loading.progress}")
                         LinearProgressIndicator(

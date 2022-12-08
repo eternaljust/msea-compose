@@ -65,11 +65,11 @@ fun WebViewPage(
                     .fillMaxWidth()
             ) {
                 WebView(
-                    state = state
+                    state = state,
+                    captureBackPresses = false
                 )
 
-                val loading = state.loadingState
-                when (loading) {
+                when (val loading = state.loadingState) {
                     is LoadingState.Loading -> {
                         println("loading.progress---${loading.progress}")
                         LinearProgressIndicator(
