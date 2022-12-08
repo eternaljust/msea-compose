@@ -85,6 +85,7 @@ class NodeViewModel : ViewModel() {
                     val tid = dl.selectXpath("dl/dd[2]/a").attr("href")
                     if (tid.contains("tid=") && tid.contains("goto=")) {
                         model.tid = tid.split("goto=")[0].split("tid=")[1]
+                        model.tid = model.tid.replace("&", "")
                     }
                     val name = dl.selectXpath("dl/dd[2]/cite/a").text()
                     if (name.isNotEmpty()) {

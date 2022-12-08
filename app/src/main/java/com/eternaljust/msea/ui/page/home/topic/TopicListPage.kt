@@ -2,7 +2,9 @@
 
 package com.eternaljust.msea.ui.page.home
 
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +30,10 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicListModel
 import com.eternaljust.msea.ui.page.home.topic.TopicListViewModel
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @Composable
 fun TopicListPage(
@@ -43,18 +49,30 @@ fun TopicListPage(
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                TopicListItemContent(item)
+                TopicListItemContent(
+                    item = item,
+                    contentClick = {
+                        var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
+                        val web = WebViewModel(url = url)
+                        val args = String.format("/%s", Uri.encode(web.toJson()))
+                        navController.navigate(RouteName.TOPIC_DETAIL + args)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun TopicListItemContent(item: TopicListModel) {
+fun TopicListItemContent(
+    item: TopicListModel,
+    contentClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
+            .clickable { contentClick() }
     ) {
         Row {
             AsyncImage(

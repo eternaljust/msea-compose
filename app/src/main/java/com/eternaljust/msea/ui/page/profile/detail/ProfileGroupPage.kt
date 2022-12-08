@@ -1,4 +1,4 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

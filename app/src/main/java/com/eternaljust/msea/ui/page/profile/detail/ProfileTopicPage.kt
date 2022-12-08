@@ -1,11 +1,11 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.detail
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,13 +21,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicListModel
-import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicViewAction
-import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicViewEvent
-import com.eternaljust.msea.ui.page.profile.detail.ProfileTopicViewModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -71,7 +70,15 @@ fun ProfileTopicPage(
 
                     itemsIndexed(lazyPagingItems) { _, item ->
                         item?.let {
-                            ProfileTopicListItemContent(item = it)
+                            ProfileTopicListItemContent(
+                                item = it,
+                                contentClick = {
+                                    var url = HTMLURL.TOPIC_DETAIL + "-${it.tid}-1-1.html"
+                                    val web = WebViewModel(url = url)
+                                    val args = String.format("/%s", Uri.encode(web.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                }
+                            )
                         }
                     }
                 }
@@ -104,7 +111,10 @@ fun ProfileTopicListHeader() {
 }
 
 @Composable
-fun ProfileTopicListItemContent(item: ProfileTopicListModel) {
+fun ProfileTopicListItemContent(
+    item: ProfileTopicListModel,
+    contentClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -163,7 +173,13 @@ fun ProfileTopicListItemContent(item: ProfileTopicListModel) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(text = item.title)
+        Text(
+            modifier = Modifier
+                .clickable {
+                    contentClick()
+                },
+            text = item.title
+        )
     }
 
     Divider(modifier = Modifier)

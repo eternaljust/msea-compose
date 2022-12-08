@@ -1,7 +1,9 @@
 package com.eternaljust.msea.ui.page.node.tag
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,7 +26,11 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -70,7 +76,15 @@ fun TagListPage(
 
                     itemsIndexed(lazyPagingItems) { _, item ->
                         item?.let {
-                            TagListItemContent(item = it)
+                            TagListItemContent(
+                                item = it,
+                                contentClick = {
+                                    var url = HTMLURL.TOPIC_DETAIL + "-${it.tid}-1-1.html"
+                                    val web = WebViewModel(url = url)
+                                    val args = String.format("/%s", Uri.encode(web.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                }
+                            )
                         }
                     }
                 }
@@ -105,7 +119,10 @@ fun TagListHeader() {
 }
 
 @Composable
-fun TagListItemContent(item: TagListModel) {
+fun TagListItemContent(
+    item: TagListModel,
+    contentClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,7 +196,13 @@ fun TagListItemContent(item: TagListModel) {
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(text = item.title)
+        Text(
+            modifier = Modifier
+                .clickable {
+                    contentClick()
+                },
+            text = item.title
+        )
     }
 
     Divider(modifier = Modifier)

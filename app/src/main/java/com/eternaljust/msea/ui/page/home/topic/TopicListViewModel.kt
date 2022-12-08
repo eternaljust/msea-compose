@@ -67,6 +67,11 @@ class TopicListViewModel(
                     if (title.isNotEmpty()) {
                         topic.title = title
                     }
+                    val thread = it.selectXpath("tr/th[@class='common']/a").attr("href")
+                    if (thread.contains("thread-")) {
+                        topic.tid = thread.split("thread-").last().split("-").first()
+                    }
+
                     val icon1 = it.selectXpath("tr/th[@class='common']/span[1]").attr("class")
                     if (icon1.isNotEmpty()) {
                         topic.icon1 = getIcon(icon1)

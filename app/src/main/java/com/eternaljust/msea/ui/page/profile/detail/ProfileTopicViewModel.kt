@@ -56,8 +56,8 @@ class ProfileTopicViewModel : ViewModel() {
                     topic.title = title
                 }
                 val tid = it.selectXpath("th/a").attr("href")
-                if (tid.isNotEmpty()) {
-                    topic.tid = tid
+                if (tid.contains("thread-")) {
+                    topic.tid = tid.split("thread-").last().split("-").first()
                 }
                 val forum = it.selectXpath("td/a[@class='xg1']").text()
                 if (forum.isNotEmpty()) {

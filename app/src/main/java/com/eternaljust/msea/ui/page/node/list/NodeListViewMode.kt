@@ -112,6 +112,10 @@ class NodeListViewModel : ViewModel() {
                     if (title.isNotEmpty()) {
                         topic.title = title
                     }
+                    val thread = it.selectXpath("tr/th[@class='new']/a[@class='s xst']").attr("href")
+                    if (thread.contains("thread-")) {
+                        topic.tid = thread.split("thread-").last().split("-").first()
+                    }
 
                     val icon1 = it.selectXpath("tr/th[@class='new']/span[1]").attr("class")
                     if (icon1.isNotEmpty()) {

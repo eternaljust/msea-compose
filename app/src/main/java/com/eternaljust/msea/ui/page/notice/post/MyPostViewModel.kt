@@ -53,8 +53,9 @@ class MyPostViewModel : ViewModel() {
                     post.title = title
                 }
                 val thread = it.selectXpath("dd[@class='ntc_body']/a[2]").attr("href")
-                if (thread.isNotEmpty() && thread.contains("&pid=")) {
-                    post.pid = thread.split("&pid=").last()
+                if (thread.contains("&ptid=")) {
+                    post.ptid = thread.split("&ptid=").last()
+                        .split("&pid=").first()
                 }
 
                 list.add(post)
@@ -70,7 +71,7 @@ data class MyPostListViewState(
 )
 
 class PostListModel {
-    var pid = ""
+    var ptid = ""
     var uid = ""
     var avatar = ""
     var name = ""

@@ -56,8 +56,9 @@ class ProfileFavoriteViewModel : ViewModel() {
                     system.title = title
                 }
                 val tid = it.selectXpath("a[last()]").attr("href")
-                if (tid.isNotEmpty()) {
-                    system.tid = tid
+                if (tid.contains("thread-")) {
+                    system.tid = tid.split("thread-").last()
+                        .split("-").first()
                 }
 
                 list.add(system)

@@ -1,9 +1,7 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,9 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.ui.page.profile.detail.*
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState

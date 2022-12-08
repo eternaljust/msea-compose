@@ -192,6 +192,7 @@ object HTMLURL {
     const val CREDIT_LIST = "$BASE/home.php?mod=spacecp&ac=credit"
     const val FRIEND_LIST = "$BASE/home.php?mod=space&do=friend"
     const val USER_GROUP_LIST = "$BASE/home.php?mod=spacecp&ac=usergroup"
+    const val TOPIC_DETAIL = "$BASE/thread"
 }
 
 sealed class HttpResult<out T> {

@@ -1,11 +1,13 @@
 package com.eternaljust.msea.ui.page.node
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.sharp.WbSunny
@@ -24,7 +26,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,6 +59,12 @@ fun NodePage(
                             item = item,
                             nodeClick = {
                                 navController.navigate(RouteName.NODE_LIST + "/${item.fid}")
+                            },
+                            contentClick = {
+                                var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
+                                val web = WebViewModel(url = url)
+                                val args = String.format("/%s", Uri.encode(web.toJson()))
+                                navController.navigate(RouteName.TOPIC_DETAIL + args)
                             }
                         )
                     }
@@ -99,7 +110,8 @@ fun NodeListHeader(item: NodeModel) {
 @Composable
 fun NodeListItemContent(
     item: NodeListModel,
-    nodeClick: () -> Unit
+    nodeClick: () -> Unit,
+    contentClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -155,26 +167,42 @@ fun NodeListItemContent(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    append(item.content)
-                }
+        val annotatedText = buildAnnotatedString {
+            pushStringAnnotation(
+                tag = "content",
+                annotation = ""
+            )
+            withStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                append(item.content)
+            }
+            pop()
 
-                append("  ")
-                append(item.time)
-                append("  ")
+            append("  ")
+            append(item.time)
+            append("  ")
 
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    append(item.username)
+            withStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                append(item.username)
+            }
+        }
+
+        ClickableText(
+            text = annotatedText,
+            onClick = { offset ->
+                annotatedText.getStringAnnotations(
+                    tag = "content",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    contentClick()
                 }
             }
         )

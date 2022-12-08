@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
+import com.eternaljust.msea.ui.page.home.TopicDetailPage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.node.list.NodeListPage
@@ -28,6 +29,7 @@ import com.eternaljust.msea.ui.page.node.tag.TagListPage
 import com.eternaljust.msea.ui.page.node.tag.TagPage
 import com.eternaljust.msea.ui.page.notice.NoticePage
 import com.eternaljust.msea.ui.page.profile.*
+import com.eternaljust.msea.ui.page.profile.detail.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.page.profile.login.LoginPage
 import com.eternaljust.msea.ui.page.profile.setting.SettingPage
@@ -336,13 +338,6 @@ private fun NavGraphBuilder.detailsNav(
     scaffoldState: SnackbarHostState,
     navController: NavHostController
 ) {
-//    composable(RouteName.TOPIC_DETAIL) {
-//        ProfileTopicPage(
-//            scaffoldState = scaffoldState,
-//            navController = navController
-//        )
-//    }
-
     composable(RouteName.PROFILE_TOPIC) {
         ProfileTopicPage(
             scaffoldState = scaffoldState,
@@ -470,6 +465,20 @@ private fun NavGraphBuilder.detailsNav(
         web?.let {
             WebViewPage(
                 web = web,
+                navController = navController
+            )
+        }
+    }
+
+    composable(
+        route = RouteName.TOPIC_DETAIL + "/{web}",
+        arguments = listOf(navArgument("web") { type = NavType.StringType })
+    ) {
+        val web = it.arguments?.getString("web")?.fromJson<WebViewModel>()
+        web?.let {
+            TopicDetailPage(
+                web = web,
+                scaffoldState = scaffoldState,
                 navController = navController
             )
         }

@@ -63,7 +63,7 @@ class TagListViewModel : ViewModel() {
                 }
                 val tid = it.selectXpath("th/a").attr("href")
                 if (tid.isNotEmpty()) {
-                    tag.tid = tid
+                    tag.tid = tid.split("thread-").last().split("-").first()
                 }
                 val forum = it.selectXpath("td[@class='by']/a").text()
                 if (forum.isNotEmpty()) {

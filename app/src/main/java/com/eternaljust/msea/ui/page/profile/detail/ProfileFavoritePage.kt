@@ -1,8 +1,9 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.detail
 
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Feed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -18,13 +19,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
-import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteListModel
-import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteListViewAction
-import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteListViewEvent
-import com.eternaljust.msea.ui.page.profile.detail.ProfileFavoriteViewModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +63,15 @@ fun ProfileFavoritePage(
                 ) {
                     itemsIndexed(lazyPagingItems) { _, item ->
                         item?.let {
-                            ProfileFavoriteListItemContent(it)
+                            ProfileFavoriteListItemContent(
+                                item = it,
+                                contentClick = {
+                                    var url = HTMLURL.TOPIC_DETAIL + "-${it.tid}-1-1.html"
+                                    val web = WebViewModel(url = url)
+                                    val args = String.format("/%s", Uri.encode(web.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                }
+                            )
                         }
                     }
                 }
@@ -73,11 +81,15 @@ fun ProfileFavoritePage(
 }
 
 @Composable
-fun ProfileFavoriteListItemContent(item: ProfileFavoriteListModel) {
+fun ProfileFavoriteListItemContent(
+    item: ProfileFavoriteListModel,
+    contentClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
+            .padding(vertical = 10.dp)
+            .clickable { contentClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

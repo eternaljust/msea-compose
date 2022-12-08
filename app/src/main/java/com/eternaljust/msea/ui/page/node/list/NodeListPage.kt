@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.node.list
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,7 +32,11 @@ import com.eternaljust.msea.ui.page.home.TopicListItemContent
 import com.eternaljust.msea.ui.page.home.topic.TopicListModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -77,7 +82,15 @@ fun NodeListPage(
 
                     itemsIndexed(lazyPagingItems) { _, item ->
                         item?.let {
-                            TopicListItemContent(item)
+                            TopicListItemContent(
+                                item = item,
+                                contentClick = {
+                                    var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
+                                    val web = WebViewModel(url = url)
+                                    val args = String.format("/%s", Uri.encode(web.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                }
+                            )
                         }
                     }
                 }

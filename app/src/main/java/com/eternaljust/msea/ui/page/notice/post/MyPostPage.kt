@@ -1,7 +1,9 @@
 package com.eternaljust.msea.ui.page.notice.post
 
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -23,6 +25,10 @@ import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @Composable
 fun MyPostPage(
@@ -38,14 +44,25 @@ fun MyPostPage(
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                MyPostListItemContent(it)
+                MyPostListItemContent(
+                    item = it,
+                    contentClick = {
+                        var url = HTMLURL.TOPIC_DETAIL + "-${it.ptid}-1-1.html"
+                        val web = WebViewModel(url = url)
+                        val args = String.format("/%s", Uri.encode(web.toJson()))
+                        navController.navigate(RouteName.TOPIC_DETAIL + args)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun MyPostListItemContent(item: PostListModel) {
+fun MyPostListItemContent(
+    item: PostListModel,
+    contentClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,24 +89,39 @@ fun MyPostListItemContent(item: PostListModel) {
                 fontWeight = FontWeight.Normal
             )
 
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        append(item.name)
-                    }
+            val annotatedText = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    append(item.name)
+                }
 
-                    append("回复了您的帖子")
+                append("回复了您的帖子")
 
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        append(item.title)
+                pushStringAnnotation(
+                    tag = "content",
+                    annotation = ""
+                )
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    append(item.title)
+                }
+                pop()
+            }
+            ClickableText(
+                text = annotatedText,
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(
+                        tag = "content",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        contentClick()
                     }
                 }
             )
