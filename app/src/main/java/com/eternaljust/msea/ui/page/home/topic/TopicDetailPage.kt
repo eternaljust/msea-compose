@@ -36,7 +36,7 @@ fun TopicDetailPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { title?.let { Text(text = it, maxLines = 2) }},
+                title = { title?.let { Text(text = it, maxLines = 2) } },
                 navigationIcon = {
                     Row {
                         IconButton(

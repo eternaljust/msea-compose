@@ -43,7 +43,7 @@ fun SettingPage(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val notificatonPermissionState = rememberPermissionState(
+    val notificationPermissionState = rememberPermissionState(
         android.Manifest.permission.POST_NOTIFICATIONS
     )
 
@@ -106,7 +106,15 @@ fun SettingPage(
                                         viewModel.dispatch(SettingViewAction.UpdateContactUsShow(true))
                                     }
                                     SettingListItem.FEEDBACK -> {
-                                        sendEmail(context = context)
+                                        try {
+                                            sendEmail(context = context)
+                                        } catch (e: Exception) {
+                                            scope.launch {
+                                                scaffoldState.showSnackbar(
+                                                    message = "邮件服务打开失败"
+                                                )
+                                            }
+                                        }
                                     }
                                     SettingListItem.TERMS_OF_SERVICE -> {
                                         navController.navigate(item.route)
@@ -138,14 +146,14 @@ fun SettingPage(
                                     daysignChecked = viewModel.viewStates.daysignChecked,
                                     daysignCheckedChange = {
                                         if (it) {
-                                            if (notificatonPermissionState.status.isGranted) {
+                                            if (notificationPermissionState.status.isGranted) {
                                                 viewModel.dispatch(
                                                     SettingViewAction.UpdateDaysignChecked(it)
                                                 )
                                                 RemindersManager.startReminder(context)
                                             } else {
                                                 SettingViewAction.UpdateDaysignChecked(false)
-                                                notificatonPermissionState.launchPermissionRequest()
+                                                notificationPermissionState.launchPermissionRequest()
                                             }
                                         } else {
                                             viewModel.dispatch(

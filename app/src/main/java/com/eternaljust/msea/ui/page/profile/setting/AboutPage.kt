@@ -1,4 +1,4 @@
-package com.eternaljust.msea.ui.page.profile
+package com.eternaljust.msea.ui.page.profile.setting
 
 import android.net.Uri
 import androidx.compose.foundation.*
@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,13 +18,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.BuildConfig
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.profile.setting.AboutViewAction
-import com.eternaljust.msea.ui.page.profile.setting.AboutViewEvent
-import com.eternaljust.msea.ui.page.profile.setting.AboutViewModel
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
 
@@ -113,8 +107,12 @@ fun LicensePage(
     val items: List<WebViewModel> = listOf(
         WebViewModel(title = "jsoup", url = "https://jsoup.org/"),
         WebViewModel(title = "okhttp", url = "https://square.github.io/okhttp/"),
-        WebViewModel(title = "coil-compose", url = "https://coil-kt.github.io/coil/compose/")
-    )
+        WebViewModel(title = "coil-compose", url = "https://coil-kt.github.io/coil/compose/"),
+        WebViewModel(
+            title = "compose-material3-datetime-pickers",
+            url = "https://github.com/marosseleng/compose-material3-datetime-pickers"
+        )
+     )
 
     Scaffold(
         topBar = {

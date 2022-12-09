@@ -32,7 +32,7 @@ fun WebViewPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { title?.let { Text(text = it) }},
+                title = { title?.let { Text(text = it, maxLines = 2) } },
                 navigationIcon = {
                     Row {
                         IconButton(
