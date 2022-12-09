@@ -165,14 +165,14 @@ class SignViewModel : ViewModel() {
                 "message" to message
             )
             val document = NetworkUtil.postRequest(url, emptyMap(), encodedParams)
-            val text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
+            var text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
             val script = document.selectXpath("//div[@id='messagetext']/p[1]/script").text()
             if (text.isNotEmpty()) {
                 if (script.isNotEmpty() && text.contains(script)) {
-                    _viewEvents.send(SignViewEvent.Message(text.replace(script, "")))
-                } else {
-                    _viewEvents.send(SignViewEvent.Message(text))
+                    text = text.replace(script, "")
                 }
+                text = text.replace("#", "")
+                _viewEvents.send(SignViewEvent.Message(text))
                 viewStates = viewStates.copy(signText = "")
             } else {
                 _viewEvents.send(SignViewEvent.Message("签到失败！"))

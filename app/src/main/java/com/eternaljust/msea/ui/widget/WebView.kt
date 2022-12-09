@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.LoadingState
 import com.google.accompanist.web.WebView
+import com.google.accompanist.web.rememberWebViewNavigator
 import com.google.accompanist.web.rememberWebViewState
 import kotlinx.android.parcel.Parcelize
 
@@ -24,6 +26,7 @@ fun WebViewPage(
 ) {
     val context = LocalContext.current
     val state = rememberWebViewState(web.url)
+    val navigator = rememberWebViewNavigator()
     val title = if(state.pageTitle != null) state.pageTitle else web.title
 
     Scaffold(
@@ -31,13 +34,32 @@ fun WebViewPage(
             TopAppBar(
                 title = { title?.let { Text(text = it) }},
                 navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "返回"
-                        )
+                    Row {
+                        IconButton(
+                            onClick = {
+                                if (navigator.canGoBack) {
+                                    navigator.navigateBack()
+                                } else {
+                                    navController.popBackStack()
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "返回"
+                            )
+                        }
+
+                        if (navigator.canGoBack) {
+                            IconButton(
+                                onClick = { navController.popBackStack() }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "关闭网页"
+                                )
+                            }
+                        }
                     }
                 },
                 actions = {
@@ -66,7 +88,7 @@ fun WebViewPage(
             ) {
                 WebView(
                     state = state,
-                    captureBackPresses = false
+                    navigator = navigator
                 )
 
                 when (val loading = state.loadingState) {
