@@ -27,7 +27,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            // 自动移除未使用的资源
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -47,6 +49,10 @@ android {
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+        dex {
+            // 当 minSdk 为 28 或更高级别时，开启 AGP 会在 APK 中打包压缩的 DEX 文件
+            useLegacyPackaging true
         }
     }
     sourceSets {
