@@ -126,7 +126,17 @@ fun DrawerPage(
 private fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNavigationItem) -> Unit) {
     items.forEach { item ->
         NavigationDrawerItem(
-            icon = { Icon(item.icon, contentDescription = null) },
+            icon = {
+                if (item.imageVector != null) {
+                    item.imageVector?.let {
+                        Icon(imageVector = it, contentDescription = null)
+                    }
+                } else if (item.painter != null) {
+                    item.painter?.let {
+                        Icon(painter = painterResource(id = it), contentDescription = null)
+                    }
+                }
+            },
             label = { Text(item.title) },
             selected = false,
             onClick = { onClick(item) },

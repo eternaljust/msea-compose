@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,13 +12,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import kotlinx.coroutines.launch
 
@@ -140,11 +139,16 @@ fun LoginPage(
                         IconButton(
                             onClick = { viewModel.dispatch(LoginViewAction.PasswordShowOrHidden)}
                         ) {
-                            val visibilityIcon =
-                                if (viewModel.viewStates.passwordHidden) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                            val description = if (viewModel.viewStates.passwordHidden) "显示密码" else "隐藏密码"
+                            val visibilityIcon = if (viewModel.viewStates.passwordHidden)
+                                R.drawable.ic_baseline_visibility_24
+                            else R.drawable.ic_baseline_visibility_off_24
+                            val description = if (viewModel.viewStates.passwordHidden) "显示密码"
+                            else "隐藏密码"
                             if (viewModel.viewStates.password.isNotEmpty()) {
-                                Icon(imageVector = visibilityIcon, contentDescription = description)
+                                Icon(
+                                    painter = painterResource(id = visibilityIcon),
+                                    contentDescription = description
+                                )
                             }
                         }
                     }
@@ -188,10 +192,18 @@ fun LoginPage(
                                     viewModel.dispatch(LoginViewAction.UpdateQuestionExpanded(false))
                                 },
                                 leadingIcon = {
-                                    Icon(
-                                        item.icon,
-                                        contentDescription = item.title
-                                    )
+                                    if (item.imageVector != null) {
+                                        item.imageVector?.let {
+                                            Icon(imageVector = it, contentDescription = item.title)
+                                        }
+                                    } else if (item.painter != null) {
+                                        item.painter?.let {
+                                            Icon(
+                                                painter = painterResource(id = it),
+                                                contentDescription = item.title
+                                            )
+                                        }
+                                    }
                                 }
                             )
 

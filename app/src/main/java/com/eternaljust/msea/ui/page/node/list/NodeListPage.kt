@@ -2,38 +2,25 @@ package com.eternaljust.msea.ui.page.node.list
 
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
-import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.TopicListItemContent
-import com.eternaljust.msea.ui.page.home.topic.TopicListModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
@@ -113,6 +100,9 @@ fun NodeListHeader(model: NodeListHeaderModel) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            val paint = if (model.todayImage == "up") R.drawable.ic_baseline_arrow_upward_24
+            else R.drawable.ic_baseline_arrow_downward_24
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             )  {
@@ -126,8 +116,7 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                     Spacer(modifier = Modifier.width(5.dp))
 
                     Icon(
-                        imageVector = if (model.todayImage == "up") Icons.Default.ArrowUpward else
-                            Icons.Default.ArrowDownward,
+                        painter = painterResource(id = paint),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary
                     )
@@ -157,8 +146,7 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                     Spacer(modifier = Modifier.width(5.dp))
 
                     Icon(
-                        imageVector = if (model.rankImage == "up") Icons.Default.ArrowUpward else
-                            Icons.Default.ArrowDownward,
+                        painter = painterResource(id = paint),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.secondary
                     )

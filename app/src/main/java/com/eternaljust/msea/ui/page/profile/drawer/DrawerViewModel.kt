@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -172,53 +173,62 @@ sealed class DrawerViewAction {
 sealed class DrawerNavigationItem(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val imageVector: ImageVector?,
+    val painter: Int?
 ) {
     object Topic : DrawerNavigationItem(
         route = RouteName.PROFILE_TOPIC,
         title = "主题",
-        icon = Icons.Default.Topic
+        imageVector = null,
+        painter = R.drawable.ic_baseline_topic_24
     )
 
     object Friend : DrawerNavigationItem(
         route = RouteName.PROFILE_FRIEND,
         title = "好友",
-        icon = Icons.Default.Group
+        imageVector = null,
+        painter = R.drawable.ic_baseline_group_24
     )
 
     object Favorite : DrawerNavigationItem(
         route = RouteName.PROFILE_FAVORITE,
         title = "收藏",
-        icon = Icons.Default.Favorite
+        imageVector = Icons.Default.Favorite,
+        painter = null
     )
 
     object Credit : DrawerNavigationItem(
         route = RouteName.PROFILE_CREDIT,
         title = "积分",
-        icon = Icons.Default.Paid
+        imageVector = null,
+        painter = R.drawable.ic_baseline_paid_24
     )
 
     object Group : DrawerNavigationItem(
         route = RouteName.PROFILE_GROUP,
         title = "用户组",
-        icon = Icons.Default.AdminPanelSettings
+        imageVector = null,
+        painter = R.drawable.ic_baseline_admin_panel_settings_24
     )
 
     object Setting : DrawerNavigationItem(
         route = RouteName.SETTING,
         title = "设置",
-        icon = Icons.Default.Settings
+        imageVector = Icons.Default.Settings,
+        painter = null
     )
 
     object About : DrawerNavigationItem(
         route = RouteName.ABOUT,
         title = "关于",
-        icon = Icons.Default.Info
+        imageVector = Icons.Default.Info,
+        painter = null
     )
 
     object Logout : DrawerNavigationItem(
         route = RouteName.LOGOUT,
         title = "退出登录",
-        icon = Icons.Default.Logout
+        imageVector = null,
+        painter = R.drawable.ic_baseline_logout_24
     )
 }

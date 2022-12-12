@@ -176,31 +176,31 @@ fun TopicListItemContent(
 @Composable
 fun TopicAttachmentIcon(icon: String) = when (icon) {
     "image" -> Icon(
-        imageVector = Icons.Default.Image,
+        painter = painterResource(id = R.drawable.ic_baseline_image_24),
         contentDescription = "帖子包含图片",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(20.dp)
     )
     "fire" -> Icon(
-        imageVector = Icons.Default.LocalFireDepartment,
+        painter = painterResource(id = R.drawable.ic_baseline_local_fire_department_24),
         contentDescription = "帖子高热度",
         tint = Color.Red,
         modifier = Modifier.size(20.dp)
     )
     "hand" -> Icon(
-        imageVector = Icons.Default.WavingHand,
+        painter = painterResource(id = R.drawable.ic_baseline_waving_hand_24),
         contentDescription = "帖子评价指数",
         tint = MaterialTheme.colorScheme.secondary,
         modifier = Modifier.size(20.dp)
     )
     "link" -> Icon(
-        imageVector = Icons.Default.Link,
+        painter = painterResource(id = R.drawable.ic_baseline_link_24),
         contentDescription = "帖子包含链接",
         tint = Color.Blue,
         modifier = Modifier.size(20.dp)
     )
     "premium" -> Icon(
-        imageVector = Icons.Default.WorkspacePremium,
+        painter = painterResource(id = R.drawable.ic_baseline_workspace_premium_24),
         contentDescription = "帖子精华",
         tint = Color.Yellow,
         modifier = Modifier.size(20.dp)

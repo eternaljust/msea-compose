@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -194,54 +195,63 @@ sealed class LoginViewAction {
 enum class LoginQuestionItem(
     val id: String,
     val title: String,
-    val icon: ImageVector
+    val imageVector: ImageVector?,
+    val painter: Int?
 ) {
     No(
         id = "0",
         title = "未设置请忽略",
-        icon = Icons.Filled.Visibility
+        imageVector = null,
+        painter = R.drawable.ic_baseline_visibility_24
     ),
 
     MotherName(
         id = "1",
         title = "母亲的名字",
-        icon = Icons.Filled.Woman
+        imageVector = null,
+        painter = R.drawable.ic_baseline_woman_24
     ),
 
     GrandpaName(
         id = "2",
         title = "爷爷的名字",
-        icon = Icons.Filled.Elderly
+        imageVector = null,
+        painter = R.drawable.ic_baseline_elderly_24
     ),
 
     FatherBornCity(
         id = "3",
         title = "父亲出生的城市",
-        icon = Icons.Filled.Man
+        imageVector = null,
+        painter = R.drawable.ic_baseline_man_24
     ),
 
     OneTeacherName(
         id = "4",
         title = "您其中一位老师的名字",
-        icon = Icons.Filled.School
+        imageVector = null,
+        painter = R.drawable.ic_baseline_school_24
     ),
 
     ComputerModel(
         id = "5",
         title = "您个人计算机的型号",
-        icon = Icons.Filled.Computer
+        imageVector = null,
+        painter = R.drawable.ic_baseline_computer_24
     ),
 
     FavoriteRestaurantName(
         id = "6",
         title = "您最喜欢的餐馆名称",
-        icon = Icons.Filled.Restaurant
+        imageVector = null,
+        painter = R.drawable.ic_baseline_restaurant_24
     ),
 
     LastFourDigitsOfDriverLicense(
         id = "7",
         title = "驾驶执照最后四位数字",
-        icon = Icons.Filled.Pin
+        imageVector = null,
+        painter = R.drawable.ic_baseline_pin_24
     )
 }
 

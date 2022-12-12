@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
@@ -76,7 +76,7 @@ fun TopicDetailPage(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Public,
+                            painter = painterResource(id = com.eternaljust.msea.R.drawable.ic_baseline_public_24),
                             contentDescription = "浏览器"
                         )
                     }

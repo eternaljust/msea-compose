@@ -175,14 +175,6 @@ enum class SettingListItem : SettingList {
             get() = "分享给朋友"
     },
 
-    CLEAN_CACHE {
-        override val route: String
-            get() = "clean_cache"
-
-        override val title: String
-            get() = "清理缓存"
-    },
-
     TERMS_OF_SERVICE {
         override val route: String
             get() = RouteName.TERMS_OF_SERVICE

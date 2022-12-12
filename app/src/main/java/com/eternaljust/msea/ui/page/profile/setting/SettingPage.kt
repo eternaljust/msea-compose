@@ -16,9 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.*
@@ -277,20 +279,27 @@ private fun ContactUsDialog(
 
 @Composable
 private fun SettingListItemIcon(item: SettingListItem) = when (item) {
-    SettingListItem.DAY_SIGN -> GetIcon(imageVector = Icons.Default.Alarm)
-    SettingListItem.DARK_MODE -> GetIcon(imageVector = Icons.Default.DarkMode)
-    SettingListItem.COLOR_SCHEME -> GetIcon(imageVector = Icons.Default.SettingsBrightness)
-    SettingListItem.FEEDBACK -> GetIcon(imageVector = Icons.Default.Feedback)
-    SettingListItem.CONTACT_US -> GetIcon(imageVector = Icons.Default.Contacts)
+    SettingListItem.DAY_SIGN -> GetIcon(painter = R.drawable.ic_baseline_alarm_24)
+    SettingListItem.DARK_MODE -> GetIcon(painter = R.drawable.ic_baseline_dark_mode_24)
+    SettingListItem.COLOR_SCHEME -> GetIcon(painter = R.drawable.ic_baseline_settings_brightness_24)
+    SettingListItem.FEEDBACK -> GetIcon(painter = R.drawable.ic_baseline_feedback_24)
+    SettingListItem.CONTACT_US -> GetIcon(painter = R.drawable.ic_baseline_contacts_24)
     SettingListItem.SHARE -> GetIcon(imageVector = Icons.Default.Share)
-    SettingListItem.CLEAN_CACHE -> GetIcon(imageVector = Icons.Default.CleaningServices)
-    SettingListItem.TERMS_OF_SERVICE -> GetIcon(imageVector = Icons.Default.ViewList)
+    SettingListItem.TERMS_OF_SERVICE -> GetIcon(painter = R.drawable.ic_baseline_view_list_24)
 }
 
 @Composable
 private fun GetIcon(imageVector: ImageVector) = Icon(
     modifier = Modifier.size(30.dp),
     imageVector = imageVector,
+    tint = MaterialTheme.colorScheme.primary,
+    contentDescription = null
+)
+
+@Composable
+private fun GetIcon(painter: Int) = Icon(
+    modifier = Modifier.size(30.dp),
+    painter = painterResource(id = painter),
     tint = MaterialTheme.colorScheme.primary,
     contentDescription = null
 )

@@ -10,13 +10,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.sharp.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.utils.HTMLURL
@@ -214,49 +215,49 @@ fun NodeListItemContent(
 @Composable
 private fun NodeCategoryIcon(fid: String) = when (fid) {
     "2" -> Icon(
-        imageVector = Icons.Default.Laptop,
+        painter = painterResource(id = R.drawable.ic_baseline_laptop_24),
         contentDescription = "黑板报",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "44" -> Icon(
-        imageVector = Icons.Default.Key,
+        painter = painterResource(id = R.drawable.ic_baseline_key_24),
         contentDescription = "Tips",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "47" -> Icon(
-        imageVector = Icons.Default.Android,
+        painter = painterResource(id = R.drawable.ic_baseline_android_24),
         contentDescription = "软件",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "93" -> Icon(
-        imageVector = Icons.Default.ZoomIn,
+        painter = painterResource(id = R.drawable.ic_baseline_zoom_in_24),
         contentDescription = "Keyword",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "98" -> Icon(
-        imageVector = Icons.Default.Web,
+        painter = painterResource(id = R.drawable.ic_baseline_web_24),
         contentDescription = "Wiki",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "112" -> Icon(
-        imageVector = Icons.Default.CurrencyExchange,
+        painter = painterResource(id = R.drawable.ic_baseline_currency_exchange_24),
         contentDescription = "问答",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "113" -> Icon(
-        imageVector = Icons.Default.Lightbulb,
+        painter = painterResource(id = R.drawable.ic_baseline_lightbulb_24),
         contentDescription = "方法论",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "114" -> Icon(
-        imageVector = Icons.Default.CloudDownload,
+        painter = painterResource(id = R.drawable.ic_baseline_cloud_download_24),
         contentDescription = "资源",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
@@ -268,61 +269,61 @@ private fun NodeCategoryIcon(fid: String) = when (fid) {
         modifier = Modifier.size(40.dp)
     )
     "119" -> Icon(
-        imageVector = Icons.Default.Visibility,
+        painter = painterResource(id = R.drawable.ic_baseline_visibility_24),
         contentDescription = "发现创造",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "120" -> Icon(
-        imageVector = Icons.Sharp.WbSunny,
+        painter = painterResource(id = R.drawable.ic_baseline_wb_sunny_24),
         contentDescription = "生活",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "121" -> Icon(
-        imageVector = Icons.Default.BusinessCenter,
+        painter = painterResource(id = R.drawable.ic_baseline_business_center_24),
         contentDescription = "职场",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "122" -> Icon(
-        imageVector = Icons.Default.Light,
+        painter = painterResource(id = R.drawable.ic_baseline_light_24),
         contentDescription = "学途",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "123" -> Icon(
-        imageVector = Icons.Default.Feedback,
+        painter = painterResource(id = R.drawable.ic_baseline_feedback_24),
         contentDescription = "反馈",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "125" -> Icon(
-        imageVector = Icons.Default.VisibilityOff,
+        painter = painterResource(id = R.drawable.ic_baseline_visibility_off_24),
         contentDescription = "石沉大海",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "126" -> Icon(
-        imageVector = Icons.Default.GTranslate,
+        painter = painterResource(id = R.drawable.ic_baseline_g_translate_24),
         contentDescription = "Google",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "127" -> Icon(
-        imageVector = Icons.Default.DesktopMac,
+        painter = painterResource(id = R.drawable.ic_baseline_desktop_mac_24),
         contentDescription = "Apple",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     "128" -> Icon(
-        imageVector = Icons.Default.SportsSoccer,
+        painter = painterResource(id = R.drawable.ic_baseline_sports_soccer_24),
         contentDescription = "探索杂谈",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
     else -> Icon(
-        imageVector = Icons.Default.Image,
+        painter = painterResource(id = R.drawable.ic_baseline_image_24),
         contentDescription = "默认",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)

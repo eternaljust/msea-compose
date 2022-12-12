@@ -17,12 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
@@ -259,7 +261,7 @@ private fun SignHeader(
                         onClick = { ruleDialogClick(true) }
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Help,
+                            painter = painterResource(id = R.drawable.ic_baseline_help_24),
                             contentDescription = "每日福利规则",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -270,7 +272,7 @@ private fun SignHeader(
                         onClick = { calendarDialogClick(true) }
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.CalendarMonth,
+                            painter = painterResource(id = R.drawable.ic_baseline_calendar_month_24),
                             contentDescription = "签到日历",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -300,7 +302,7 @@ private fun SignHeader(
                 Row {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Outlined.EnergySavingsLeaf,
+                        painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
                         contentDescription = "今日已签到人数",
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -314,7 +316,7 @@ private fun SignHeader(
 
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Outlined.EnergySavingsLeaf,
+                        painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
                         contentDescription = "昨日已签到人数",
                         tint = MaterialTheme.colorScheme.secondary
                     )
@@ -342,7 +344,7 @@ private fun SignHeader(
 
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        imageVector = Icons.Outlined.EventAvailable,
+                        painter = painterResource(id = R.drawable.ic_baseline_event_available_24),
                         contentDescription = "已参与人数",
                         tint = MaterialTheme.colorScheme.primary
                     )

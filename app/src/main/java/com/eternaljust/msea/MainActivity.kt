@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -47,24 +48,28 @@ import kotlinx.coroutines.launch
 sealed class BottomBarScreen(
     val route: String,
     val title: String,
-    val icon: ImageVector
+    val imageVector: ImageVector?,
+    val paint: Int?
 ) {
     object Home : BottomBarScreen(
         route = RouteName.HOME,
         title = "虫部落",
-        icon = Icons.Default.Home
+        imageVector = Icons.Default.Home,
+        paint = null
     )
 
     object Notice : BottomBarScreen(
         route = RouteName.NOTICE,
         title = "通知",
-        icon = Icons.Default.Notifications
+        imageVector = Icons.Default.Notifications,
+        paint = null
     )
 
     object Node : BottomBarScreen(
         route = RouteName.NODE,
         title = "节点",
-        icon = Icons.Default.GridView
+        imageVector = null,
+        paint =  R.drawable.ic_baseline_grid_view_24
     )
 }
 
@@ -224,7 +229,21 @@ fun MyApp() {
                         ) {
                             screens.forEach { screen ->
                                 NavigationBarItem(
-                                    icon = { Icon(screen.icon, contentDescription = null) },
+                                    icon = {
+                                        if (screen.imageVector != null) {
+                                            screen.imageVector.let {
+                                                Icon(imageVector = it, contentDescription = null)
+                                            }
+                                        } else if (screen.paint != null) {
+                                            screen.paint.let {
+                                                Icon(
+                                                    painter = painterResource(id = it),
+                                                    contentDescription = null
+                                                )
+                                            }
+                                        }
+
+                                         },
                                     label = { Text(screen.title) },
                                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                     onClick = {
@@ -308,7 +327,7 @@ fun TopAppBarAcitons(
                 onClick = { navController.navigate(route = RouteName.SIGN) }
             ) {
                 Icon(
-                    imageVector = Icons.Default.EnergySavingsLeaf,
+                    painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
                     contentDescription = "签到"
                 )
             }
@@ -330,7 +349,7 @@ fun TopAppBarAcitons(
         BottomBarScreen.Node.route -> {
             IconButton(onClick = { navController.navigate(route = RouteName.TAG) }) {
                 Icon(
-                    imageVector = Icons.Default.Tag,
+                    painter = painterResource(R.drawable.ic_baseline_tag_24),
                     contentDescription = "标签"
                 )
             }
