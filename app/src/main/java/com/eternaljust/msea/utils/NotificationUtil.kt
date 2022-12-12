@@ -140,7 +140,7 @@ fun NotificationManager.sendReminderNotification(
         MainActivity::class.java
     )
     val deepLinkPendingIntent: PendingIntent =
-        TaskStackBuilder.create(applicationContext!!).run {
+        TaskStackBuilder.create(applicationContext).run {
             addNextIntentWithParentStack(deepLinkIntent)
             getPendingIntent(requestCode, PendingIntent.FLAG_IMMUTABLE)!!
         }
