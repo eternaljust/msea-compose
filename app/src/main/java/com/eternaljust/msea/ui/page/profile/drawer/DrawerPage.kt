@@ -50,7 +50,7 @@ fun DrawerPage(
                 Text(text = "提示")
             },
             text = {
-                Text(text = "退出登录后，相关设置会被重置")
+                Text(text = "是否确认退出登录？")
             },
             onDismissRequest = {
                 viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
@@ -69,7 +69,7 @@ fun DrawerPage(
                         onClick(DrawerNavigationItem.Logout)
                     }
                 ) {
-                    Text(text = "确认退出")
+                    Text(text = "确认")
                 }
             }
         )

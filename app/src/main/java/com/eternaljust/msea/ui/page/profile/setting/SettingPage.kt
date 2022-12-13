@@ -312,7 +312,10 @@ fun SettingListItemTitle(
     timePickerClick: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = item.title)
+        Text(
+            text = item.title,
+            maxLines = 2
+        )
 
         if (item == SettingListItem.DAY_SIGN) {
             Spacer(modifier = Modifier.width(16.dp))

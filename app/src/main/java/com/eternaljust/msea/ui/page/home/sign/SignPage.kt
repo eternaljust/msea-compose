@@ -26,6 +26,7 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -154,7 +155,7 @@ private fun SignHeader(
                 text = { Text(text = daySign.rule) },
                 confirmButton = {
                     Button(onClick = { ruleDialogClick(false) }) {
-                        Text(text = "好的")
+                        Text(text = "确认")
                     }
                 }
             )
@@ -206,7 +207,7 @@ private fun SignHeader(
                 },
                 confirmButton = {
                     Button(onClick = { calendarDialogClick(false) }) {
-                        Text(text = "好的")
+                        Text(text = "确认")
                     }
                 }
             )
@@ -373,12 +374,7 @@ fun SignList(
         TabRow(selectedTabIndex = pagerState.currentPage) {
             items.forEachIndexed { index, item ->
                 Tab(
-                    text = {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    },
+                    text = { AutosizeText(text = item.title) },
                     selected = pagerState.currentPage == index,
                     onClick = {
                         scope.launch {

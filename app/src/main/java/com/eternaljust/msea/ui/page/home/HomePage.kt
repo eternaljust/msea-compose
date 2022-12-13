@@ -6,14 +6,13 @@ import androidx.compose.material3.*
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.ui.page.home.TopicListPage
 import com.eternaljust.msea.ui.page.home.topic.TopicListViewModel
+import com.eternaljust.msea.ui.widget.AutosizeText
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -38,7 +37,7 @@ fun HomePage(
             TabRow(selectedTabIndex = pagerState.currentPage) {
                 items.forEachIndexed { index, item ->
                     Tab(
-                        text = { Text(item.title) },
+                        text = { AutosizeText(text = item.title) },
                         selected = pagerState.currentPage == index,
                         onClick = {
                             scope.launch {
