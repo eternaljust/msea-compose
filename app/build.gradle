@@ -27,8 +27,9 @@ android {
 
     buildTypes {
         release {
-            // 自动移除未使用的资源
+            // 混淆
             minifyEnabled true
+            // 自动移除未使用的资源
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -51,7 +52,7 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
         dex {
-            // 当 minSdk 为 28 或更高级别时，开启 AGP 会在 APK 中打包压缩的 DEX 文件
+            // 当 minSdk 为 28 或更高级别时，开启后 AGP 会在 APK 中打包压缩的 DEX 文件
             useLegacyPackaging true
         }
     }
@@ -60,6 +61,12 @@ android {
             res {
                 srcDirs 'src/main/res', 'src/main/res/drawble-night', 'src/main/res/drawable-night'
             }
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = "Msea_" + variant.versionName + ".apk"
         }
     }
 }
