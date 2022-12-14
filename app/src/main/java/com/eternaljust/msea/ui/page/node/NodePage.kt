@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.utils.HTMLURL
@@ -183,7 +184,13 @@ fun NodeListItemContent(
             pop()
 
             append("  ")
-            append(item.time)
+            withStyle(
+                style = SpanStyle(
+                    color = ColorTheme(light = Color.Black, dark = Color.White)
+                )
+            ) {
+                append(item.time)
+            }
             append("  ")
 
             withStyle(

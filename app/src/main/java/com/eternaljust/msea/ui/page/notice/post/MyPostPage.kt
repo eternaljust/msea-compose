@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,6 +25,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.utils.HTMLURL
@@ -98,7 +100,15 @@ fun MyPostListItemContent(
                     append(item.name)
                 }
 
-                append("回复了您的帖子")
+                append("  ")
+                withStyle(
+                    style = SpanStyle(
+                        color = ColorTheme(light = Color.Black, dark = Color.White)
+                    )
+                ) {
+                    append("回复了您的帖子")
+                }
+                append("  ")
 
                 pushStringAnnotation(
                     tag = "content",

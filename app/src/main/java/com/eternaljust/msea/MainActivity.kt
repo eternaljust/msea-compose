@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -324,12 +325,20 @@ fun TopAppBarAcitons(
     when (route) {
         BottomBarScreen.Home.route -> {
             IconButton(
+                modifier = Modifier.size(50.dp),
                 onClick = { navController.navigate(route = RouteName.SIGN) }
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
-                    contentDescription = "签到"
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
+                        contentDescription = "签到"
+                    )
+
+                    Text(text = "签到")
+                }
             }
 
 //            IconButton(onClick = { /* doSomething() */ }) {

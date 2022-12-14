@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -22,6 +23,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 
 @Composable
@@ -82,7 +84,13 @@ fun InteractiveListItemContent(item: InteractiveFriendListModel) {
                         append(item.name)
                     }
 
-                    append(item.content)
+                    withStyle(
+                        style = SpanStyle(
+                            color = ColorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append(item.content)
+                    }
 
                     withStyle(
                         style = SpanStyle(
