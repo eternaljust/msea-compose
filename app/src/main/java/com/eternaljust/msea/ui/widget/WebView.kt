@@ -66,10 +66,12 @@ fun WebViewPage(
                 actions = {
                     IconButton(
                         onClick = {
-                            openSystemBrowser(
-                                url = web.url,
-                                context = context
-                            )
+                            state.content.getCurrentUrl()?.let {
+                                openSystemBrowser(
+                                    url = it,
+                                    context = context
+                                )
+                            }
                         }
                     ) {
                         Icon(
@@ -89,7 +91,13 @@ fun WebViewPage(
             ) {
                 WebView(
                     state = state,
-                    navigator = navigator
+                    navigator = navigator,
+                    onCreated = { webView ->
+                        webView.settings.javaScriptEnabled = true
+                        webView.settings.domStorageEnabled = true
+                        webView.settings.blockNetworkImage = false
+                        webView.settings.databaseEnabled = true
+                    }
                 )
 
                 when (val loading = state.loadingState) {

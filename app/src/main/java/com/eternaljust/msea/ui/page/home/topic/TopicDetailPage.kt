@@ -16,10 +16,7 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.openSystemBrowser
-import com.google.accompanist.web.LoadingState
-import com.google.accompanist.web.WebView
-import com.google.accompanist.web.rememberWebViewNavigator
-import com.google.accompanist.web.rememberWebViewState
+import com.google.accompanist.web.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,10 +66,12 @@ fun TopicDetailPage(
                 actions = {
                     IconButton(
                         onClick = {
-                            openSystemBrowser(
-                                url = web.url,
-                                context = context
-                            )
+                            state.content.getCurrentUrl()?.let {
+                                openSystemBrowser(
+                                    url = it,
+                                    context = context
+                                )
+                            }
                         }
                     ) {
                         Icon(
@@ -91,7 +90,13 @@ fun TopicDetailPage(
             ) {
                 WebView(
                     state = state,
-                    navigator = navigator
+                    navigator = navigator,
+                    onCreated = { webView ->
+                        webView.settings.javaScriptEnabled = true
+                        webView.settings.domStorageEnabled = true
+                        webView.settings.blockNetworkImage = false
+                        webView.settings.databaseEnabled = true
+                    }
                 )
 
                 when (val loading = state.loadingState) {
