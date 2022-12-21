@@ -1,13 +1,13 @@
 @file:Suppress("IMPLICIT_CAST_TO_ANY")
 
-package com.eternaljust.msea.ui.page.home
+package com.eternaljust.msea.ui.page.home.topic
 
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -27,8 +27,6 @@ import androidx.paging.compose.itemsIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.home.topic.TopicListModel
-import com.eternaljust.msea.ui.page.home.topic.TopicListViewModel
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.utils.HTMLURL
@@ -51,6 +49,9 @@ fun TopicListPage(
             item?.let {
                 TopicListItemContent(
                     item = item,
+                    avatarClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
+                    },
                     contentClick = {
                         var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
                         val web = WebViewModel(url = url)
@@ -66,19 +67,20 @@ fun TopicListPage(
 @Composable
 fun TopicListItemContent(
     item: TopicListModel,
+    avatarClick: () -> Unit,
     contentClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
-            .clickable { contentClick() }
     ) {
         Row {
             AsyncImage(
                 modifier = Modifier
                     .size(45.dp)
-                    .clip(shape = RoundedCornerShape(5)),
+                    .clip(shape = RoundedCornerShape(5))
+                    .clickable { avatarClick() },
                 model = item.avatar,
                 placeholder = painterResource(id = R.drawable.icon),
                 contentDescription = null
@@ -94,6 +96,7 @@ fun TopicListItemContent(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
+                        modifier = Modifier.clickable { avatarClick() },
                         text = item.name,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
@@ -151,20 +154,38 @@ fun TopicListItemContent(
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        Text(
-            buildAnnotatedString {
-                append(item.title)
+        val annotatedText = buildAnnotatedString {
+            pushStringAnnotation(
+                tag = "content",
+                annotation = ""
+            )
 
-                if (item.attachmentColorRed) {
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Red
-                        )
-                    ) {
-                        append(item.attachment)
-                    }
-                } else {
+            append(item.title)
+
+            if (item.attachmentColorRed) {
+                withStyle(
+                    style = SpanStyle(
+                        color = Color.Red
+                    )
+                ) {
                     append(item.attachment)
+                }
+            } else {
+                append(item.attachment)
+            }
+
+            pop()
+        }
+
+        ClickableText(
+            text = annotatedText,
+            onClick = { offset ->
+                annotatedText.getStringAnnotations(
+                    tag = "content",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    contentClick()
                 }
             }
         )

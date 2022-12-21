@@ -44,12 +44,7 @@ class SignListViewModel : ViewModel() {
 
                     val href = it.selectXpath("td[2]//a").attr("href")
                     if (href.contains("uid-")) {
-                        val uid = href.split("uid-")[1]
-                        if (uid.contains(".html")) {
-                            signModel.uid = uid.split(".").first()
-                        } else {
-                            signModel.uid = uid
-                        }
+                        signModel.uid = NetworkUtil.getUid(href)
                     }
 
                     val content = it.selectXpath("td[3]/p").text()
@@ -129,12 +124,7 @@ class SignDayListViewModel(
 
                     val href = it.selectXpath("td[2]//a").attr("href")
                     if (href.contains("uid-")) {
-                        val uid = href.split("uid-")[1]
-                        if (uid.contains(".html")) {
-                            signModel.uid = uid.split(".").first()
-                        } else {
-                            signModel.uid = uid
-                        }
+                        signModel.uid = NetworkUtil.getUid(href)
                     }
 
                     val continuous = it.selectXpath("td[3]").text()

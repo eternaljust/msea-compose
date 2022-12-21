@@ -18,6 +18,7 @@ object RouteName {
     const val PROFILE_FAVORITE = "profile_favorite"
     const val PROFILE_CREDIT = "profile_credit"
     const val PROFILE_GROUP= "profile_group"
+    const val PROFILE_DETAIL = "profile_detail"
     const val SETTING = "setting"
     const val ABOUT = "about"
     const val LOGIN = "login"

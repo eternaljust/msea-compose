@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.ui.page.home.topic.TopicListPage
 import com.eternaljust.msea.ui.page.home.topic.TopicListViewModel
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.google.accompanist.pager.HorizontalPager

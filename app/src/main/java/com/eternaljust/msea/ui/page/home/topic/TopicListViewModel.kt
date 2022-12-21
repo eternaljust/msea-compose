@@ -51,6 +51,10 @@ class TopicListViewModel(
                     if (name.isNotEmpty()) {
                         topic.name = name
                     }
+                    val uid = it.selectXpath("tr/td[@class='by']/cite/a").attr("href")
+                    if (uid.contains("uid-")) {
+                        topic.uid = NetworkUtil.getUid(uid)
+                    }
                     val time = it.selectXpath("tr/td[@class='by']/em/a").text()
                     if (time.isNotEmpty()) {
                         topic.time = time

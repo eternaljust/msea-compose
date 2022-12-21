@@ -3,7 +3,6 @@ package com.eternaljust.msea.ui.page.node.list
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.home.TopicListItemContent
+import com.eternaljust.msea.ui.page.home.topic.TopicListItemContent
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
@@ -71,6 +70,9 @@ fun NodeListPage(
                         item?.let {
                             TopicListItemContent(
                                 item = item,
+                                avatarClick = {
+                                    navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
+                                },
                                 contentClick = {
                                     var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
                                     val web = WebViewModel(url = url)

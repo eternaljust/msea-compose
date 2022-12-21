@@ -523,4 +523,18 @@ private fun NavGraphBuilder.detailsNav(
             navController = navController
         )
     }
+
+    composable(
+        route = RouteName.PROFILE_DETAIL + "/{uid}",
+        arguments = listOf(navArgument("uid") { type = NavType.StringType })
+    ) {
+        val uid = it.arguments?.getString("uid")
+        uid?.let {
+            ProfileDetailPage(
+                scaffoldState = scaffoldState,
+                navController = navController,
+                uid = it
+            )
+        }
+    }
 }

@@ -176,7 +176,7 @@ object HTMLURL {
     const val BASE = "https://www.chongbuluo.com"
 
     const val LOGIN = "$BASE/member.php?mod=logging&action=login&loginsubmit=yes"
-    const val PROFILE = "$BASE/home.php?mod=space&uid="
+    const val PROFILE = "$BASE/home.php?mod=space&do=profile&from=space&uid="
     const val GET_DAY_SIGN = "$BASE/plugin.php?id=wq_sign"
     const val SIGN_MESSAGE = GET_DAY_SIGN + "&mod=mood&infloat=yes&confirmsubmit=yes" +
             "&handlekey=pc_click_wqsign"
