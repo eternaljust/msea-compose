@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.ui.page.home.sign.SignTab
+import com.eternaljust.msea.ui.page.home.sign.SignTabItem
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +21,12 @@ class ProfileDetailViewModel : ViewModel() {
         private set
     private val _viewEvents = Channel<ProfileDetailViewEvent>(Channel.BUFFERED)
     val viewEvents = _viewEvents.receiveAsFlow()
+
+    val profileItems: List<ProfileDetailTabItem>
+        get() = listOf(
+            ProfileDetailTabItem.TOPIC,
+            ProfileDetailTabItem.FRIEND
+        )
 
     fun dispatch(action: ProfileDetailViewAction) {
         when (action) {
@@ -41,7 +49,13 @@ class ProfileDetailViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.PROFILE + uid
             val document = NetworkUtil.getRequest(url)
+            var text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
+            if (text.isNotEmpty()) {
+                _viewEvents.send(ProfileDetailViewEvent.Message(text))
+                return@launch
+            }
             val profile = ProfileDetailModel()
+            profile.uid = uid
             val src = document.selectXpath("//div[@class='h cl']//img").attr("src")
             if (src.isNotEmpty()) {
                 val avatar = src.replace("&size=small", "" )
@@ -103,22 +117,23 @@ class ProfileDetailViewModel : ViewModel() {
             if (li.isNotEmpty()) {
                 val levels = mutableListOf<String>()
                 li.forEach {
-                    var name = it.selectXpath("//em[@class='xg1']").text()
-                    name = name.trim()
-                    println("name=$name")
-                    if (name.isNotEmpty()) {
+                    var group = it.selectXpath("em[@class='xg1']").text()
+                    group = group.replace(" ", "")
+                    println("group=$group")
+                    if (group.isNotEmpty()) {
                         var lv = ""
-                        val text = it.selectXpath("/span/a").text()
+                        val text = it.selectXpath("span[@class='xi2']/a").text()
                         if (text.isNotEmpty()) {
-                            lv = text.trim()
+                            lv = text
                         } else {
                             val text1 = it.text()
                             if (text1.isNotEmpty()) {
-                                lv = text1.replace(name, "").trim()
+                                lv = text1.replace(group, "")
                             }
                         }
+                        lv = lv.replace(" ", "")
                         println("lv=$lv")
-                        levels.add("$name($lv)")
+                        levels.add("$group($lv)")
                     }
                 }
                 if (levels.isNotEmpty()) {
@@ -139,6 +154,8 @@ data class ProfileDetailViewState(
 
 sealed class ProfileDetailViewEvent {
     object PopBack : ProfileDetailViewEvent()
+
+    data class Message(val message: String) : ProfileDetailViewEvent()
 }
 
 sealed class ProfileDetailViewAction {
@@ -159,4 +176,27 @@ class ProfileDetailModel {
     var integral: String = ""
     var bits: String = ""
     var violation: String = ""
+}
+
+interface ProfileDetailTab {
+    val id: String
+    val title: String
+}
+
+enum class ProfileDetailTabItem : ProfileDetailTab {
+    TOPIC {
+        override val id: String
+            get() = "topic"
+
+        override val title: String
+            get() = "主题"
+    },
+
+    FRIEND {
+        override val id: String
+            get() = "friend"
+
+        override val title: String
+            get() = "好友"
+    }
 }

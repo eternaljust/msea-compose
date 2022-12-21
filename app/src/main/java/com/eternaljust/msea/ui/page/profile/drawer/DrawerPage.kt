@@ -154,7 +154,6 @@ private fun DrawerHeader(
 ) {
     Surface(
         modifier = Modifier
-            .height(200.dp)
             .fillMaxWidth()
     ) {
         Column(
@@ -163,6 +162,8 @@ private fun DrawerHeader(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Spacer(modifier = Modifier.height(10.dp))
+
             if (isLogin) {
                 AsyncImage(
                     modifier = Modifier
@@ -173,13 +174,16 @@ private fun DrawerHeader(
                     contentDescription = null
                 )
 
+                Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
-                    modifier = Modifier
-                        .offset(y = 10.dp),
+                    modifier = Modifier,
                     text = "${userInfo.name} uid(${userInfo.uid})",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
+
+                Spacer(modifier = Modifier.height(5.dp))
 
                 val level = if (userInfo.level.contains("(")) {
                     userInfo.level
@@ -187,15 +191,15 @@ private fun DrawerHeader(
                     "用户组(${userInfo.level})"
                 }
                 Text(
-                    modifier = Modifier
-                        .offset(y = 10.dp),
+                    modifier = Modifier,
                     text = level,
                     color = MaterialTheme.colorScheme.secondary
                 )
 
+                Spacer(modifier = Modifier.height(5.dp))
+
                 Row(
                     modifier = Modifier
-                        .offset(y = 10.dp)
                 ) {
                     Text(
                         text = "好友: "
@@ -227,7 +231,6 @@ private fun DrawerHeader(
 
                 Row(
                     modifier = Modifier
-                        .offset(y = 10.dp)
                 ) {
                     Text(
                         text = "积分: "
@@ -268,6 +271,8 @@ private fun DrawerHeader(
                     Text(text = "未登录")
                 }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }

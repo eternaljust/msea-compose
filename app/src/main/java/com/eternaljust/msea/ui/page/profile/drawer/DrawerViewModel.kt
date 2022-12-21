@@ -108,22 +108,23 @@ class DrawerViewModel : ViewModel() {
             if (li.isNotEmpty()) {
                 val levels = mutableListOf<String>()
                 li.forEach {
-                    var name = it.selectXpath("//em[@class='xg1']").text()
-                    name = name.trim()
-                    println("name=$name")
-                    if (name.isNotEmpty()) {
+                    var group = it.selectXpath("em[@class='xg1']").text()
+                    group = group.replace(" ", "")
+                    println("group=$group")
+                    if (group.isNotEmpty()) {
                         var lv = ""
-                        val text = it.selectXpath("/span/a").text()
+                        val text = it.selectXpath("span[@class='xi2']/a").text()
                         if (text.isNotEmpty()) {
-                            lv = text.trim()
+                            lv = text
                         } else {
                             val text1 = it.text()
                             if (text1.isNotEmpty()) {
-                                lv = text1.replace(name, "").trim()
+                                lv = text1.replace(group, "")
                             }
                         }
+                        lv = lv.replace(" ", "")
                         println("lv=$lv")
-                        levels.add("$name($lv)")
+                        levels.add("$group($lv)")
                     }
                 }
                 if (levels.isNotEmpty()) {

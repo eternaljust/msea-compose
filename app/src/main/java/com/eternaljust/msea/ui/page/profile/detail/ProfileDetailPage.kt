@@ -7,20 +7,29 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.home.sign.*
+import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 fun ProfileDetailPage(
     scaffoldState: SnackbarHostState,
@@ -35,9 +44,16 @@ fun ProfileDetailPage(
                 is ProfileDetailViewEvent.PopBack -> {
                     navController.popBackStack()
                 }
+                is ProfileDetailViewEvent.Message -> {
+                    viewModel.viewModelScope.launch {
+                        scaffoldState.showSnackbar(message = it.message)
+                    }
+                }
             }
         }
     }
+
+    val pagerState = rememberPagerState()
 
     Scaffold(
         topBar = {
@@ -50,9 +66,36 @@ fun ProfileDetailPage(
             Surface(
                 modifier = Modifier
                     .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
             ) {
-                Column {
+                Column(
+                    modifier = Modifier,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     ProfileDetailHeader(profile = viewModel.viewStates.profile)
+
+                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                        viewModel.profileItems.forEachIndexed { index, item ->
+                            Tab(
+                                text = { AutosizeText(text = item.title) },
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    viewModel.viewModelScope.launch {
+                                        pagerState.scrollToPage(index)
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
+                        val item = viewModel.profileItems[pagerState.currentPage]
+                        Text(text = item.title)
+                    }
                 }
             }
         }
@@ -64,13 +107,10 @@ fun ProfileDetailHeader(
     profile: ProfileDetailModel
 ) {
     Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-            .height(200.dp),
+        modifier = Modifier,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    ){
         Spacer(modifier = Modifier.height(10.dp))
 
         AsyncImage(
@@ -82,13 +122,16 @@ fun ProfileDetailHeader(
             contentDescription = null
         )
 
+        Spacer(modifier = Modifier.height(10.dp))
+
         Text(
-            modifier = Modifier
-                .offset(y = 10.dp),
+            modifier = Modifier,
             text = "${profile.name} uid(${profile.uid})",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
+
+        Spacer(modifier = Modifier.height(5.dp))
 
         val level = if (profile.level.contains("(")) {
             profile.level
@@ -96,15 +139,16 @@ fun ProfileDetailHeader(
             "用户组(${profile.level})"
         }
         Text(
-            modifier = Modifier
-                .offset(y = 10.dp),
+            modifier = Modifier,
             text = level,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center
         )
+
+        Spacer(modifier = Modifier.height(5.dp))
 
         Row(
             modifier = Modifier
-                .offset(y = 10.dp)
         ) {
             Text(
                 text = "好友: "
@@ -136,7 +180,6 @@ fun ProfileDetailHeader(
 
         Row(
             modifier = Modifier
-                .offset(y = 10.dp)
         ) {
             Text(
                 text = "积分: "
