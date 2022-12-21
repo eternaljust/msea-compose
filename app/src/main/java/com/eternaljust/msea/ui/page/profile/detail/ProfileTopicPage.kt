@@ -33,8 +33,11 @@ import com.eternaljust.msea.utils.toJson
 fun ProfileTopicPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
+    uid: String,
+    showTopBar: Boolean = true,
     viewModel: ProfileTopicViewModel = viewModel()
 ) {
+    viewModel.dispatch(ProfileTopicViewAction.SetUid(uid = uid))
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             when (it) {
@@ -47,16 +50,18 @@ fun ProfileTopicPage(
 
     Scaffold(
         topBar = {
-            NormalTopAppBar(
-                title = "主题列表",
-                onClick = { viewModel.dispatch(ProfileTopicViewAction.PopBack) }
-            )
+            if (showTopBar) {
+                NormalTopAppBar(
+                    title = "主题列表",
+                    onClick = { viewModel.dispatch(ProfileTopicViewAction.PopBack) }
+                )
+            }
         },
         content = { paddingValues ->
             Surface(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = if (showTopBar) 16.dp else 0.dp)
             ) {
                 val viewStates = viewModel.viewStates
                 val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()

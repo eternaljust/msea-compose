@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProfileTopicViewModel : ViewModel() {
+    private var uid = ""
+
     private val pager by lazy {
         configPager(PagingConfig(pageSize = 30, prefetchDistance = 1)) {
             loadData(page = it)
@@ -34,6 +36,7 @@ class ProfileTopicViewModel : ViewModel() {
     fun dispatch(action: ProfileTopicViewAction) {
         when (action) {
             is ProfileTopicViewAction.PopBack -> popBack()
+            is ProfileTopicViewAction.SetUid -> uid = action.uid
         }
     }
 
@@ -41,7 +44,7 @@ class ProfileTopicViewModel : ViewModel() {
         val list = mutableListOf<ProfileTopicListModel>()
 
         withContext(Dispatchers.IO) {
-            val url = HTMLURL.PROFILE_TOPIC_LIST + "&uid=${UserInfo.instance.uid}&page=${page}"
+            val url = HTMLURL.PROFILE_TOPIC_LIST + "&uid=$uid&page=${page}"
             val document = NetworkUtil.getRequest(url)
             var tr = document.selectXpath("//div[@class='bm_c']//table/tbody/tr")
             tr.forEach {
@@ -111,6 +114,8 @@ sealed class ProfileTopicViewEvent {
 
 sealed class ProfileTopicViewAction {
     object PopBack: ProfileTopicViewAction()
+
+    data class SetUid(val uid: String) : ProfileTopicViewAction()
 }
 
 class ProfileTopicListModel {

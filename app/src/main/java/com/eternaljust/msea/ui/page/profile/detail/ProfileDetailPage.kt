@@ -1,17 +1,13 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +17,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.home.sign.*
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -94,7 +89,16 @@ fun ProfileDetailPage(
 
                     HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
                         val item = viewModel.profileItems[pagerState.currentPage]
-                        Text(text = item.title)
+                        if (item == ProfileDetailTabItem.TOPIC) {
+                            ProfileTopicPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController,
+                                uid = uid,
+                                showTopBar = false
+                            )
+                        } else {
+                            Text(text = item.title)
+                        }
                     }
                 }
             }

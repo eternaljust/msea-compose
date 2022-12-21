@@ -156,10 +156,15 @@ fun MyApp() {
                                 snackbarHostState.showSnackbar(message = "已退出登录")
                             }
                         } else {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id)
-                                launchSingleTop = true
-                                restoreState = true
+                            if (item.route == RouteName.PROFILE_TOPIC) {
+                                navController.navigate(RouteName.PROFILE_TOPIC +
+                                                               "/${UserInfo.instance.uid}")
+                            } else {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id)
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
                         }
                     }
@@ -371,13 +376,6 @@ private fun NavGraphBuilder.detailsNav(
     scaffoldState: SnackbarHostState,
     navController: NavHostController
 ) {
-    composable(RouteName.PROFILE_TOPIC) {
-        ProfileTopicPage(
-            scaffoldState = scaffoldState,
-            navController = navController
-        )
-    }
-
     composable(RouteName.PROFILE_FRIEND) {
         ProfileFriendPage(
             scaffoldState = scaffoldState,
@@ -534,6 +532,21 @@ private fun NavGraphBuilder.detailsNav(
                 scaffoldState = scaffoldState,
                 navController = navController,
                 uid = it
+            )
+        }
+    }
+
+    composable(
+        route = RouteName.PROFILE_TOPIC + "/{uid}",
+        arguments = listOf(navArgument("uid") { type = NavType.StringType })
+    ) {
+        val uid = it.arguments?.getString("uid")
+        uid?.let {
+            ProfileTopicPage(
+                scaffoldState = scaffoldState,
+                navController = navController,
+                uid = it,
+                showTopBar = true
             )
         }
     }
