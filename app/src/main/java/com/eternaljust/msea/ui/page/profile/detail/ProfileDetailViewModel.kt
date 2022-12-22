@@ -5,14 +5,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.eternaljust.msea.ui.page.home.sign.SignTab
 import com.eternaljust.msea.ui.page.home.sign.SignTabItem
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProfileDetailViewModel : ViewModel() {
     private var uid = ""
@@ -199,4 +204,79 @@ enum class ProfileDetailTabItem : ProfileDetailTab {
         override val title: String
             get() = "好友"
     }
+}
+
+class ProfileDetailFriendViewModel : ViewModel() {
+    private var uid = ""
+
+    private val pager by lazy {
+        configPager(PagingConfig(pageSize = 30, prefetchDistance = 1)) {
+            loadData(page = it)
+        }
+    }
+
+    var viewStates by mutableStateOf(ProfileDetailFriendViewState(pagingData = pager))
+        private set
+
+    fun dispatch(action: ProfileDetailFriendViewAction) {
+        when (action) {
+            is ProfileDetailFriendViewAction.SetUid -> uid = action.uid
+        }
+    }
+
+    private suspend fun loadData(page: Int) : List<ProfileDetailFriendModel> {
+        val list = mutableListOf<ProfileDetailFriendModel>()
+
+        withContext(Dispatchers.IO) {
+            val url = HTMLURL.FRIEND_DETAIL_LIST + "&uid=$uid&page=${page}"
+            val document = NetworkUtil.getRequest(url)
+            val count = document.selectXpath("//div[@class='bm_c']/p/span[@class='xw1']").text()
+            println("count = $count")
+            if (count.isNotEmpty()) {
+                viewStates = viewStates.copy(count = count)
+            }
+            val li = document.selectXpath("//ul[@class='buddy cl']/li[@class='bbda cl']")
+            li.forEach {
+                var friend = ProfileDetailFriendModel()
+                val avatar = it.selectXpath("div[@class='avt']/a/img").attr("src")
+                if (avatar.isNotEmpty()) {
+                    friend.avatar = NetworkUtil.getAvatar(avatar)
+                }
+                val name = it.selectXpath("h4/a").text()
+                if (name.isNotEmpty()) {
+                    friend.name = name
+                }
+                val uid = it.selectXpath("h4/a").attr("href")
+                if (uid.contains("uid=")) {
+                    friend.uid = uid.split("uid=").last()
+                }
+                val content = it.selectXpath("p[@class='maxh']").text()
+                if (content.isNotEmpty()) {
+                    friend.content = content
+                }
+                println("friend.name--${friend.name}")
+
+                list.add(friend)
+            }
+        }
+
+        return list
+    }
+}
+
+data class ProfileDetailFriendViewState(
+    val pagingData: Flow<PagingData<ProfileDetailFriendModel>>,
+    val privacyText: String = "",
+    val count: String = ""
+)
+
+sealed class ProfileDetailFriendViewAction {
+    data class SetUid(val uid: String) : ProfileDetailFriendViewAction()
+}
+
+class ProfileDetailFriendModel {
+    var name = ""
+    var uid = ""
+    var avatar = ""
+    var content = ""
 }

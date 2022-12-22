@@ -1,6 +1,9 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -8,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -15,10 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.eternaljust.msea.ui.widget.RefreshGrid
+import com.eternaljust.msea.ui.widget.RefreshList
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -97,7 +105,11 @@ fun ProfileDetailPage(
                                 showTopBar = false
                             )
                         } else {
-                            Text(text = item.title)
+                            ProfileDetailFriendPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController,
+                                uid = uid
+                            )
                         }
                     }
                 }
@@ -211,6 +223,64 @@ fun ProfileDetailHeader(
                 text = profile.violation,
                 color = MaterialTheme.colorScheme.primary
             )
+        }
+    }
+}
+
+@Composable
+fun ProfileDetailFriendPage(
+    scaffoldState: SnackbarHostState,
+    navController: NavHostController,
+    uid: String,
+    viewModel: ProfileDetailFriendViewModel = viewModel()
+) {
+    viewModel.dispatch(ProfileDetailFriendViewAction.SetUid(uid = uid))
+    val viewStates = viewModel.viewStates
+    val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+
+    Column(
+        modifier = Modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        RefreshGrid(
+            lazyPagingItems = lazyPagingItems
+        ) {
+            items(lazyPagingItems.itemCount) { index ->
+                val item = lazyPagingItems[index]
+                item?.let {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .size(45.dp)
+                                .clip(shape = RoundedCornerShape(5)),
+                            model = item.avatar,
+                            placeholder = painterResource(id = R.drawable.icon),
+                            contentDescription = null
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Column {
+                            Text(
+                                text = item.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Text(
+                                text = item.content,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
