@@ -1,6 +1,7 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -27,6 +28,8 @@ import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshGrid
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -37,10 +40,12 @@ import kotlinx.coroutines.launch
 fun ProfileDetailPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
-    uid: String,
+    uid: String = "",
+    username: String = "",
     viewModel: ProfileDetailViewModel = viewModel()
 ) {
     viewModel.dispatch(ProfileDetailViewAction.SetUid(uid = uid))
+    viewModel.dispatch(ProfileDetailViewAction.SetUsername(username = username))
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             when (it) {
@@ -95,21 +100,32 @@ fun ProfileDetailPage(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
-                        val item = viewModel.profileItems[pagerState.currentPage]
-                        if (item == ProfileDetailTabItem.TOPIC) {
-                            ProfileTopicPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController,
-                                uid = uid,
-                                showTopBar = false
-                            )
-                        } else {
-                            ProfileDetailFriendPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController,
-                                uid = uid
-                            )
+                    if (uid.isNotEmpty() || viewModel.viewStates.profile.uid.isNotEmpty()) {
+                        val id = uid.ifEmpty { viewModel.viewStates.profile.uid }
+                        HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
+                            val item = viewModel.profileItems[pagerState.currentPage]
+                            if (item == ProfileDetailTabItem.TOPIC) {
+                                ProfileTopicPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController,
+                                    uid = id,
+                                    showTopBar = false
+                                )
+                            } else {
+                                // 自己的好友列表
+                                if (id == UserInfo.instance.uid) {
+                                    FriendListPage(
+                                        scaffoldState = scaffoldState,
+                                        navController = navController
+                                    )
+                                } else {
+                                    ProfileDetailFriendPage(
+                                        scaffoldState = scaffoldState,
+                                        navController = navController,
+                                        uid = id
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -252,7 +268,10 @@ fun ProfileDetailFriendPage(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background),
+                            .background(MaterialTheme.colorScheme.background)
+                            .clickable {
+                                navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AsyncImage(

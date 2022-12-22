@@ -1,6 +1,7 @@
 package com.eternaljust.msea.ui.page.home.sign
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.utils.RouteName
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -35,7 +37,12 @@ fun SignListPage(
 
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                SignListItemContent(it)
+                SignListItemContent(
+                    item = it,
+                    nicknameClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                    }
+                )
             }
         }
     }
@@ -69,7 +76,10 @@ private fun SignListHeader () {
 }
 
 @Composable
-private fun SignListItemContent(item: SignListModel) {
+private fun SignListItemContent(
+    item: SignListModel,
+    nicknameClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +91,8 @@ private fun SignListItemContent(item: SignListModel) {
 
         Text(
             modifier = Modifier
-                .width(60.dp),
+                .width(60.dp)
+                .clickable { nicknameClick() },
             text = item.name
         )
 
@@ -122,7 +133,12 @@ fun SignDayListPage(
 
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                SignDayListItemContent(it)
+                SignDayListItemContent(
+                    item = it,
+                    nicknameClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                    }
+                )
             }
         }
     }
@@ -160,7 +176,10 @@ private fun SignDayListHeader () {
 }
 
 @Composable
-private fun SignDayListItemContent(item: SignDayListModel) {
+private fun SignDayListItemContent(
+    item: SignDayListModel,
+    nicknameClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,7 +191,8 @@ private fun SignDayListItemContent(item: SignDayListModel) {
 
         Text(
             modifier = Modifier
-                .width(80.dp),
+                .width(80.dp)
+                .clickable { nicknameClick() },
             text = item.name,
             textAlign = TextAlign.Center
         )

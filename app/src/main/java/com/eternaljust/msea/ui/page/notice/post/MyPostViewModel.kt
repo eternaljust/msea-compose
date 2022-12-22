@@ -45,7 +45,7 @@ class MyPostViewModel : ViewModel() {
                     post.name = name
                 }
                 val href = it.selectXpath("dd[@class='ntc_body']/a[1]").attr("href")
-                if (href.isNotEmpty()) {
+                if (href.contains("uid-")) {
                     post.uid = NetworkUtil.getUid(href)
                 }
                 val title = it.selectXpath("dd[@class='ntc_body']/a[2]").text()

@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,6 +22,7 @@ import kotlinx.coroutines.withContext
 
 class ProfileDetailViewModel : ViewModel() {
     private var uid = ""
+    private var username = ""
 
     var viewStates by mutableStateOf(ProfileDetailViewState())
         private set
@@ -38,7 +40,15 @@ class ProfileDetailViewModel : ViewModel() {
             is ProfileDetailViewAction.PopBack -> popBack()
             is ProfileDetailViewAction.SetUid -> {
                 uid = action.uid
-                getProfile()
+                if (uid.isNotEmpty()) {
+                    getProfile()
+                }
+            }
+            is ProfileDetailViewAction.SetUsername -> {
+                username = action.username
+                if (username.isNotEmpty()) {
+                    getProfile()
+                }
             }
             is ProfileDetailViewAction.GetProfile -> getProfile()
         }
@@ -52,7 +62,10 @@ class ProfileDetailViewModel : ViewModel() {
 
     private fun getProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            val url = HTMLURL.PROFILE + uid
+            var url = HTMLURL.PROFILE + uid
+            if (username.isNotEmpty()) {
+                url = HTMLURL.BASE + "/space-username-${username}.html"
+            }
             val document = NetworkUtil.getRequest(url)
             var text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
             if (text.isNotEmpty()) {
@@ -60,7 +73,15 @@ class ProfileDetailViewModel : ViewModel() {
                 return@launch
             }
             val profile = ProfileDetailModel()
-            profile.uid = uid
+            if (uid.isNotEmpty()) {
+                profile.uid = uid
+            } else {
+                val id = document.selectXpath("//div[@class='h cl']//a").attr("href")
+                if (id.contains("uid-")) {
+                    profile.uid = NetworkUtil.getUid(id)
+                    println("profile.uid = ${profile.uid }")
+                }
+            }
             val src = document.selectXpath("//div[@class='h cl']//img").attr("src")
             if (src.isNotEmpty()) {
                 val avatar = src.replace("&size=small", "" )
@@ -168,6 +189,7 @@ sealed class ProfileDetailViewAction {
     object GetProfile : ProfileDetailViewAction()
 
     data class SetUid(val uid: String) : ProfileDetailViewAction()
+    data class SetUsername(val username: String) : ProfileDetailViewAction()
 }
 
 class ProfileDetailModel {
@@ -247,8 +269,8 @@ class ProfileDetailFriendViewModel : ViewModel() {
                     friend.name = name
                 }
                 val uid = it.selectXpath("h4/a").attr("href")
-                if (uid.contains("uid=")) {
-                    friend.uid = uid.split("uid=").last()
+                if (uid.contains("uid-")) {
+                    friend.uid = NetworkUtil.getUid(uid)
                 }
                 val content = it.selectXpath("p[@class='maxh']").text()
                 if (content.isNotEmpty()) {

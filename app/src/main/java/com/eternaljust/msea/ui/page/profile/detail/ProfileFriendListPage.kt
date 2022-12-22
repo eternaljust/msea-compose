@@ -1,6 +1,8 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -19,6 +21,10 @@ import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,7 +45,12 @@ fun FriendListPage(
 
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                FriendListListItemContent(it)
+                FriendListListItemContent(
+                    item = it,
+                    avatarClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                    }
+                )
             }
         }
     }
@@ -68,7 +79,10 @@ fun FriendListListHeader(
 }
 
 @Composable
-fun FriendListListItemContent(item: FriendListModel) {
+fun FriendListListItemContent(
+    item: FriendListModel,
+    avatarClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,7 +92,8 @@ fun FriendListListItemContent(item: FriendListModel) {
         AsyncImage(
             modifier = Modifier
                 .size(45.dp)
-                .clip(shape = RoundedCornerShape(5)),
+                .clip(shape = RoundedCornerShape(5))
+                .clickable { avatarClick() },
             model = item.avatar,
             placeholder = painterResource(id = R.drawable.icon),
             contentDescription = null
@@ -96,6 +111,7 @@ fun FriendListListItemContent(item: FriendListModel) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    modifier = Modifier.clickable { avatarClick() },
                     text = item.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
@@ -137,7 +153,12 @@ fun FriendVisitorTraceListPage(
 
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                FriendVisitorTraceListListItemContent(it)
+                FriendVisitorTraceListListItemContent(
+                    item = it,
+                    avatarClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                    }
+                )
             }
         }
     }
@@ -161,7 +182,10 @@ fun FriendVisitorTraceListListHeader(
 }
 
 @Composable
-fun FriendVisitorTraceListListItemContent(item: FriendVisitorTraceListModel) {
+fun FriendVisitorTraceListListItemContent(
+    item: FriendVisitorTraceListModel,
+    avatarClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +195,8 @@ fun FriendVisitorTraceListListItemContent(item: FriendVisitorTraceListModel) {
         AsyncImage(
             modifier = Modifier
                 .size(45.dp)
-                .clip(shape = RoundedCornerShape(5)),
+                .clip(shape = RoundedCornerShape(5))
+                .clickable { avatarClick() },
             model = item.avatar,
             placeholder = painterResource(id = R.drawable.icon),
             contentDescription = null
@@ -189,6 +214,7 @@ fun FriendVisitorTraceListListItemContent(item: FriendVisitorTraceListModel) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    modifier = Modifier.clickable { avatarClick() },
                     text = item.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold

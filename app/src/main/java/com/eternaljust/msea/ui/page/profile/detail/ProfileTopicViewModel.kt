@@ -81,7 +81,6 @@ class ProfileTopicViewModel : ViewModel() {
                 val lastName = it.selectXpath("td[@class='by'][last()]/cite/a").text()
                 if (lastName.isNotEmpty()) {
                     topic.lastName = lastName
-                    topic.lastUserName = "space-username-${lastName}.html"
                 }
                 val lastTime = it.selectXpath("td[@class='by'][last()]/em/a").text()
                 if (lastTime.isNotEmpty()) {
@@ -151,10 +150,6 @@ class ProfileTopicListModel {
      * 最后发表的昵称
      */
     var lastName = ""
-    /**
-     * 最后发表的用户
-     */
-    var lastUserName = ""
     /**
      * 最后发表的时间
      */

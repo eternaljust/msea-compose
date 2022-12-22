@@ -1,7 +1,9 @@
 package com.eternaljust.msea.ui.page.notice.interactive
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -25,6 +27,7 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.utils.RouteName
 
 @Composable
 fun InteractivePage(
@@ -40,14 +43,22 @@ fun InteractivePage(
     ) {
         itemsIndexed(lazyPagingItems) { _, item ->
             item?.let {
-                InteractiveListItemContent(it)
+                InteractiveListItemContent(
+                    item = it,
+                    avatarClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun InteractiveListItemContent(item: InteractiveFriendListModel) {
+fun InteractiveListItemContent(
+    item: InteractiveFriendListModel,
+    avatarClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,7 +68,8 @@ fun InteractiveListItemContent(item: InteractiveFriendListModel) {
         AsyncImage(
             modifier = Modifier
                 .size(45.dp)
-                .clip(shape = RoundedCornerShape(5)),
+                .clip(shape = RoundedCornerShape(5))
+                .clickable { avatarClick() },
             model = item.avatar,
             placeholder = painterResource(id = R.drawable.icon),
             contentDescription = null
@@ -74,30 +86,45 @@ fun InteractiveListItemContent(item: InteractiveFriendListModel) {
                 fontWeight = FontWeight.Normal
             )
 
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        append(item.name)
-                    }
+            val annotatedText = buildAnnotatedString {
+                pushStringAnnotation(
+                    tag = "avatar",
+                    annotation = ""
+                )
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    append(item.name)
+                }
+                pop()
 
-                    withStyle(
-                        style = SpanStyle(
-                            color = ColorTheme(light = Color.Black, dark = Color.White)
-                        )
-                    ) {
-                        append(item.content)
-                    }
+                withStyle(
+                    style = SpanStyle(
+                        color = ColorTheme(light = Color.Black, dark = Color.White)
+                    )
+                ) {
+                    append(item.content)
+                }
 
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        append(item.action)
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    append(item.action)
+                }
+            }
+            ClickableText(
+                text = annotatedText,
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(
+                        tag = "avatar",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        avatarClick()
                     }
                 }
             )

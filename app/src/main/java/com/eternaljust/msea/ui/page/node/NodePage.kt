@@ -53,7 +53,12 @@ fun NodePage(
             lazyPagingItems.itemSnapshotList.forEach {
                 it?.let {
                     stickyHeader {
-                        NodeListHeader(it)
+                        NodeListHeader(
+                            item = it
+                        ) {
+                            val route = RouteName.PROFILE_DETAIL_USERNAME + "/$it"
+                            navController.navigate(route)
+                        }
                     }
 
                     items(it.list) { item ->
@@ -61,6 +66,10 @@ fun NodePage(
                             item = item,
                             nodeClick = {
                                 navController.navigate(RouteName.NODE_LIST + "/${item.fid}")
+                            },
+                            nicknameClick = {
+                                val route = RouteName.PROFILE_DETAIL_USERNAME + "/${item.username}"
+                                navController.navigate(route)
                             },
                             contentClick = {
                                 var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
@@ -77,7 +86,10 @@ fun NodePage(
 }
 
 @Composable
-fun NodeListHeader(item: NodeModel) {
+fun NodeListHeader(
+    item: NodeModel,
+    nicknameClick: (String) -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,7 +110,9 @@ fun NodeListHeader(item: NodeModel) {
 
                     item.moderators.forEach {
                         Text(
-                            modifier = Modifier.padding(horizontal = 5.dp),
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .clickable { nicknameClick(it) },
                             text = it,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -113,6 +127,7 @@ fun NodeListHeader(item: NodeModel) {
 fun NodeListItemContent(
     item: NodeListModel,
     nodeClick: () -> Unit,
+    nicknameClick: () -> Unit,
     contentClick: () -> Unit
 ) {
     Column(
@@ -193,6 +208,10 @@ fun NodeListItemContent(
             }
             append("  ")
 
+            pushStringAnnotation(
+                tag = "username",
+                annotation = ""
+            )
             withStyle(
                 style = SpanStyle(
                     color = MaterialTheme.colorScheme.secondary
@@ -200,6 +219,7 @@ fun NodeListItemContent(
             ) {
                 append(item.username)
             }
+            pop()
         }
 
         ClickableText(
@@ -211,6 +231,13 @@ fun NodeListItemContent(
                     end = offset
                 ).firstOrNull()?.let {
                     contentClick()
+                }
+                annotatedText.getStringAnnotations(
+                    tag = "username",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    nicknameClick()
                 }
             }
         )

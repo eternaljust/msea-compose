@@ -537,6 +537,20 @@ private fun NavGraphBuilder.detailsNav(
     }
 
     composable(
+        route = RouteName.PROFILE_DETAIL_USERNAME + "/{username}",
+        arguments = listOf(navArgument("username") { type = NavType.StringType })
+    ) {
+        val username = it.arguments?.getString("username")
+        username?.let {
+            ProfileDetailPage(
+                scaffoldState = scaffoldState,
+                navController = navController,
+                username = it
+            )
+        }
+    }
+
+    composable(
         route = RouteName.PROFILE_TOPIC + "/{uid}",
         arguments = listOf(navArgument("uid") { type = NavType.StringType })
     ) {

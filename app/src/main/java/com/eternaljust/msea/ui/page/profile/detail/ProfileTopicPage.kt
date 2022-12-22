@@ -77,6 +77,10 @@ fun ProfileTopicPage(
                         item?.let {
                             ProfileTopicListItemContent(
                                 item = it,
+                                nicknameClick = {
+                                    val route = RouteName.PROFILE_DETAIL_USERNAME + "/${it.lastName}"
+                                    navController.navigate(route)
+                                },
                                 contentClick = {
                                     var url = HTMLURL.TOPIC_DETAIL + "-${it.tid}-1-1.html"
                                     val web = WebViewModel(url = url)
@@ -118,6 +122,7 @@ fun ProfileTopicListHeader() {
 @Composable
 fun ProfileTopicListItemContent(
     item: ProfileTopicListModel,
+    nicknameClick: () -> Unit,
     contentClick: () -> Unit
 ) {
     Column(
@@ -148,6 +153,7 @@ fun ProfileTopicListItemContent(
             ) {
                 Column {
                     Text(
+                        modifier = Modifier.clickable { nicknameClick() },
                         text = item.lastName,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold

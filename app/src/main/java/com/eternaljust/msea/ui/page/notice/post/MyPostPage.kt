@@ -1,6 +1,7 @@
 package com.eternaljust.msea.ui.page.notice.post
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -48,6 +49,9 @@ fun MyPostPage(
             item?.let {
                 MyPostListItemContent(
                     item = it,
+                    avatarClick = {
+                        navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                    },
                     contentClick = {
                         var url = HTMLURL.TOPIC_DETAIL + "-${it.ptid}-1-1.html"
                         val web = WebViewModel(url = url)
@@ -63,6 +67,7 @@ fun MyPostPage(
 @Composable
 fun MyPostListItemContent(
     item: PostListModel,
+    avatarClick: () -> Unit,
     contentClick: () -> Unit
 ) {
     Row(
@@ -74,7 +79,8 @@ fun MyPostListItemContent(
         AsyncImage(
             modifier = Modifier
                 .size(45.dp)
-                .clip(shape = RoundedCornerShape(5)),
+                .clip(shape = RoundedCornerShape(5))
+                .clickable { avatarClick() },
             model = item.avatar,
             placeholder = painterResource(id = R.drawable.icon),
             contentDescription = null
@@ -92,6 +98,10 @@ fun MyPostListItemContent(
             )
 
             val annotatedText = buildAnnotatedString {
+                pushStringAnnotation(
+                    tag = "avatar",
+                    annotation = ""
+                )
                 withStyle(
                     style = SpanStyle(
                         color = MaterialTheme.colorScheme.primary
@@ -99,6 +109,7 @@ fun MyPostListItemContent(
                 ) {
                     append(item.name)
                 }
+                pop()
 
                 append("  ")
                 withStyle(
@@ -126,6 +137,14 @@ fun MyPostListItemContent(
             ClickableText(
                 text = annotatedText,
                 onClick = { offset ->
+                    annotatedText.getStringAnnotations(
+                        tag = "avatar",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        avatarClick()
+                    }
+
                     annotatedText.getStringAnnotations(
                         tag = "content",
                         start = offset,

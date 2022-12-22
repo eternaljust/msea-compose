@@ -78,6 +78,10 @@ fun TagListPage(
                         item?.let {
                             TagListItemContent(
                                 item = it,
+                                nicknameClick = {
+                                    val route = RouteName.PROFILE_DETAIL_USERNAME + "/$it"
+                                    navController.navigate(route)
+                                },
                                 contentClick = {
                                     var url = HTMLURL.TOPIC_DETAIL + "-${it.tid}-1-1.html"
                                     val web = WebViewModel(url = url)
@@ -121,6 +125,7 @@ fun TagListHeader() {
 @Composable
 fun TagListItemContent(
     item: TagListModel,
+    nicknameClick: (String) -> Unit,
     contentClick: () -> Unit
 ) {
     Column(
@@ -151,6 +156,7 @@ fun TagListItemContent(
             ) {
                 Column {
                     Text(
+                        modifier = Modifier.clickable { nicknameClick(item.name) },
                         text = item.name,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
@@ -168,6 +174,7 @@ fun TagListItemContent(
 
                 Column {
                     Text(
+                        modifier = Modifier.clickable { nicknameClick(item.lastName) },
                         text = item.lastName,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
