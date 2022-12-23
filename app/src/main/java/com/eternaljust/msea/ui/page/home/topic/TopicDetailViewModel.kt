@@ -82,6 +82,23 @@ class TopicDetailViewModel : ViewModel() {
                         topic.nodeFid = fid.split("fid=").last()
                     }
 
+                    val span = document.selectXpath("//span[@class='tag iconfont icon-tag-fill']/a")
+                    var tags = mutableListOf<TagItemModel>()
+                    span.forEach {
+                        val tag = TagItemModel()
+                        val title = it.attr("title")
+                        if (title.isNotEmpty()) {
+                            tag.title = title
+                        }
+                        val id = it.attr("href")
+                        if (id.contains("id=")) {
+                            tag.tid = id.split("id=").last()
+                        }
+
+                        tags.add(tag)
+                    }
+                    topic.tags = tags
+
                     viewStates = viewStates.copy(topic = topic)
                 }
                 val node = document.selectXpath("//table[@class='plhin']")
