@@ -12,6 +12,7 @@ object RouteName {
     const val HOME = "home"
     const val NOTICE = "notice"
     const val NODE = "node"
+    const val NODE_DETAIL = "node_detail"
     const val TOPIC_DETAIL = "topic_detail"
     const val PROFILE_TOPIC = "profile_topic"
     const val PROFILE_FRIEND = "profile_friend"

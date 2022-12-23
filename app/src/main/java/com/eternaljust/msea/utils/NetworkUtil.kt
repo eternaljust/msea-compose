@@ -185,7 +185,7 @@ object HTMLURL {
     const val MY_POST_LIST = "$BASE/home.php?mod=space&do=notice&view=mypost"
     const val SYSTEM_LIST = "$BASE/home.php?mod=space&do=notice&view=system"
     const val INTERACTIVE_LIST = "$BASE/home.php?mod=space&do=notice&view=interactive&type=friend"
-    const val NODE_LIST = "$BASE/forum.php?mod=index"
+    const val NODE_LIST = "$BASE/forum.php?mod=index&gid="
     const val TAG_LIST = "$BASE/misc.php?mod=tag"
     const val PROFILE_TOPIC_LIST = "$BASE/home.php?mod=space&do=thread&view=me&order=dateline&from=space"
     const val PROFILE_FAVORITE_LIST = "$BASE/home.php?mod=space&do=favorite&type=thread"

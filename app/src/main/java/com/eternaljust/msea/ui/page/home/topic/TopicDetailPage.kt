@@ -1,48 +1,47 @@
 package com.eternaljust.msea.ui.page.home.topic
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.ui.widget.WebViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
+import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
-import com.eternaljust.msea.utils.openSystemBrowser
-import com.google.accompanist.web.*
+import com.eternaljust.msea.utils.RouteName
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TopicDetailPage(
-    web: WebViewModel,
     scaffoldState: SnackbarHostState,
-    navController: NavHostController
+    navController: NavHostController,
+    tid: String,
+    viewModel: TopicDetailViewModel = viewModel()
 ) {
-    val context = LocalContext.current
-    val state = rememberWebViewState(web.url)
-    val navigator = rememberWebViewNavigator()
-    val title = if(state.pageTitle != null) state.pageTitle else web.title
+    viewModel.dispatch(TopicDetailViewAction.SetTid(tid = tid))
+    val viewStates = viewModel.viewStates
+    val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { title?.let { Text(text = it, maxLines = 2) } },
+                title = { Text(text = "帖子详情") },
                 navigationIcon = {
                     Row {
                         IconButton(
                             onClick = {
-                                if (navigator.canGoBack) {
-                                    navigator.navigateBack()
-                                } else {
-                                    navController.popBackStack()
-                                }
+                                navController.popBackStack()
                             }
                         ) {
                             Icon(
@@ -50,67 +49,113 @@ fun TopicDetailPage(
                                 contentDescription = "返回"
                             )
                         }
-
-                        if (navigator.canGoBack) {
-                            IconButton(
-                                onClick = { navController.popBackStack() }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = "关闭网页"
-                                )
-                            }
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            state.content.getCurrentUrl()?.let {
-                                openSystemBrowser(
-                                    url = it,
-                                    context = context
-                                )
-                            }
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = com.eternaljust.msea.R.drawable.ic_baseline_public_24),
-                            contentDescription = "浏览器"
-                        )
                     }
                 },
                 colors = mseaTopAppBarColors()
             )
         },
         content = { paddingValues ->
-            Box(
+            Surface(
                 modifier = Modifier
                     .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                WebView(
-                    state = state,
-                    navigator = navigator,
-                    onCreated = { webView ->
-                        webView.settings.javaScriptEnabled = true
-                        webView.settings.domStorageEnabled = true
-                        webView.settings.blockNetworkImage = false
-                        webView.settings.databaseEnabled = true
-                    }
-                )
-
-                when (val loading = state.loadingState) {
-                    is LoadingState.Loading -> {
-                        println("loading.progress---${loading.progress}")
-                        LinearProgressIndicator(
-                            modifier = Modifier.fillMaxWidth(),
-                            progress = loading.progress,
-                            color = MaterialTheme.colorScheme.secondary
+                RefreshList(
+                    lazyPagingItems = lazyPagingItems
+                ) {
+                    stickyHeader{
+                        TopicDetailHeader(
+                            topic = viewStates.topic,
+                            nodeClick = {
+                                navController.navigate(RouteName.NODE_DETAIL + "/$it")
+                            },
+                            nodeListClick = {
+                                navController.navigate(RouteName.NODE_LIST + "/$it")
+                            }
                         )
                     }
-                    else -> {}
+
+                    itemsIndexed(lazyPagingItems) { _, item ->
+                        item?.let {
+                            Text(text = it.name)
+                        }
+                    }
                 }
             }
         }
+    )
+}
+
+@Composable
+fun TopicDetailHeader(
+    topic: TopicDetailModel,
+    nodeClick: (String) -> Unit,
+    nodeListClick: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
+                contentDescription = "节点",
+                tint = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                modifier = Modifier.clickable { nodeClick("-1") },
+                text = "节点",
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            if (topic.indexTitle.isNotEmpty()) {
+                NodeArrowIcon()
+
+                Text(
+                    modifier = Modifier.clickable { nodeClick(topic.gid) },
+                    text = topic.indexTitle,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            if (topic.nodeTitle.isNotEmpty()) {
+                NodeArrowIcon()
+
+                Text(
+                    modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
+                    text = topic.nodeTitle,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = topic.title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = topic.commentCount,
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.Gray
+        )
+    }
+}
+
+@Composable
+private fun NodeArrowIcon() {
+    Icon(
+        modifier = Modifier.size(20.dp),
+        painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_ios_24),
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.primary
     )
 }

@@ -53,10 +53,7 @@ fun TopicListPage(
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
                     },
                     contentClick = {
-                        var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
-                        val web = WebViewModel(url = url)
-                        val args = String.format("/%s", Uri.encode(web.toJson()))
-                        navController.navigate(RouteName.TOPIC_DETAIL + args)
+                        navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
                     }
                 )
             }

@@ -24,13 +24,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailPage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
+import com.eternaljust.msea.ui.page.node.NodeDetailPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.node.list.NodeListPage
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.page.node.tag.TagListPage
 import com.eternaljust.msea.ui.page.node.tag.TagPage
 import com.eternaljust.msea.ui.page.notice.NoticePage
-import com.eternaljust.msea.ui.page.profile.*
 import com.eternaljust.msea.ui.page.profile.detail.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.page.profile.login.LoginPage
@@ -42,6 +42,7 @@ import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -70,7 +71,7 @@ sealed class BottomBarScreen(
         route = RouteName.NODE,
         title = "节点",
         imageVector = null,
-        paint =  R.drawable.ic_baseline_grid_view_24
+        paint = R.drawable.ic_baseline_grid_view_24
     )
 }
 
@@ -128,7 +129,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @Composable
 fun MyApp() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -237,16 +238,15 @@ fun MyApp() {
                                 NavigationBarItem(
                                     icon = {
                                         if (screen.imageVector != null) {
-                                            screen.imageVector.let {
-                                                Icon(imageVector = it, contentDescription = null)
-                                            }
+                                            Icon(
+                                                imageVector = screen.imageVector,
+                                                contentDescription = null
+                                            )
                                         } else if (screen.paint != null) {
-                                            screen.paint.let {
-                                                Icon(
-                                                    painter = painterResource(id = it),
-                                                    contentDescription = null
-                                                )
-                                            }
+                                            Icon(
+                                                painter = painterResource(id = screen.paint),
+                                                contentDescription = null
+                                            )
                                         }
 
                                          },
@@ -372,6 +372,7 @@ fun TopAppBarAcitons(
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 private fun NavGraphBuilder.detailsNav(
     scaffoldState: SnackbarHostState,
     navController: NavHostController
@@ -453,11 +454,11 @@ private fun NavGraphBuilder.detailsNav(
         arguments = listOf(navArgument("tagItem") { type = NavType.StringType })
     ) {
         val tagItem = it.arguments?.getString("tagItem")?.fromJson<TagItemModel>()
-        tagItem?.let {
+        tagItem?.let { item ->
             TagListPage(
                 scaffoldState = scaffoldState,
                 navController = navController,
-                tagItem = it
+                tagItem = item
             )
         }
     }
@@ -467,11 +468,11 @@ private fun NavGraphBuilder.detailsNav(
         arguments = listOf(navArgument("fid") { type = NavType.StringType })
     ) {
         val fid = it.arguments?.getString("fid")
-        fid?.let {
+        fid?.let { id ->
             NodeListPage(
                 scaffoldState = scaffoldState,
                 navController = navController,
-                fid = it
+                fid = id
             )
         }
     }
@@ -493,24 +494,24 @@ private fun NavGraphBuilder.detailsNav(
         arguments = listOf(navArgument("web") { type = NavType.StringType })
     ) {
         val web = it.arguments?.getString("web")?.fromJson<WebViewModel>()
-        web?.let {
+        web?.let { model ->
             WebViewPage(
-                web = web,
+                web = model,
                 navController = navController
             )
         }
     }
 
     composable(
-        route = RouteName.TOPIC_DETAIL + "/{web}",
-        arguments = listOf(navArgument("web") { type = NavType.StringType })
+        route = RouteName.TOPIC_DETAIL + "/{tid}",
+        arguments = listOf(navArgument("tid") { type = NavType.StringType })
     ) {
-        val web = it.arguments?.getString("web")?.fromJson<WebViewModel>()
-        web?.let {
+        val tid = it.arguments?.getString("tid")
+        tid?.let { id ->
             TopicDetailPage(
-                web = web,
                 scaffoldState = scaffoldState,
-                navController = navController
+                navController = navController,
+                tid = id
             )
         }
     }
@@ -527,11 +528,11 @@ private fun NavGraphBuilder.detailsNav(
         arguments = listOf(navArgument("uid") { type = NavType.StringType })
     ) {
         val uid = it.arguments?.getString("uid")
-        uid?.let {
+        uid?.let { id ->
             ProfileDetailPage(
                 scaffoldState = scaffoldState,
                 navController = navController,
-                uid = it
+                uid = id
             )
         }
     }
@@ -541,11 +542,11 @@ private fun NavGraphBuilder.detailsNav(
         arguments = listOf(navArgument("username") { type = NavType.StringType })
     ) {
         val username = it.arguments?.getString("username")
-        username?.let {
+        username?.let { id ->
             ProfileDetailPage(
                 scaffoldState = scaffoldState,
                 navController = navController,
-                username = it
+                username = id
             )
         }
     }
@@ -555,12 +556,26 @@ private fun NavGraphBuilder.detailsNav(
         arguments = listOf(navArgument("uid") { type = NavType.StringType })
     ) {
         val uid = it.arguments?.getString("uid")
-        uid?.let {
+        uid?.let { id ->
             ProfileTopicPage(
                 scaffoldState = scaffoldState,
                 navController = navController,
-                uid = it,
+                uid = id,
                 showTopBar = true
+            )
+        }
+    }
+
+    composable(
+        route = RouteName.NODE_DETAIL + "/{gid}",
+        arguments = listOf(navArgument("gid") { type = NavType.StringType })
+    ) {
+        val gid = it.arguments?.getString("gid")
+        gid?.let { id ->
+            NodeDetailPage(
+                scaffoldState = scaffoldState,
+                navController = navController,
+                gid = id
             )
         }
     }

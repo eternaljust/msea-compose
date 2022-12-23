@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,19 +27,74 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.node.tag.TagViewAction
+import com.eternaljust.msea.ui.page.node.tag.TagViewEvent
 import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NodePage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     viewModel: NodeViewModel = viewModel()
+) {
+    NodeContent(
+        navController = navController,
+        viewModel = viewModel
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NodeDetailPage(
+    scaffoldState: SnackbarHostState,
+    navController: NavHostController,
+    gid: String = "",
+    viewModel: NodeViewModel = viewModel()
+) {
+    if (gid != "-1") {
+        viewModel.dispatch(NodeViewAction.SetGid(gid = gid))
+    }
+    LaunchedEffect(Unit) {
+        viewModel.viewEvents.collect {
+            when (it) {
+                is NodeViewEvent.PopBack -> {
+                    navController.popBackStack()
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            NormalTopAppBar(
+                title = "节点",
+                onClick = { viewModel.dispatch(NodeViewAction.PopBack) }
+            )
+        },
+        content = { paddingValues ->
+            Surface(
+                modifier = Modifier.padding(paddingValues)
+            ) {
+                NodeContent(
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun NodeContent(
+    navController: NavHostController,
+    viewModel: NodeViewModel
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
@@ -72,10 +128,7 @@ fun NodePage(
                                 navController.navigate(route)
                             },
                             contentClick = {
-                                var url = HTMLURL.TOPIC_DETAIL + "-${item.tid}-1-1.html"
-                                val web = WebViewModel(url = url)
-                                val args = String.format("/%s", Uri.encode(web.toJson()))
-                                navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
                             }
                         )
                     }

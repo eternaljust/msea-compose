@@ -119,5 +119,6 @@ fun WebViewPage(
 @Parcelize
 data class WebViewModel(
     var url: String = "",
-    var title: String = ""
+    var title: String = "",
+    var tid: String = ""
 ) : Parcelable
