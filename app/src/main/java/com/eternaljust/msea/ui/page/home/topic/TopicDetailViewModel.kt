@@ -102,7 +102,7 @@ class TopicDetailViewModel : ViewModel() {
                     viewStates = viewStates.copy(topic = topic)
                 }
                 val node = document.selectXpath("//div/table[@class='plhin']/tbody")
-                node.forEach {
+                node.forEach { it ->
                     var comment = TopicCommentModel()
                     val avatar = it.selectXpath("tr/td[@class='pls']//div[@class='avatar']/a/img")
                         .attr("src")
@@ -123,14 +123,25 @@ class TopicDetailViewModel : ViewModel() {
                     if (time.isNotEmpty()) {
                         comment.time = time
                     }
-                    val xpath = "tr/td[@class='plc']//div[@class='t_fsz']//td[@class='t_f']"
-                    val content = it.selectXpath(xpath).text()
+
+                    var td = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']")
+                    val content = td.html()
                     println("content---${content}")
-                    if (content.isNotEmpty()) {
+                    if (content.contains("font") || content.contains("strong")
+                        || content.contains("color") || content.contains("quote")
+                        || content.contains("</a>")) {
+                        comment.isText = false
                         comment.content = content
+                    } else {
+                        val text = td.text()
+                        if (text.isNotEmpty()) {
+                            comment.content = text
+                        }
                     }
 
-                    list.add(comment)
+                    if (comment.name.isNotEmpty()) {
+                        list.add(comment)
+                    }
                 }
             }
         }

@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +29,7 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.WebHTML
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
@@ -264,7 +266,18 @@ fun TopicDetailItemContent(
         }
     }
 
-    Text(text = item.content)
+    if (item.isText) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = item.content,
+            textAlign = TextAlign.Left
+        )
+    } else {
+        WebHTML(
+            modifier = Modifier.fillMaxWidth().background(Color.Red),
+            html = item.content
+        )
+    }
 
     Divider(modifier = Modifier)
 }
