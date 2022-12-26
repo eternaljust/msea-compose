@@ -1,6 +1,5 @@
 package com.eternaljust.msea.ui.widget
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -15,14 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-
 
 @Composable
 fun <T : Any> RefreshList(
@@ -39,6 +37,13 @@ fun <T : Any> RefreshList(
         onRefresh = {
             onRefresh.invoke()
             lazyPagingItems.refresh()
+        },
+        indicator = { state, refreshTrigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
         }
     ) {
         swipeRefreshState.isRefreshing =
@@ -86,6 +91,13 @@ fun <T : Any> RefreshGrid(
         onRefresh = {
             onRefresh.invoke()
             lazyPagingItems.refresh()
+        },
+        indicator = { state, refreshTrigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
         }
     ) {
         swipeRefreshState.isRefreshing =
