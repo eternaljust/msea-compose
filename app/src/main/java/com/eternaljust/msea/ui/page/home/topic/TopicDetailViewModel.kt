@@ -101,29 +101,33 @@ class TopicDetailViewModel : ViewModel() {
 
                     viewStates = viewStates.copy(topic = topic)
                 }
-                val node = document.selectXpath("//table[@class='plhin']")
+                val node = document.selectXpath("//div/table[@class='plhin']/tbody")
                 node.forEach {
                     var comment = TopicCommentModel()
-
-                    val avatar = it.selectXpath("tr/td[@class='icn']/a/img").attr("src")
+                    val avatar = it.selectXpath("tr/td[@class='pls']//div[@class='avatar']/a/img")
+                        .attr("src")
                     if (avatar.isNotEmpty()) {
-                        comment.avatar = HTMLURL.BASE + "/" + avatar
+                        comment.avatar = avatar
                     }
-                    val name = it.selectXpath("tr/td[@class='by']/cite/a").text()
+                    val name = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a").text()
                     if (name.isNotEmpty()) {
                         comment.name = name
                     }
-                    val uid = it.selectXpath("tr/td[@class='by']/cite/a").attr("href")
+                    val uid = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a")
+                        .attr("href")
                     if (uid.contains("uid-")) {
                         comment.uid = NetworkUtil.getUid(uid)
                     }
-                    val time = it.selectXpath("tr/td[@class='by']/em/a").text()
+                    val time = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/em")
+                        .text()
                     if (time.isNotEmpty()) {
                         comment.time = time
                     }
-                    val reply = it.selectXpath("tr/td[@class='num']/a").text()
-                    if (reply.isNotEmpty()) {
-                        comment.reply = reply
+                    val xpath = "tr/td[@class='plc']//div[@class='t_fsz']//td[@class='t_f']"
+                    val content = it.selectXpath(xpath).text()
+                    println("content---${content}")
+                    if (content.isNotEmpty()) {
+                        comment.content = content
                     }
 
                     list.add(comment)

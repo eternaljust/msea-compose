@@ -15,12 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
+import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.widget.RefreshList
@@ -65,7 +69,7 @@ fun TopicDetailPage(
             Surface(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
                 RefreshList(
                     lazyPagingItems = lazyPagingItems
@@ -88,7 +92,12 @@ fun TopicDetailPage(
 
                     itemsIndexed(lazyPagingItems) { _, item ->
                         item?.let {
-                            Text(text = it.name)
+                            TopicDetailItemContent(
+                                item = it,
+                                avatarClick = {
+                                    navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                                }
+                            )
                         }
                     }
                 }
@@ -104,92 +113,98 @@ fun TopicDetailHeader(
     nodeListClick: (String) -> Unit,
     tagClick: (TagItemModel) -> Unit
 ) {
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
-                contentDescription = "节点",
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Text(
-                modifier = Modifier.clickable { nodeClick("-1") },
-                text = "节点",
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            if (topic.indexTitle.isNotEmpty()) {
-                NodeArrowIcon()
-
-                Text(
-                    modifier = Modifier.clickable { nodeClick(topic.gid) },
-                    text = topic.indexTitle,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            if (topic.nodeTitle.isNotEmpty()) {
-                NodeArrowIcon()
-
-                Text(
-                    modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
-                    text = topic.nodeTitle,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = topic.title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = topic.commentCount,
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray
-        )
-
-        if (topic.tags.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(4.dp))
-
             Row(
                 modifier = Modifier,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Icon(
                     modifier = Modifier.size(20.dp),
-                    painter = painterResource(id = R.drawable.ic_baseline_tag_24),
+                    painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
                     contentDescription = "节点",
                     tint = MaterialTheme.colorScheme.primary
                 )
 
-                topic.tags.forEach {
-                    Column(
-                        modifier = Modifier
-                            .clip(shape = RoundedCornerShape(50.dp))
-                            .background(MaterialTheme.colorScheme.secondary)
-                            .clickable { tagClick(it) },
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
+                Text(
+                    modifier = Modifier.clickable { nodeClick("-1") },
+                    text = "节点",
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                if (topic.indexTitle.isNotEmpty()) {
+                    NodeArrowIcon()
+
+                    Text(
+                        modifier = Modifier.clickable { nodeClick(topic.gid) },
+                        text = topic.indexTitle,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                if (topic.nodeTitle.isNotEmpty()) {
+                    NodeArrowIcon()
+
+                    Text(
+                        modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
+                        text = topic.nodeTitle,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = topic.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = topic.commentCount,
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray
+            )
+
+            if (topic.tags.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(id = R.drawable.ic_baseline_tag_24),
+                        contentDescription = "节点",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    topic.tags.forEach {
+                        Column(
                             modifier = Modifier
-                                .padding(vertical = 3.dp, horizontal = 5.dp),
-                            text = it.title,
-                            color = Color.White,
-                            style = MaterialTheme.typography.labelMedium
-                        )
+                                .clip(shape = RoundedCornerShape(50.dp))
+                                .background(MaterialTheme.colorScheme.secondary)
+                                .clickable { tagClick(it) },
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(vertical = 3.dp, horizontal = 5.dp),
+                                text = it.title,
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     }
                 }
             }
@@ -205,4 +220,51 @@ private fun NodeArrowIcon() {
         contentDescription = null,
         tint = MaterialTheme.colorScheme.primary
     )
+}
+
+@Composable
+fun TopicDetailItemContent(
+    item: TopicCommentModel,
+    avatarClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 10.dp)
+    ) {
+        Row {
+            AsyncImage(
+                modifier = Modifier
+                    .size(45.dp)
+                    .clip(shape = RoundedCornerShape(5))
+                    .clickable { avatarClick() },
+                model = item.avatar,
+                placeholder = painterResource(id = R.drawable.icon),
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column {
+                Text(
+                    modifier = Modifier.clickable { avatarClick() },
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(
+                    text = item.time,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+        }
+    }
+
+    Text(text = item.content)
+
+    Divider(modifier = Modifier)
 }
