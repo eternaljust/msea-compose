@@ -2,7 +2,6 @@
 
 package com.eternaljust.msea.ui.page.home.topic
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,11 +26,9 @@ import androidx.paging.compose.itemsIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.toJson
 
 @Composable
 fun TopicListPage(
@@ -157,7 +154,13 @@ fun TopicListItemContent(
                 annotation = ""
             )
 
-            append(item.title)
+            withStyle(
+                style = SpanStyle(
+                    color = ColorTheme(light = Color.Black, dark = Color.White)
+                )
+            ) {
+                append(item.title)
+            }
 
             if (item.attachmentColorRed) {
                 withStyle(

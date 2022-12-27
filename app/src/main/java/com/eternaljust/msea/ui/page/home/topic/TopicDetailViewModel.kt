@@ -126,18 +126,21 @@ class TopicDetailViewModel : ViewModel() {
 
                     var td = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']")
                     val content = td.html()
-                    println("content---${content}")
                     if (content.contains("font") || content.contains("strong")
                         || content.contains("color") || content.contains("quote")
                         || content.contains("</a>")) {
                         comment.isText = false
-                        comment.content = content
+                        comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
+                        if (comment.content.contains("blockquote")) {
+                            comment.content = comment.content.replace("<br>", "")
+                        }
                     } else {
                         val text = td.text()
                         if (text.isNotEmpty()) {
                             comment.content = text
                         }
                     }
+                    println("content---${comment.content}")
 
                     if (comment.name.isNotEmpty()) {
                         list.add(comment)

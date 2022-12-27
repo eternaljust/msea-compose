@@ -22,6 +22,7 @@ import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.*
 import com.google.accompanist.web.WebView
 import kotlinx.android.parcel.Parcelize
+import okhttp3.internal.toHexString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +131,7 @@ data class WebViewModel(
 const val cssStyle =
     """
 a:link, a:visited, a:hover, a:active {
-    color: #006e26;
+    color: aColor;
     text-decoration: none;
     word-break: break-all;
     -webkit-touch-callout: none;
@@ -141,17 +142,8 @@ img {
     max-width: 100%;
 }
 
-td {
-    font-size: tdFontSize;
-    line-height: tdLineHeight;
-}
-
-body {
-    margin: 0px;
-}
-
 div.quote {
-    width: 100%
+    width: 100%;
     border-radius: 3px;
 }
 
@@ -168,14 +160,16 @@ div.rsld img {
     height: 30px;
     border-radius: 5px;
 }
+
+td {
+    font-size: tdFontSize;
+    line-height: tdLineHeight;
+}
+
     """
 
 const val lightStyle =
     """
-td {
-    color: #000;
-}
-
 body {
     background-color: #fff;
 }
@@ -183,20 +177,28 @@ body {
 div.quote, div.rsld {
     background-color: #f9f9f9;
 }
+
+td {
+    color: #000;
+}
     """
 
 const val darkStyle =
     """
+body {
+    background-color: #1c1c1e;
+}
+
+div.quote, div.rsld {
+    background-color: #2c2c2e;
+}
+
 td {
     color: #fff;
 }
 
-body {
-    background-color: #000;
-}
-
-div.quote, div.rsld {
-    background-color: #1c1c1e;
+blockquote {
+    color: #ffffff;
 }
     """
 
@@ -212,10 +214,19 @@ fun WebHTML(
     val runningInPreview = LocalInspectionMode.current
     val gray = if(isNodeFid125Gray) grayStyle else ""
     val themeStyle = if(isSystemInDarkTheme()) darkStyle else lightStyle
-    val fontPx = MaterialTheme.typography.bodyLarge.fontSize.value
-    val lineHeight = MaterialTheme.typography.bodyLarge.lineHeight.value
-    var htmlStyle = cssStyle.replace("tdFontSize","${fontPx}px")
-    htmlStyle = htmlStyle.replace("tdLineHeight", "${lineHeight}px")
+    val fontPx = MaterialTheme.typography.bodyLarge.fontSize.value.toInt()
+    val lineHeight = MaterialTheme.typography.bodyLarge.lineHeight.value.toInt()
+    val color = MaterialTheme.colorScheme.primary.value
+    var hex = java.lang.Long.toHexString(color.toLong())
+    val aColor = hex.substring(0, 8).removePrefix("ff")
+    var htmlStyle = (cssStyle + themeStyle).replace("tdFontSize","${fontPx}px")
+    htmlStyle.replace("tdLineHeight", "${lineHeight}px").also { htmlStyle = it }
+    htmlStyle.replace("aColor", "#$aColor").also { htmlStyle = it }
+    val style = htmlStyle + gray
+    val head = "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"><style>$style</style></head>"
+    val body = "<body><div id=\"Wrapper\"<table><tbody><tr>$html</tr></tbody></table></div></body>"
+    val html = "<html>$head$body</html>"
+    println("html---$html")
 
     BoxWithConstraints(modifier) {
         AndroidView(
@@ -247,9 +258,6 @@ fun WebHTML(
             // AndroidViews are not supported by preview, bail early
             if (runningInPreview) return@AndroidView
 
-            val head = "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"><style>${htmlStyle + themeStyle + gray}</style></head>"
-            val body = "<body><div id=\"Wrapper\">$html</div></body>"
-            val html = "<html>$head$body</html>"
             view.loadDataWithBaseURL(null, html, "text/html", "utf-8",null)
         }
     }

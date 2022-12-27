@@ -232,7 +232,7 @@ fun TopicDetailItemContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 10.dp)
+            .padding(8.dp)
     ) {
         Row {
             AsyncImage(
@@ -255,7 +255,7 @@ fun TopicDetailItemContent(
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = item.time,
@@ -268,16 +268,22 @@ fun TopicDetailItemContent(
 
     if (item.isText) {
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             text = item.content,
             textAlign = TextAlign.Left
         )
     } else {
         WebHTML(
-            modifier = Modifier.fillMaxWidth().background(Color.Red),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             html = item.content
         )
     }
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     Divider(modifier = Modifier)
 }
