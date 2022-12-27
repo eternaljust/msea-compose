@@ -126,8 +126,19 @@ class NetworkUtil private constructor() {
         fun getUid(text: String): String {
             if (text.contains("uid-") && text.contains(".html")) {
                 val uids = text.split("uid-")
-                val uid = uids.last().replace(".html", "")
-                return uid
+                return uids.last().replace(".html", "")
+            } else if (text.contains("mod=space&uid=")) {
+                return text.split("mod=space&uid=").last()
+            }
+            return ""
+        }
+
+        fun getTid(text: String): String {
+            if (text.contains("thread-") && text.contains(".html")) {
+                val uids = text.split("thread-")
+                return uids.last().split("-").first()
+            } else if (text.contains("mod=viewthread&tid=")) {
+                return text.split("mod=viewthread&tid=").last()
             }
             return ""
         }

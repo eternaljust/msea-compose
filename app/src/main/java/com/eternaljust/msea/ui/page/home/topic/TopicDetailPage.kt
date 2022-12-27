@@ -31,6 +31,7 @@ import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebHTML
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
 
@@ -98,6 +99,15 @@ fun TopicDetailPage(
                                 item = it,
                                 avatarClick = {
                                     navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                                },
+                                userOrTopicClick = { url ->
+                                    if (url.contains("uid")) {
+                                        val uid = NetworkUtil.getUid(url)
+                                        navController.navigate(RouteName.PROFILE_DETAIL + "/$uid")
+                                    } else if (url.contains("tid") || url.contains("thread")) {
+                                        val tid = NetworkUtil.getTid(url)
+                                        navController.navigate(RouteName.TOPIC_DETAIL + "/$tid")
+                                    }
                                 }
                             )
                         }
@@ -227,7 +237,8 @@ private fun NodeArrowIcon() {
 @Composable
 fun TopicDetailItemContent(
     item: TopicCommentModel,
-    avatarClick: () -> Unit
+    avatarClick: () -> Unit,
+    userOrTopicClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -279,7 +290,8 @@ fun TopicDetailItemContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            html = item.content
+            html = item.content,
+            userOrTopicClick = { userOrTopicClick(it) }
         )
     }
 

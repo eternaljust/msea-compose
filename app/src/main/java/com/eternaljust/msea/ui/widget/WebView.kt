@@ -1,9 +1,11 @@
 package com.eternaljust.msea.ui.widget
 
-import androidx.compose.runtime.Composable
+import android.graphics.Bitmap
 import android.os.Parcelable
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -18,11 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
+import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.*
-import com.google.accompanist.web.WebView
 import kotlinx.android.parcel.Parcelize
-import okhttp3.internal.toHexString
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -208,7 +210,8 @@ const val grayStyle = "html {-webkit-filter: grayscale(100%);}"
 fun WebHTML(
     modifier: Modifier = Modifier,
     html: String,
-    isNodeFid125Gray: Boolean = false
+    isNodeFid125Gray: Boolean = false,
+    userOrTopicClick: (String) -> Unit
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
     val runningInPreview = LocalInspectionMode.current
@@ -227,6 +230,7 @@ fun WebHTML(
     val body = "<body><div id=\"Wrapper\"<table><tbody><tr>$html</tr></tbody></table></div></body>"
     val html = "<html>$head$body</html>"
     println("html---$html")
+    val context = LocalContext.current
 
     BoxWithConstraints(modifier) {
         AndroidView(
@@ -259,6 +263,31 @@ fun WebHTML(
             if (runningInPreview) return@AndroidView
 
             view.loadDataWithBaseURL(null, html, "text/html", "utf-8",null)
+
+            view.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    url: String?
+                ): Boolean {
+                    url?.let {
+                        println("shouldOverrideUrlLoading---${it}")
+                        if (it.contains(HTMLURL.BASE)) {
+                            // 用户、帖子
+                            if (it.contains("mod=space&uid=") ||
+                                it.contains("mod=viewthread&tid=") ||
+                                it.contains("space-uid-") ||
+                                it.contains("/thread-")) {
+                                userOrTopicClick(it)
+                            } else {
+                                openSystemBrowser(it, context)
+                            }
+                        } else {
+                            openSystemBrowser(it, context)
+                        }
+                    }
+                    return true
+                }
+            }
         }
     }
 }
