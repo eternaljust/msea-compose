@@ -28,6 +28,7 @@ import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
+import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebHTML
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
@@ -278,6 +279,37 @@ fun TopicDetailItemContent(
     }
 
     if (item.isText) {
+        if (item.blockquoteTime.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .clip(shape = RoundedCornerShape(4))
+                    .background(
+                        ColorTheme(
+                            light = Color(0xFFF9F9F9),
+                            dark = Color(0xFF2C2C2E)
+                        )
+                    )
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 30.dp, vertical = 4.dp),
+                    text = item.blockquoteTime,
+                    color = Color(0xFF999999),
+                    style = MaterialTheme.typography.labelMedium
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 30.dp, vertical = 4.dp),
+                    text = item.blockquoteContent
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()

@@ -1,9 +1,7 @@
 package com.eternaljust.msea.ui.widget
 
-import android.graphics.Bitmap
 import android.os.Parcelable
 import android.view.ViewGroup
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -173,7 +171,7 @@ td {
 const val lightStyle =
     """
 body {
-    background-color: #fff;
+    background-color: bodyBackgroundColor;
 }
 
 div.quote, div.rsld {
@@ -222,9 +220,13 @@ fun WebHTML(
     val color = MaterialTheme.colorScheme.primary.value
     var hex = java.lang.Long.toHexString(color.toLong())
     val aColor = hex.substring(0, 8).removePrefix("ff")
+    val background = MaterialTheme.colorScheme.background.value
+    val backgroundHex = java.lang.Long.toHexString(background.toLong())
+    val backgroundColor = backgroundHex.substring(0, 8).removePrefix("ff")
     var htmlStyle = (cssStyle + themeStyle).replace("tdFontSize","${fontPx}px")
     htmlStyle.replace("tdLineHeight", "${lineHeight}px").also { htmlStyle = it }
     htmlStyle.replace("aColor", "#$aColor").also { htmlStyle = it }
+    htmlStyle.replace("bodyBackgroundColor", "#$backgroundColor").also { htmlStyle = it }
     val style = htmlStyle + gray
     val head = "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"><style>$style</style></head>"
     val body = "<body><div id=\"Wrapper\"<table><tbody><tr>$html</tr></tbody></table></div></body>"

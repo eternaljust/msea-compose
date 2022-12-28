@@ -129,10 +129,25 @@ class TopicDetailViewModel : ViewModel() {
                     if (content.contains("font") || content.contains("strong")
                         || content.contains("color") || content.contains("quote")
                         || content.contains("</a>")) {
-                        comment.isText = false
-                        comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
-                        if (comment.content.contains("blockquote")) {
-                            comment.content = comment.content.replace("<br>", "")
+                        if (content.contains("quote")) {
+                            comment.isText = true
+                            val xpath = "tr/td[@class='plc']//td[@class='t_f']/div[@class='quote']/blockquote"
+                            val time = it.selectXpath("$xpath//font[@color='#999999']").text()
+                            println("time---$time")
+                            comment.blockquoteTime = time
+                            val text = it.selectXpath(xpath).text()
+                            comment.blockquoteContent = text.replace(time, "").removePrefix(" ")
+                            val quote = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']").text()
+                            if (quote.isNotEmpty()) {
+                                comment.content = quote.replace(text, "").removePrefix(" ")
+                            }
+                        } else {
+                            comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
+                            comment.isText = false
+                        }
+                        if (comment.content.contains("file") && comment.content.contains("src")) {
+                            comment.content = comment.content.replace("src=\"static/image/common/none.gif\"", "")
+                            comment.content = comment.content.replace("file", "src")
                         }
                     } else {
                         val text = td.text()
@@ -189,5 +204,6 @@ class TopicCommentModel {
     var time = ""
     var content = ""
     var isText = true
-    var webViewHeight: Float = 0f
+    var blockquoteTime = ""
+    var blockquoteContent = ""
 }
