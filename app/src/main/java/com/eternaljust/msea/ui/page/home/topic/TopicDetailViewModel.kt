@@ -35,6 +35,8 @@ class TopicDetailViewModel : ViewModel() {
     fun dispatch(action: TopicDetailViewAction) {
         when (action) {
             is TopicDetailViewAction.PopBack -> popBack()
+            is TopicDetailViewAction.Favorite -> favorite()
+            is TopicDetailViewAction.Share -> share()
             is TopicDetailViewAction.SetTid -> tid = action.tid
         }
     }
@@ -42,6 +44,27 @@ class TopicDetailViewModel : ViewModel() {
     private fun popBack() {
         viewModelScope.launch {
             _viewEvents.send(TopicDetailViewEvent.PopBack)
+        }
+    }
+
+    private fun share() {
+        viewModelScope.launch {
+            _viewEvents.send(TopicDetailViewEvent.Share)
+        }
+    }
+
+    private fun favorite() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.BASE + "/${viewStates.topic.favorite}"
+            val document = NetworkUtil.getRequest(url)
+            val result = document.html()
+            if (result.contains("信息收藏成功")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("收藏成功"))
+            } else if (result.contains("已收藏")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("抱歉，您已收藏，请勿重复收藏"))
+            } else {
+                _viewEvents.send(TopicDetailViewEvent.Message("收藏失败，请稍后重试"))
+            }
         }
     }
 
@@ -54,6 +77,7 @@ class TopicDetailViewModel : ViewModel() {
             withContext(Dispatchers.Default) {
                 if (page == 1) {
                     val topic = TopicDetailModel()
+                    topic.url = url
                     val title = document.selectXpath("//td[@class='plc ptm pbn vwthd']/h1/span").text()
                     if (title.isNotEmpty()) {
                         topic.title = title
@@ -98,9 +122,28 @@ class TopicDetailViewModel : ViewModel() {
                         tags.add(tag)
                     }
                     topic.tags = tags
+                    val action = document.selectXpath("//div[@class='pob cl']//a[1]")
+                        .attr("href")
+                    if (action.contains("ac=favorite")) {
+                        topic.favorite = action
+                    }
 
                     viewStates = viewStates.copy(topic = topic)
                 }
+
+                if (page > 1) {
+                    val pageNumber = document.selectXpath("//div[@class='pgs mtm mbm cl']//label/span").text()
+                    println("pageNumber---$pageNumber")
+                    if (pageNumber.isNotEmpty()) {
+                        val number = pageNumber.replace("/ ", "").replace(" 页", "")
+                        if (page > number.toInt()) {
+                            return@withContext list
+                        }
+                    } else {
+                        return@withContext list
+                    }
+                }
+
                 val node = document.selectXpath("//div/table[@class='plhin']/tbody")
                 node.forEach { it ->
                     var comment = TopicCommentModel()
@@ -123,12 +166,17 @@ class TopicDetailViewModel : ViewModel() {
                     if (time.isNotEmpty()) {
                         comment.time = time
                     }
+                    val sup = it.selectXpath("tr/td[@class='plc']//div[@class='pi']/strong")
+                        .text()
+                    if (sup.isNotEmpty()) {
+                        comment.sup = sup
+                    }
 
                     var td = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']")
                     val content = td.html()
                     if (content.contains("font") || content.contains("strong")
                         || content.contains("color") || content.contains("quote")
-                        || content.contains("</a>")) {
+                        || content.contains("</a>") || content.contains("<img")) {
                         if (content.contains("quote")) {
                             comment.isText = true
                             val xpath = "tr/td[@class='plc']//td[@class='t_f']/div[@class='quote']/blockquote"
@@ -145,9 +193,10 @@ class TopicDetailViewModel : ViewModel() {
                             comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
                             comment.isText = false
                         }
-                        if (comment.content.contains("file") && comment.content.contains("src")) {
+                        if (comment.content.contains("file=")) {
+                            comment.content = comment.content.replace("file=", "src=")
+                        } else if (comment.content.contains("src=")) {
                             comment.content = comment.content.replace("src=\"static/image/common/none.gif\"", "")
-                            comment.content = comment.content.replace("file", "src")
                         }
                     } else {
                         val text = td.text()
@@ -175,21 +224,28 @@ data class TopicDetailViewState(
 
 sealed class TopicDetailViewEvent {
     object PopBack : TopicDetailViewEvent()
+    object Share : TopicDetailViewEvent()
+
+    data class Message(val message: String) : TopicDetailViewEvent()
 }
 
 sealed class TopicDetailViewAction {
     object PopBack : TopicDetailViewAction()
+    object Favorite : TopicDetailViewAction()
+    object Share : TopicDetailViewAction()
 
     data class SetTid(val tid: String) : TopicDetailViewAction()
 }
 
 class TopicDetailModel {
+    var url = ""
     var indexTitle = ""
     var gid = ""
     var nodeTitle = ""
     var nodeFid = ""
     var title = ""
     var commentCount = ""
+    var favorite = ""
     var tags: List<TagItemModel> = emptyList()
 }
 
@@ -197,7 +253,6 @@ class TopicCommentModel {
     var uid = ""
     var pid = ""
     var reply = ""
-    var favorite = ""
     var name = ""
     var avatar = ""
     var lv = ""
@@ -206,4 +261,5 @@ class TopicCommentModel {
     var isText = true
     var blockquoteTime = ""
     var blockquoteContent = ""
+    var sup = ""
 }

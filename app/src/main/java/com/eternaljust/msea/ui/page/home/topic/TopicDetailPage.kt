@@ -8,18 +8,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -32,9 +33,7 @@ import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebHTML
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
-import com.eternaljust.msea.utils.NetworkUtil
-import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.toJson
+import com.eternaljust.msea.utils.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -45,8 +44,30 @@ fun TopicDetailPage(
     viewModel: TopicDetailViewModel = viewModel()
 ) {
     viewModel.dispatch(TopicDetailViewAction.SetTid(tid = tid))
+
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.viewEvents.collect {
+            when (it) {
+                is TopicDetailViewEvent.PopBack -> {
+                    navController.popBackStack()
+                }
+                is TopicDetailViewEvent.Share -> {
+                    openSystemShare(
+                        text = viewModel.viewStates.topic.url,
+                        title = viewModel.viewStates.topic.title,
+                        context = context
+                    )
+                }
+                is TopicDetailViewEvent.Message -> {
+                    scaffoldState.showSnackbar(message = it.message)
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -56,12 +77,38 @@ fun TopicDetailPage(
                     Row {
                         IconButton(
                             onClick = {
-                                navController.popBackStack()
+                                viewModel.dispatch(TopicDetailViewAction.PopBack)
                             }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "返回"
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    if (viewModel.viewStates.topic.title.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                viewModel.dispatch(TopicDetailViewAction.Share)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "分享"
+                            )
+                        }
+                    }
+
+                    if (viewModel.viewStates.topic.favorite.isNotEmpty() &&
+                        UserInfo.instance.auth.isNotEmpty()) {
+                        IconButton(
+                            onClick = { viewModel.dispatch(TopicDetailViewAction.Favorite) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = "收藏"
                             )
                         }
                     }
@@ -246,35 +293,53 @@ fun TopicDetailItemContent(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Row {
-            AsyncImage(
-                modifier = Modifier
-                    .size(45.dp)
-                    .clip(shape = RoundedCornerShape(5))
-                    .clickable { avatarClick() },
-                model = item.avatar,
-                placeholder = painterResource(id = R.drawable.icon),
-                contentDescription = null
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Column {
-                Text(
-                    modifier = Modifier.clickable { avatarClick() },
-                    text = item.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row {
+                AsyncImage(
+                    modifier = Modifier
+                        .size(45.dp)
+                        .clip(shape = RoundedCornerShape(5))
+                        .clickable { avatarClick() },
+                    model = item.avatar,
+                    placeholder = painterResource(id = R.drawable.icon),
+                    contentDescription = null
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
-                Text(
-                    text = item.time,
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Normal
-                )
+                Column {
+                    Text(
+                        modifier = Modifier.clickable { avatarClick() },
+                        text = item.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = item.time,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
             }
+
+            Text(
+                modifier = Modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = RoundedCornerShape(50)
+                    )
+                    .padding(horizontal = 5.dp),
+                text = item.sup,
+                color = Color.White,
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 

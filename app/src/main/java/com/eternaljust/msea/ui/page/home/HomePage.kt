@@ -50,8 +50,7 @@ fun HomePage(
             }
 
             HorizontalPager(count = items.size, state = pagerState) {
-                val tabItem = items[pagerState.currentPage]
-                val viewModel = when (tabItem) {
+                val vm = when (items[pagerState.currentPage]) {
                     TopicTabItem.NEW -> TopicListViewModel.new
                     TopicTabItem.HOT -> TopicListViewModel.hot
                     TopicTabItem.NEWTHREAD -> TopicListViewModel.newthread
@@ -60,7 +59,7 @@ fun HomePage(
                 TopicListPage(
                     scaffoldState = scaffoldState,
                     navController = navController,
-                    viewModel = viewModel
+                    viewModel = vm
                 )
             }
         }

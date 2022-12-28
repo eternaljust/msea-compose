@@ -67,10 +67,7 @@ fun ProfileFavoritePage(
                             ProfileFavoriteListItemContent(
                                 item = it,
                                 contentClick = {
-                                    var url = HTMLURL.TOPIC_DETAIL + "-${it.tid}-1-1.html"
-                                    val web = WebViewModel(url = url)
-                                    val args = String.format("/%s", Uri.encode(web.toJson()))
-                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                    navController.navigate(RouteName.TOPIC_DETAIL + "/${it.tid}")
                                 }
                             )
                         }
