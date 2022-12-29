@@ -3,6 +3,7 @@ package com.eternaljust.msea.ui.widget
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -20,6 +21,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
@@ -55,18 +57,74 @@ fun <T : Any> RefreshList(
         ) {
             itemContent()
 
-            // 上拉加载更多的状态：加载中、加载错误以及没有更多数据
-            if (!swipeRefreshState.isRefreshing) {
-                item {
-                    lazyPagingItems.apply {
-                        when (loadState.append) {
-                            is LoadState.Loading -> LoadingItem()
-                            is LoadState.Error -> ErrorItem { retry() }
-                            is LoadState.NotLoading -> {
-                                if (loadState.append.endOfPaginationReached) {
-                                    NoMoreItem(text = noMoreDataText)
-                                }
-                            }
+            refresh(
+                lazyPagingItems = lazyPagingItems,
+                swipeRefreshState = swipeRefreshState,
+                noMoreDataText = noMoreDataText
+            )
+        }
+    }
+}
+
+@Composable
+fun <T : Any> RefreshListState(
+    lazyPagingItems: LazyPagingItems<T>,
+    listState: LazyListState,
+    noMoreDataText: String = "没有更多了",
+    isRefreshing: Boolean = false,
+    onRefresh: (() -> Unit) = {},
+    itemContent: LazyListScope.() -> Unit
+) {
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = {
+            onRefresh.invoke()
+            lazyPagingItems.refresh()
+        },
+        indicator = { state, refreshTrigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        }
+    ) {
+        swipeRefreshState.isRefreshing =
+            ((lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing)
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            state = listState
+        ) {
+            itemContent()
+
+            refresh(
+                lazyPagingItems = lazyPagingItems,
+                swipeRefreshState = swipeRefreshState,
+                noMoreDataText = noMoreDataText
+            )
+        }
+    }
+}
+
+fun <T : Any> LazyListScope.refresh(
+    lazyPagingItems: LazyPagingItems<T>,
+    swipeRefreshState: SwipeRefreshState,
+    noMoreDataText: String
+) {
+    // 上拉加载更多的状态：加载中、加载错误以及没有更多数据
+    if (!swipeRefreshState.isRefreshing) {
+        item {
+            lazyPagingItems.apply {
+                when (loadState.append) {
+                    is LoadState.Loading -> LoadingItem()
+                    is LoadState.Error -> ErrorItem { retry() }
+                    is LoadState.NotLoading -> {
+                        if (loadState.append.endOfPaginationReached) {
+                            NoMoreItem(text = noMoreDataText)
                         }
                     }
                 }

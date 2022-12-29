@@ -35,7 +35,7 @@ class SignViewModel : ViewModel() {
             is SignViewAction.RuleShowDialog -> ruleDialog(action.isShow)
             is SignViewAction.SignShowDialog -> signDialog(action.isShow)
             is SignViewAction.SignTextChange -> signChange(action.text)
-            is SignViewAction.SignConfirm -> signComfirm()
+            is SignViewAction.SignConfirm -> signConfirm()
         }
     }
 
@@ -157,7 +157,7 @@ class SignViewModel : ViewModel() {
         viewStates = viewStates.copy(signText = text)
     }
 
-    private fun signComfirm() {
+    private fun signConfirm() {
         viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.SIGN_MESSAGE
             val message = NetworkUtil.urlEncode(viewStates.signText)

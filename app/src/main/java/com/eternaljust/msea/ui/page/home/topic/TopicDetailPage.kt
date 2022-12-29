@@ -5,9 +5,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -24,16 +27,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.theme.ColorTheme
-import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.WebHTML
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.ui.widget.*
 import com.eternaljust.msea.utils.*
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -48,6 +53,7 @@ fun TopicDetailPage(
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
     val context = LocalContext.current
+    val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -64,6 +70,12 @@ fun TopicDetailPage(
                 }
                 is TopicDetailViewEvent.Message -> {
                     scaffoldState.showSnackbar(message = it.message)
+                }
+                is TopicDetailViewEvent.Refresh -> {
+                    lazyPagingItems.refresh()
+                }
+                is TopicDetailViewEvent.Login -> {
+                    navController.navigate(route = RouteName.LOGIN)
                 }
             }
         }
@@ -116,14 +128,48 @@ fun TopicDetailPage(
                 colors = mseaTopAppBarColors()
             )
         },
+        floatingActionButton = {
+            if (viewModel.viewStates.topic.action.isNotEmpty()) {
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(text = "评论")
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "评论"
+                        )
+                    },
+                    onClick = {
+                        viewModel.dispatch(TopicDetailViewAction.CommentShowDialog(isShow = true))
+                    },
+                    expanded = listState.isScrollInProgress
+                )
+            }
+        },
         content = { paddingValues ->
             Surface(
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
-                RefreshList(
-                    lazyPagingItems = lazyPagingItems
+                TopicAlertDialog(
+                    commentText = viewModel.viewStates.commentText,
+                    commentTextChange = {
+                        viewModel.dispatch(TopicDetailViewAction.CommentTextChange(it))
+                    },
+                    commentConfirm = {
+                        viewModel.dispatch(TopicDetailViewAction.Comment)
+                    },
+                    showCommentDialog = viewModel.viewStates.showCommentDialog,
+                    commentDialogClick = {
+                        viewModel.dispatch(TopicDetailViewAction.CommentShowDialog(it))
+                    }
+                )
+                
+                RefreshListState(
+                    lazyPagingItems = lazyPagingItems,
+                    listState = listState
                 ) {
                     stickyHeader{
                         TopicDetailHeader(
@@ -164,6 +210,44 @@ fun TopicDetailPage(
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TopicAlertDialog(
+    commentText: String,
+    commentTextChange: (String) -> Unit,
+    commentConfirm: () -> Unit,
+    showCommentDialog: Boolean,
+    commentDialogClick: (Boolean) -> Unit,
+) {
+    if (showCommentDialog) {
+        AlertDialog(
+            onDismissRequest = { commentDialogClick(false) },
+            title = { Text(text = "帖子主题回复") },
+            text = {
+                TextField(
+                    modifier = Modifier.height(100.dp),
+                    value = commentText,
+                    onValueChange = { commentTextChange(it) },
+                    placeholder = { Text(text = "输入回复评论内容") }
+                )
+            },
+            dismissButton = {
+                Button(onClick = { commentDialogClick(false) }) {
+                    Text(text = "取消")
+                }
+            },
+            confirmButton = {
+                Button(
+                    enabled = commentText.isNotEmpty(),
+                    onClick = { commentConfirm() }
+                ) {
+                    Text(text = "发表回复")
+                }
+            }
+        )
+    }
 }
 
 @Composable

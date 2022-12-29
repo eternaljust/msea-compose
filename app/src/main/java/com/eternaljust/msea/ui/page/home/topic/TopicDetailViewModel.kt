@@ -10,6 +10,7 @@ import androidx.paging.PagingData
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
+import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
 
 class TopicDetailViewModel : ViewModel() {
     private var tid = ""
@@ -38,6 +40,18 @@ class TopicDetailViewModel : ViewModel() {
             is TopicDetailViewAction.Favorite -> favorite()
             is TopicDetailViewAction.Share -> share()
             is TopicDetailViewAction.SetTid -> tid = action.tid
+            is TopicDetailViewAction.CommentShowDialog -> {
+                viewModelScope.launch {
+                    if (UserInfo.instance.auth.isEmpty()) {
+                        _viewEvents.send(TopicDetailViewEvent.Login)
+                        return@launch
+                    } else {
+                        commentDialog(action.isShow)
+                    }
+                }
+            }
+            is TopicDetailViewAction.CommentTextChange -> commentChange(action.text)
+            is TopicDetailViewAction.Comment -> comment()
         }
     }
 
@@ -66,6 +80,37 @@ class TopicDetailViewModel : ViewModel() {
                 _viewEvents.send(TopicDetailViewEvent.Message("收藏失败，请稍后重试"))
             }
         }
+    }
+
+    private fun comment() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val time = Instant.now().epochSecond
+            val url = HTMLURL.BASE + "/${viewStates.topic.action}"
+            val message = NetworkUtil.urlEncode(viewStates.commentText)
+            val encodedParams = mapOf(
+                "message" to message
+            )
+            val params = mapOf(
+                "posttime" to time.toString()
+            )
+            val document = NetworkUtil.postRequest(url, params, encodedParams)
+            val result = document.html()
+            if (result.isNotEmpty()) {
+                _viewEvents.send(TopicDetailViewEvent.Message("评论成功"))
+                _viewEvents.send(TopicDetailViewEvent.Refresh)
+            } else {
+                _viewEvents.send(TopicDetailViewEvent.Message("评论失败，请稍后重试"))
+            }
+            commentDialog(isShow = false)
+        }
+    }
+
+    private fun commentDialog(isShow: Boolean) {
+        viewStates = viewStates.copy(showCommentDialog = isShow)
+    }
+
+    private fun commentChange(text: String) {
+        viewStates = viewStates.copy(commentText = text)
     }
 
     private suspend fun loadData(page: Int) : List<TopicCommentModel> {
@@ -122,10 +167,16 @@ class TopicDetailViewModel : ViewModel() {
                         tags.add(tag)
                     }
                     topic.tags = tags
-                    val action = document.selectXpath("//div[@class='pob cl']//a[1]")
+                    val favorite = document.selectXpath("//div[@class='pob cl']//a[1]")
                         .attr("href")
-                    if (action.contains("ac=favorite")) {
-                        topic.favorite = action
+                    if (favorite.contains("ac=favorite")) {
+                        topic.favorite = favorite
+                    }
+
+                    val action = document.selectXpath("//div[@id='f_pst']/form")
+                        .attr("action")
+                    if (action.isNotEmpty()) {
+                        topic.action = action
                     }
 
                     viewStates = viewStates.copy(topic = topic)
@@ -219,12 +270,16 @@ class TopicDetailViewModel : ViewModel() {
 
 data class TopicDetailViewState(
     val topic: TopicDetailModel = TopicDetailModel(),
-    val pagingData: Flow<PagingData<TopicCommentModel>>
+    val pagingData: Flow<PagingData<TopicCommentModel>>,
+    val showCommentDialog: Boolean = false,
+    val commentText: String = "",
 )
 
 sealed class TopicDetailViewEvent {
     object PopBack : TopicDetailViewEvent()
     object Share : TopicDetailViewEvent()
+    object Refresh : TopicDetailViewEvent()
+    object Login : TopicDetailViewEvent()
 
     data class Message(val message: String) : TopicDetailViewEvent()
 }
@@ -233,8 +288,11 @@ sealed class TopicDetailViewAction {
     object PopBack : TopicDetailViewAction()
     object Favorite : TopicDetailViewAction()
     object Share : TopicDetailViewAction()
+    object Comment : TopicDetailViewAction()
 
     data class SetTid(val tid: String) : TopicDetailViewAction()
+    data class CommentShowDialog(val isShow: Boolean) : TopicDetailViewAction()
+    data class CommentTextChange(val text: String) : TopicDetailViewAction()
 }
 
 class TopicDetailModel {
@@ -246,6 +304,7 @@ class TopicDetailModel {
     var title = ""
     var commentCount = ""
     var favorite = ""
+    var action = ""
     var tags: List<TagItemModel> = emptyList()
 }
 
