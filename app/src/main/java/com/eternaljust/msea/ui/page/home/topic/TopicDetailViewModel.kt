@@ -128,6 +128,11 @@ class TopicDetailViewModel : ViewModel() {
 
     private fun recommendAdd() {
         viewModelScope.launch(Dispatchers.IO) {
+            if (UserInfo.instance.auth.isEmpty()) {
+                _viewEvents.send(TopicDetailViewEvent.Login)
+                return@launch
+            }
+
             val url = HTMLURL.BASE + "/${viewStates.topic.recommendAdd}"
             val document = NetworkUtil.getRequest(url)
             val result = document.selectXpath("//div[@class='wp cl w']/div[@class='nfl']").text()
@@ -147,6 +152,11 @@ class TopicDetailViewModel : ViewModel() {
 
     private fun recommendSubtract() {
         viewModelScope.launch(Dispatchers.IO) {
+            if (UserInfo.instance.auth.isEmpty()) {
+                _viewEvents.send(TopicDetailViewEvent.Login)
+                return@launch
+            }
+
             val url = HTMLURL.BASE + "/${viewStates.topic.recommendSubtract}"
             val document = NetworkUtil.getRequest(url)
             val result = document.selectXpath("//div[@class='wp cl w']/div[@class='nfl']").text()
