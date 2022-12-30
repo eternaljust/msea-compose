@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
@@ -17,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.reduce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -55,6 +53,8 @@ class TopicDetailViewModel : ViewModel() {
             is TopicDetailViewAction.CommentTextChange -> commentChange(action.text)
             is TopicDetailViewAction.Comment -> comment()
             is TopicDetailViewAction.Support -> support(action.action)
+            is TopicDetailViewAction.RecommendAdd -> recommendAdd()
+            is TopicDetailViewAction.RecommendSubtract -> recommendSubtract()
         }
     }
 
@@ -123,6 +123,40 @@ class TopicDetailViewModel : ViewModel() {
                 _viewEvents.send(TopicDetailViewEvent.Message("评论失败，请稍后重试"))
             }
             commentDialog(isShow = false)
+        }
+    }
+
+    private fun recommendAdd() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.BASE + "/${viewStates.topic.recommendAdd}"
+            val document = NetworkUtil.getRequest(url)
+            val result = document.selectXpath("//div[@class='wp cl w']/div[@class='nfl']").text()
+            if (result.contains("+")) {
+                if (viewStates.recommendAddCount == "0") {
+                    val count = viewStates.recommendAddCount.toInt() + 1
+                    viewStates = viewStates.copy(recommendAddCount = count.toString())
+                }
+                _viewEvents.send(TopicDetailViewEvent.Message("已顶"))
+            } else if (result.contains("已评价")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("您已评价过本主题"))
+            } else {
+                _viewEvents.send(TopicDetailViewEvent.Message("评价失败，请稍后重试"))
+            }
+        }
+    }
+
+    private fun recommendSubtract() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.BASE + "/${viewStates.topic.recommendSubtract}"
+            val document = NetworkUtil.getRequest(url)
+            val result = document.selectXpath("//div[@class='wp cl w']/div[@class='nfl']").text()
+            if (result.contains("-")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("已踩"))
+            } else if (result.contains("已评价")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("您已评价过本主题"))
+            } else {
+                _viewEvents.send(TopicDetailViewEvent.Message("评价失败，请稍后重试"))
+            }
         }
     }
 
@@ -203,6 +237,20 @@ class TopicDetailViewModel : ViewModel() {
                         .attr("action")
                     if (action.isNotEmpty()) {
                         topic.action = action
+                    }
+                    val addXpath = "//div[@class='mtw mbm hm cl']/a[@id='recommend_add']"
+                    val add = document.selectXpath(addXpath).attr("href")
+                    if (add.isNotEmpty()) {
+                        topic.recommendAdd = add
+                    }
+                    val addCount = document.selectXpath("${addXpath}//span[@id='recommendv_add']").text()
+                    if (addCount.isNotEmpty()) {
+                        viewStates = viewStates.copy(recommendAddCount = addCount)
+                    }
+                    val subtractXpath = "//div[@class='mtw mbm hm cl']/a[@id='recommend_subtract']"
+                    val subtract = document.selectXpath(subtractXpath).attr("href")
+                    if (subtract.isNotEmpty()) {
+                        topic.recommendSubtract = subtract
                     }
 
                     viewStates = viewStates.copy(topic = topic)
@@ -314,7 +362,8 @@ data class TopicDetailViewState(
     val pagingData: Flow<PagingData<TopicCommentModel>>,
     val showCommentDialog: Boolean = false,
     val commentText: String = "",
-    var favoriteCount: String = ""
+    var favoriteCount: String = "",
+    var recommendAddCount: String = ""
 )
 
 sealed class TopicDetailViewEvent {
@@ -331,6 +380,8 @@ sealed class TopicDetailViewAction {
     object Favorite : TopicDetailViewAction()
     object Share : TopicDetailViewAction()
     object Comment : TopicDetailViewAction()
+    object RecommendAdd : TopicDetailViewAction()
+    object RecommendSubtract : TopicDetailViewAction()
 
     data class SetTid(val tid: String) : TopicDetailViewAction()
     data class CommentShowDialog(val isShow: Boolean) : TopicDetailViewAction()
@@ -348,6 +399,8 @@ class TopicDetailModel {
     var commentCount = ""
     var favorite = ""
     var action = ""
+    var recommendAdd = ""
+    var recommendSubtract = ""
     var tags: List<TagItemModel> = emptyList()
 }
 

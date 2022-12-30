@@ -162,15 +162,11 @@ fun TopicListItemContent(
                 append(item.title)
             }
 
-            if (item.attachmentColorRed) {
-                withStyle(
-                    style = SpanStyle(
-                        color = Color.Red
-                    )
-                ) {
-                    append(item.attachment)
-                }
-            } else {
+            val color = if (item.attachmentColorRed) Color.Red else
+                ColorTheme(light = Color.Black, dark = Color.White)
+            withStyle(
+                style = SpanStyle( color = color )
+            ) {
                 append(item.attachment)
             }
 

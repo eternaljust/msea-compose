@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
@@ -36,6 +37,7 @@ import com.eternaljust.msea.utils.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -178,6 +180,7 @@ fun TopicDetailPage(
                     stickyHeader{
                         TopicDetailHeader(
                             topic = viewStates.topic,
+                            recommendAddCount = viewStates.recommendAddCount,
                             nodeClick = {
                                 navController.navigate(RouteName.NODE_DETAIL + "/$it")
                             },
@@ -187,6 +190,12 @@ fun TopicDetailPage(
                             tagClick = {
                                 val args = String.format("/%s", Uri.encode(it.toJson()))
                                 navController.navigate(RouteName.TAG_LIST + args)
+                            },
+                            recommendAdd = {
+                                viewModel.dispatch(TopicDetailViewAction.RecommendAdd)
+                            },
+                            recommendSubtract = {
+                                viewModel.dispatch(TopicDetailViewAction.RecommendSubtract)
                             }
                         )
                     }
@@ -209,6 +218,11 @@ fun TopicDetailPage(
                                 },
                                 supportClick = { action ->
                                     viewModel.dispatch(TopicDetailViewAction.Support(action = action))
+                                },
+                                replyClick = {
+                                    viewModel.viewModelScope.launch {
+                                        scaffoldState.showSnackbar(message = "回复他人的评论功能正在努力开发中💪")
+                                    }
                                 }
                             )
                         }
@@ -260,9 +274,12 @@ fun TopicAlertDialog(
 @Composable
 fun TopicDetailHeader(
     topic: TopicDetailModel,
+    recommendAddCount: String,
     nodeClick: (String) -> Unit,
     nodeListClick: (String) -> Unit,
-    tagClick: (TagItemModel) -> Unit
+    tagClick: (TagItemModel) -> Unit,
+    recommendAdd: () -> Unit,
+    recommendSubtract: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -274,87 +291,148 @@ fun TopicDetailHeader(
                 .padding(8.dp)
         ) {
             Row(
-                modifier = Modifier,
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
-                    contentDescription = "节点",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-
-                Text(
-                    modifier = Modifier.clickable { nodeClick("-1") },
-                    text = "节点",
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                if (topic.indexTitle.isNotEmpty()) {
-                    NodeArrowIcon()
-
-                    Text(
-                        modifier = Modifier.clickable { nodeClick(topic.gid) },
-                        text = topic.indexTitle,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                if (topic.nodeTitle.isNotEmpty()) {
-                    NodeArrowIcon()
-
-                    Text(
-                        modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
-                        text = topic.nodeTitle,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = topic.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = topic.commentCount,
-                style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray
-            )
-
-            if (topic.tags.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Row(
                     modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     Icon(
                         modifier = Modifier.size(20.dp),
-                        painter = painterResource(id = R.drawable.ic_baseline_tag_24),
+                        painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
                         contentDescription = "节点",
                         tint = MaterialTheme.colorScheme.primary
                     )
 
-                    topic.tags.forEach {
-                        Column(
-                            modifier = Modifier
-                                .clip(shape = RoundedCornerShape(50.dp))
-                                .background(MaterialTheme.colorScheme.secondary)
-                                .clickable { tagClick(it) },
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                    Text(
+                        modifier = Modifier.clickable { nodeClick("-1") },
+                        text = "节点",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (topic.indexTitle.isNotEmpty()) {
+                        NodeArrowIcon()
+
+                        Text(
+                            modifier = Modifier.clickable { nodeClick(topic.gid) },
+                            text = topic.indexTitle,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    if (topic.nodeTitle.isNotEmpty()) {
+                        NodeArrowIcon()
+
+                        Text(
+                            modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
+                            text = topic.nodeTitle,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                if (topic.recommendAdd.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.secondary)
+                            .clickable { recommendAdd() },
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_baseline_arrow_drop_up_24),
+                            contentDescription = "顶",
+                            tint = Color.White
+                        )
+
+                        if (recommendAddCount.isNotEmpty()) {
                             Text(
-                                modifier = Modifier
-                                    .padding(vertical = 3.dp, horizontal = 5.dp),
-                                text = it.title,
+                                modifier = Modifier.padding(
+                                    vertical = 3.dp,
+                                    horizontal = 5.dp
+                                ),
+                                text = recommendAddCount,
                                 color = Color.White,
                                 style = MaterialTheme.typography.labelMedium
                             )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Column {
+                Text(
+                    text = topic.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = topic.commentCount,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray
+                    )
+
+                    if (topic.recommendSubtract.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier
+                                .clip(shape = RoundedCornerShape(50))
+                                .background(MaterialTheme.colorScheme.secondary)
+                                .clickable { recommendSubtract() },
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_baseline_arrow_drop_down_24),
+                                contentDescription = "踩",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+
+                if (topic.tags.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        modifier = Modifier,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            painter = painterResource(id = R.drawable.ic_baseline_tag_24),
+                            contentDescription = "节点",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+
+                        topic.tags.forEach {
+                            Column(
+                                modifier = Modifier
+                                    .clip(shape = RoundedCornerShape(50.dp))
+                                    .background(MaterialTheme.colorScheme.secondary)
+                                    .clickable { tagClick(it) },
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(vertical = 3.dp, horizontal = 5.dp),
+                                    text = it.title,
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
                         }
                     }
                 }
@@ -378,7 +456,8 @@ fun TopicDetailItemContent(
     item: TopicCommentModel,
     avatarClick: () -> Unit,
     userOrTopicClick: (String) -> Unit,
-    supportClick: (String) -> Unit
+    supportClick: (String) -> Unit,
+    replyClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -496,7 +575,7 @@ fun TopicDetailItemContent(
             Row(
                 modifier = Modifier
                     .height(20.dp)
-                    .clickable { },
+                    .clickable { replyClick(item.reply) },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
