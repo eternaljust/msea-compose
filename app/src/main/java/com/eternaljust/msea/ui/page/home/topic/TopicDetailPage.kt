@@ -9,10 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,13 +112,20 @@ fun TopicDetailPage(
 
                     if (viewModel.viewStates.topic.favorite.isNotEmpty() &&
                         UserInfo.instance.auth.isNotEmpty()) {
-                        IconButton(
-                            onClick = { viewModel.dispatch(TopicDetailViewAction.Favorite) }
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .clickable { viewModel.dispatch(TopicDetailViewAction.Favorite) }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Favorite,
+                                imageVector = Icons.Default.Star,
                                 contentDescription = "收藏"
                             )
+                            
+                            val count = viewModel.viewStates.favoriteCount
+                            if (count != "0") {
+                                Text(text = count)
+                            }
                         }
                     }
                 },
@@ -202,6 +206,9 @@ fun TopicDetailPage(
                                         val tid = NetworkUtil.getTid(url)
                                         navController.navigate(RouteName.TOPIC_DETAIL + "/$tid")
                                     }
+                                },
+                                supportClick = { action ->
+                                    viewModel.dispatch(TopicDetailViewAction.Support(action = action))
                                 }
                             )
                         }
@@ -370,7 +377,8 @@ private fun NodeArrowIcon() {
 fun TopicDetailItemContent(
     item: TopicCommentModel,
     avatarClick: () -> Unit,
-    userOrTopicClick: (String) -> Unit
+    userOrTopicClick: (String) -> Unit,
+    supportClick: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -476,7 +484,68 @@ fun TopicDetailItemContent(
         )
     }
 
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(4.dp))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        if (item.reply.isNotEmpty()) {
+            Row(
+                modifier = Modifier
+                    .height(20.dp)
+                    .clickable { },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(id = R.drawable.ic_baseline_sms_24),
+                    contentDescription = "回复",
+                    tint = MaterialTheme.colorScheme.secondaryContainer
+                )
+
+                Text(
+                    text = " 回复",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+        }
+
+        if (item.support.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Row(
+                modifier = Modifier
+                    .height(20.dp)
+                    .clickable { supportClick(item.support) },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    imageVector = Icons.Default.ThumbUp,
+                    contentDescription = "支持",
+                    tint = MaterialTheme.colorScheme.secondaryContainer
+                )
+
+                Text(
+                    text = " 支持",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                )
+
+                Text(
+                    text = " ${item.supportCount}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.Red
+                )
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(4.dp))
 
     Divider(modifier = Modifier)
 }

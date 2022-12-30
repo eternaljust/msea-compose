@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.reduce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -52,6 +54,7 @@ class TopicDetailViewModel : ViewModel() {
             }
             is TopicDetailViewAction.CommentTextChange -> commentChange(action.text)
             is TopicDetailViewAction.Comment -> comment()
+            is TopicDetailViewAction.Support -> support(action.action)
         }
     }
 
@@ -73,11 +76,29 @@ class TopicDetailViewModel : ViewModel() {
             val document = NetworkUtil.getRequest(url)
             val result = document.html()
             if (result.contains("信息收藏成功")) {
+                val count = viewStates.favoriteCount.toInt() + 1
+                viewStates = viewStates.copy(favoriteCount = count.toString())
                 _viewEvents.send(TopicDetailViewEvent.Message("收藏成功"))
             } else if (result.contains("已收藏")) {
                 _viewEvents.send(TopicDetailViewEvent.Message("抱歉，您已收藏，请勿重复收藏"))
             } else {
                 _viewEvents.send(TopicDetailViewEvent.Message("收藏失败，请稍后重试"))
+            }
+        }
+    }
+
+    private fun support(action: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.BASE + "/$action"
+            val document = NetworkUtil.getRequest(url)
+            val result = document.html()
+            if (result.contains("投票成功")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("投票成功"))
+                _viewEvents.send(TopicDetailViewEvent.Refresh)
+            } else if (result.contains("投过票了")) {
+                _viewEvents.send(TopicDetailViewEvent.Message("您已经对此回帖投过票了"))
+            } else {
+                _viewEvents.send(TopicDetailViewEvent.Message("投票失败，请稍后重试"))
             }
         }
     }
@@ -167,10 +188,15 @@ class TopicDetailViewModel : ViewModel() {
                         tags.add(tag)
                     }
                     topic.tags = tags
-                    val favorite = document.selectXpath("//div[@class='pob cl']//a[1]")
+                    val xpath = "//div[@class='pob cl']//a[@id='k_favorite']"
+                    val favorite = document.selectXpath(xpath)
                         .attr("href")
                     if (favorite.contains("ac=favorite")) {
                         topic.favorite = favorite
+                    }
+                    val count = document.selectXpath("$xpath//span[@id='favoritenumber']").text()
+                    if (count.isNotEmpty()) {
+                        viewStates = viewStates.copy(favoriteCount = count)
                     }
 
                     val action = document.selectXpath("//div[@id='f_pst']/form")
@@ -221,6 +247,21 @@ class TopicDetailViewModel : ViewModel() {
                         .text()
                     if (sup.isNotEmpty()) {
                         comment.sup = sup
+                    }
+                    val reply = it.selectXpath("tr/td[@class='plc']//div[@class='pob cl']//a[@class='iconfont icon-message-fill']")
+                        .attr("href")
+                    if (reply.contains("action=reply")) {
+                        comment.reply = reply
+                    }
+                    val xpath = "tr/td[@class='plc']//div[@class='pob cl']//a[@class='iconfont icon-like-fill']"
+                    val support = it.selectXpath(xpath)
+                        .attr("href")
+                    if (support.contains("do=support")) {
+                        comment.support = support
+                    }
+                    val count = it.selectXpath("$xpath/span").text()
+                    if (count.isNotEmpty()) {
+                        comment.supportCount = count
                     }
 
                     var td = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']")
@@ -273,6 +314,7 @@ data class TopicDetailViewState(
     val pagingData: Flow<PagingData<TopicCommentModel>>,
     val showCommentDialog: Boolean = false,
     val commentText: String = "",
+    var favoriteCount: String = ""
 )
 
 sealed class TopicDetailViewEvent {
@@ -293,6 +335,7 @@ sealed class TopicDetailViewAction {
     data class SetTid(val tid: String) : TopicDetailViewAction()
     data class CommentShowDialog(val isShow: Boolean) : TopicDetailViewAction()
     data class CommentTextChange(val text: String) : TopicDetailViewAction()
+    data class Support(val action: String) : TopicDetailViewAction()
 }
 
 class TopicDetailModel {
@@ -312,6 +355,8 @@ class TopicCommentModel {
     var uid = ""
     var pid = ""
     var reply = ""
+    var support = ""
+    var supportCount = ""
     var name = ""
     var avatar = ""
     var lv = ""
