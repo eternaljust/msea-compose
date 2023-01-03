@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.node.list
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -17,10 +18,13 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.home.topic.TopicListItemContent
+import com.eternaljust.msea.ui.theme.GetIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -96,7 +100,12 @@ fun NodeListPage(
                                     navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
                                 },
                                 contentClick = {
-                                    navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
+                                    val topic = TopicDetailRouteModel(
+                                        tid = item.tid,
+                                        isNodeFid125 = viewModel.isNodeFid125
+                                    )
+                                    val args = String.format("/%s", Uri.encode(topic.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
                                 },
                                 isNodeFid125 = viewModel.isNodeFid125
                             )
@@ -145,7 +154,7 @@ fun NodeListHeader(
                     Icon(
                         painter = painterResource(id = paint),
                         contentDescription = null,
-                        tint = GetIconTintColor(isNodeFid125)
+                        tint = GetIconTintColorSecondary(isNodeFid125)
                     )
                 }
             }
@@ -175,7 +184,7 @@ fun NodeListHeader(
                     Icon(
                         painter = painterResource(id = paint),
                         contentDescription = null,
-                        tint = GetIconTintColor(isNodeFid125)
+                        tint = GetIconTintColorSecondary(isNodeFid125)
                     )
                 }
             }
@@ -186,9 +195,4 @@ fun NodeListHeader(
 @Composable
 private fun GetTextColor(isNodeFid125: Boolean): Color {
     return if (isNodeFid125) Color.Gray else Color.Red
-}
-
-@Composable
-private fun GetIconTintColor(isNodeFid125: Boolean): Color {
-    return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondary
 }

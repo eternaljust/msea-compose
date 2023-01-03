@@ -16,7 +16,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +34,8 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.theme.GetIconTintColorPrimary
+import com.eternaljust.msea.ui.theme.GetIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.*
 import com.eternaljust.msea.utils.*
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -45,6 +49,7 @@ fun TopicDetailPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     tid: String,
+    isNodeFid125: Boolean = false,
     viewModel: TopicDetailViewModel = viewModel()
 ) {
     viewModel.dispatch(TopicDetailViewAction.SetTid(tid = tid))
@@ -99,7 +104,7 @@ fun TopicDetailPage(
                     }
                 },
                 actions = {
-                    if (viewModel.viewStates.topic.title.isNotEmpty()) {
+                    if (viewModel.viewStates.topic.title.isNotEmpty() && !isNodeFid125) {
                         IconButton(
                             onClick = {
                                 viewModel.dispatch(TopicDetailViewAction.Share)
@@ -113,7 +118,7 @@ fun TopicDetailPage(
                     }
 
                     if (viewModel.viewStates.topic.favorite.isNotEmpty() &&
-                        UserInfo.instance.auth.isNotEmpty()) {
+                        UserInfo.instance.auth.isNotEmpty() && !isNodeFid125) {
                         Row(
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
@@ -131,11 +136,18 @@ fun TopicDetailPage(
                         }
                     }
                 },
-                colors = mseaTopAppBarColors()
+                colors = if (!isNodeFid125) mseaTopAppBarColors() else {
+                    TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = Color.Gray,
+                        titleContentColor = Color.White,
+                        actionIconContentColor = Color.White,
+                        navigationIconContentColor = Color.White
+                    )
+                }
             )
         },
         floatingActionButton = {
-            if (viewModel.viewStates.topic.action.isNotEmpty()) {
+            if (viewModel.viewStates.topic.action.isNotEmpty() && !isNodeFid125) {
                 ExtendedFloatingActionButton(
                     text = {
                         Text(text = "评论")
@@ -175,11 +187,13 @@ fun TopicDetailPage(
                 
                 RefreshListState(
                     lazyPagingItems = lazyPagingItems,
-                    listState = listState
+                    listState = listState,
+                    tint = if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.primary
                 ) {
                     stickyHeader{
                         TopicDetailHeader(
                             topic = viewStates.topic,
+                            isNodeFid125 = isNodeFid125,
                             recommendAddCount = viewStates.recommendAddCount,
                             nodeClick = {
                                 navController.navigate(RouteName.NODE_DETAIL + "/$it")
@@ -204,6 +218,7 @@ fun TopicDetailPage(
                         item?.let {
                             TopicDetailItemContent(
                                 item = it,
+                                isNodeFid125 = isNodeFid125,
                                 avatarClick = {
                                     navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
                                 },
@@ -213,7 +228,9 @@ fun TopicDetailPage(
                                         navController.navigate(RouteName.PROFILE_DETAIL + "/$uid")
                                     } else if (url.contains("tid") || url.contains("thread")) {
                                         val tid = NetworkUtil.getTid(url)
-                                        navController.navigate(RouteName.TOPIC_DETAIL + "/$tid")
+                                        val topic = TopicDetailRouteModel(tid = tid)
+                                        val args = String.format("/%s", Uri.encode(topic.toJson()))
+                                        navController.navigate(RouteName.TOPIC_DETAIL + args)
                                     }
                                 },
                                 supportClick = { action ->
@@ -274,6 +291,7 @@ fun TopicAlertDialog(
 @Composable
 fun TopicDetailHeader(
     topic: TopicDetailModel,
+    isNodeFid125: Boolean,
     recommendAddCount: String,
     nodeClick: (String) -> Unit,
     nodeListClick: (String) -> Unit,
@@ -283,7 +301,9 @@ fun TopicDetailHeader(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = if (!isNodeFid125) CardDefaults.cardColors() else
+            CardDefaults.cardColors(containerColor = Color.LightGray)
     ) {
         Column(
             modifier = Modifier
@@ -304,32 +324,32 @@ fun TopicDetailHeader(
                         modifier = Modifier.size(20.dp),
                         painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
                         contentDescription = "节点",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = GetIconTintColorPrimary(isNodeFid125)
                     )
 
                     Text(
                         modifier = Modifier.clickable { nodeClick("-1") },
                         text = "节点",
-                        color = MaterialTheme.colorScheme.primary
+                        color = GetIconTintColorPrimary(isNodeFid125)
                     )
 
                     if (topic.indexTitle.isNotEmpty()) {
-                        NodeArrowIcon()
+                        NodeArrowIcon(isNodeFid125)
 
                         Text(
                             modifier = Modifier.clickable { nodeClick(topic.gid) },
                             text = topic.indexTitle,
-                            color = MaterialTheme.colorScheme.primary
+                            color = GetIconTintColorPrimary(isNodeFid125)
                         )
                     }
 
                     if (topic.nodeTitle.isNotEmpty()) {
-                        NodeArrowIcon()
+                        NodeArrowIcon(isNodeFid125)
 
                         Text(
                             modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
                             text = topic.nodeTitle,
-                            color = MaterialTheme.colorScheme.primary
+                            color = GetIconTintColorPrimary(isNodeFid125)
                         )
                     }
                 }
@@ -338,7 +358,7 @@ fun TopicDetailHeader(
                     Row(
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.secondary)
+                            .background(GetIconTintColorSecondary(isNodeFid125))
                             .clickable { recommendAdd() },
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -388,7 +408,7 @@ fun TopicDetailHeader(
                         Row(
                             modifier = Modifier
                                 .clip(shape = RoundedCornerShape(50))
-                                .background(MaterialTheme.colorScheme.secondary)
+                                .background(GetIconTintColorSecondary(isNodeFid125))
                                 .clickable { recommendSubtract() },
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
@@ -413,14 +433,14 @@ fun TopicDetailHeader(
                             modifier = Modifier.size(20.dp),
                             painter = painterResource(id = R.drawable.ic_baseline_tag_24),
                             contentDescription = "节点",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = GetIconTintColorPrimary(isNodeFid125)
                         )
 
                         topic.tags.forEach {
                             Column(
                                 modifier = Modifier
                                     .clip(shape = RoundedCornerShape(50.dp))
-                                    .background(MaterialTheme.colorScheme.secondary)
+                                    .background(GetIconTintColorSecondary(isNodeFid125))
                                     .clickable { tagClick(it) },
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
@@ -442,18 +462,19 @@ fun TopicDetailHeader(
 }
 
 @Composable
-private fun NodeArrowIcon() {
+private fun NodeArrowIcon(isNodeFid125: Boolean) {
     Icon(
         modifier = Modifier.size(20.dp),
         painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_ios_24),
         contentDescription = null,
-        tint = MaterialTheme.colorScheme.primary
+        tint = GetIconTintColorPrimary(isNodeFid125)
     )
 }
 
 @Composable
 fun TopicDetailItemContent(
     item: TopicCommentModel,
+    isNodeFid125: Boolean,
     avatarClick: () -> Unit,
     userOrTopicClick: (String) -> Unit,
     supportClick: (String) -> Unit,
@@ -477,7 +498,9 @@ fun TopicDetailItemContent(
                         .clickable { avatarClick() },
                     model = item.avatar,
                     placeholder = painterResource(id = R.drawable.icon),
-                    contentDescription = null
+                    contentDescription = null,
+                    colorFilter = if (!isNodeFid125) null else
+                        ColorFilter.tint(Color.LightGray, BlendMode.Color)
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -503,7 +526,7 @@ fun TopicDetailItemContent(
             Text(
                 modifier = Modifier
                     .background(
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = GetIconTintColorSecondary(isNodeFid125),
                         shape = RoundedCornerShape(50)
                     )
                     .padding(horizontal = 5.dp),
@@ -559,6 +582,7 @@ fun TopicDetailItemContent(
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
             html = item.content,
+            isNodeFid125Gray = isNodeFid125,
             userOrTopicClick = { userOrTopicClick(it) }
         )
     }
@@ -582,13 +606,13 @@ fun TopicDetailItemContent(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(id = R.drawable.ic_baseline_sms_24),
                     contentDescription = "回复",
-                    tint = MaterialTheme.colorScheme.secondaryContainer
+                    tint = GetTextSecondaryContainer(isNodeFid125)
                 )
 
                 Text(
                     text = " 回复",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.secondaryContainer
+                    color = GetTextSecondaryContainer(isNodeFid125)
                 )
             }
         }
@@ -606,19 +630,19 @@ fun TopicDetailItemContent(
                     modifier = Modifier.size(20.dp),
                     imageVector = Icons.Default.ThumbUp,
                     contentDescription = "支持",
-                    tint = MaterialTheme.colorScheme.secondaryContainer
+                    tint = GetTextSecondaryContainer(isNodeFid125)
                 )
 
                 Text(
                     text = " 支持",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.secondaryContainer
+                    color = GetTextSecondaryContainer(isNodeFid125)
                 )
 
                 Text(
                     text = " ${item.supportCount}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.Red
+                    color = if (isNodeFid125) Color.Gray else Color.Red
                 )
             }
         }
@@ -627,4 +651,9 @@ fun TopicDetailItemContent(
     Spacer(modifier = Modifier.height(4.dp))
 
     Divider(modifier = Modifier)
+}
+
+@Composable
+private fun GetTextSecondaryContainer(isNodeFid125: Boolean): Color {
+    return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondaryContainer
 }

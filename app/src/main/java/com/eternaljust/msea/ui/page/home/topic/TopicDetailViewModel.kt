@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.home.topic
 
+import android.os.Parcelable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.configPager
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -430,3 +432,9 @@ class TopicCommentModel {
     var blockquoteContent = ""
     var sup = ""
 }
+
+@Parcelize
+data class TopicDetailRouteModel(
+    var tid: String = "",
+    var isNodeFid125: Boolean = false
+) : Parcelable

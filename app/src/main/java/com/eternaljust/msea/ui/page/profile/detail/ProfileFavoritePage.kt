@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
@@ -67,7 +68,9 @@ fun ProfileFavoritePage(
                             ProfileFavoriteListItemContent(
                                 item = it,
                                 contentClick = {
-                                    navController.navigate(RouteName.TOPIC_DETAIL + "/${it.tid}")
+                                    val topic = TopicDetailRouteModel(tid = it.tid)
+                                    val args = String.format("/%s", Uri.encode(topic.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
                                 }
                             )
                         }

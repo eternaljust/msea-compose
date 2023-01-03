@@ -26,6 +26,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
@@ -53,7 +54,9 @@ fun MyPostPage(
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
                     },
                     contentClick = {
-                        navController.navigate(RouteName.TOPIC_DETAIL + "/${it.ptid}")
+                        val topic = TopicDetailRouteModel(tid = it.ptid)
+                        val args = String.format("/%s", Uri.encode(topic.toJson()))
+                        navController.navigate(RouteName.TOPIC_DETAIL + args)
                     }
                 )
             }

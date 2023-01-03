@@ -2,6 +2,7 @@
 
 package com.eternaljust.msea.ui.page.home.topic
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,6 +32,7 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.theme.ColorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.toJson
 
 @Composable
 fun TopicListPage(
@@ -52,7 +54,9 @@ fun TopicListPage(
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
                     },
                     contentClick = {
-                        navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
+                        val topic = TopicDetailRouteModel(tid = item.tid)
+                        val args = String.format("/%s", Uri.encode(topic.toJson()))
+                        navController.navigate(RouteName.TOPIC_DETAIL + args)
                     }
                 )
             }

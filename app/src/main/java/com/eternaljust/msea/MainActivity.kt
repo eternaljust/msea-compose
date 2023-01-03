@@ -24,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailPage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.node.NodeDetailPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.node.list.NodeListPage
@@ -505,15 +506,16 @@ private fun NavGraphBuilder.detailsNav(
     }
 
     composable(
-        route = RouteName.TOPIC_DETAIL + "/{tid}",
-        arguments = listOf(navArgument("tid") { type = NavType.StringType })
+        route = RouteName.TOPIC_DETAIL + "/{topic}",
+        arguments = listOf(navArgument("topic") { type = NavType.StringType })
     ) {
-        val tid = it.arguments?.getString("tid")
-        tid?.let { id ->
+        val topic = it.arguments?.getString("topic")?.fromJson<TopicDetailRouteModel>()
+        topic?.let { model ->
             TopicDetailPage(
                 scaffoldState = scaffoldState,
                 navController = navController,
-                tid = id
+                tid = model.tid,
+                isNodeFid125 = model.isNodeFid125
             )
         }
     }

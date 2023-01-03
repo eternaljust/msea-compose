@@ -24,6 +24,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.WebViewModel
@@ -78,12 +79,14 @@ fun TagListPage(
                         item?.let {
                             TagListItemContent(
                                 item = it,
-                                nicknameClick = {
-                                    val route = RouteName.PROFILE_DETAIL_USERNAME + "/$it"
+                                nicknameClick = { name ->
+                                    val route = RouteName.PROFILE_DETAIL_USERNAME + "/$name"
                                     navController.navigate(route)
                                 },
                                 contentClick = {
-                                    navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
+                                    val topic = TopicDetailRouteModel(tid = it.tid)
+                                    val args = String.format("/%s", Uri.encode(topic.toJson()))
+                                    navController.navigate(RouteName.TOPIC_DETAIL + args)
                                 }
                             )
                         }

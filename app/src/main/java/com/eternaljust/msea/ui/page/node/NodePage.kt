@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.node.tag.TagViewAction
 import com.eternaljust.msea.ui.page.node.tag.TagViewEvent
 import com.eternaljust.msea.ui.theme.ColorTheme
@@ -128,7 +129,12 @@ private fun NodeContent(
                                 navController.navigate(route)
                             },
                             contentClick = {
-                                navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
+                                val topic = TopicDetailRouteModel(
+                                    tid = item.tid,
+                                    isNodeFid125 = item.fid == "125"
+                                )
+                                val args = String.format("/%s", Uri.encode(topic.toJson()))
+                                navController.navigate(RouteName.TOPIC_DETAIL + args)
                             }
                         )
                     }

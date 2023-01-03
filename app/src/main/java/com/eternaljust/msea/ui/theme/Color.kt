@@ -1,6 +1,7 @@
 package com.eternaljust.msea.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.eternaljust.msea.utils.SettingInfo
@@ -81,4 +82,14 @@ fun ColorTheme(
     } else {
         return dark
     }
+}
+
+@Composable
+fun GetIconTintColorSecondary(isNodeFid125: Boolean): Color {
+    return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondary
+}
+
+@Composable
+fun GetIconTintColorPrimary(isNodeFid125: Boolean): Color {
+    return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.primary
 }
