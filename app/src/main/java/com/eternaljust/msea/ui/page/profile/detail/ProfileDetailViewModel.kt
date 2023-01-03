@@ -86,7 +86,7 @@ class ProfileDetailViewModel : ViewModel() {
             if (src.isNotEmpty()) {
                 val avatar = src.replace("&size=small", "" )
                 println("avatar=$avatar")
-                profile.avatar = avatar
+                profile.avatar = NetworkUtil.getAvatar(avatar)
             }
 
             val h2 = document.selectXpath("//div[@class='h cl']//h2").text()

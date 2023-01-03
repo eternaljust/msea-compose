@@ -45,7 +45,7 @@ class TopicListViewModel(
 
                     val avatar = it.selectXpath("tr/td[@class='icn']/a/img").attr("src")
                     if (avatar.isNotEmpty()) {
-                        topic.avatar = HTMLURL.BASE + "/" + avatar
+                        topic.avatar = NetworkUtil.getAvatar(avatar)
                     }
                     val name = it.selectXpath("tr/td[@class='by']/cite/a").text()
                     if (name.isNotEmpty()) {

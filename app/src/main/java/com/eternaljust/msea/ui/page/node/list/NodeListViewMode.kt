@@ -9,7 +9,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.eternaljust.msea.ui.page.home.topic.TopicListModel
 import com.eternaljust.msea.ui.page.home.topic.getIcon
-import com.eternaljust.msea.ui.page.node.tag.TagListViewAction
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.configPager
@@ -21,6 +20,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class NodeListViewModel : ViewModel() {
+    /*
+    石沉大海
+     */
+    val isNodeFid125: Boolean
+        get() = fid == "125"
+
     private var fid: String = ""
 
     private val pager by lazy {
@@ -90,7 +95,7 @@ class NodeListViewModel : ViewModel() {
 
                     val avatar = it.selectXpath("tr/td[@class='icn']/a/img").attr("src")
                     if (avatar.isNotEmpty()) {
-                        topic.avatar = HTMLURL.BASE + "/" + avatar
+                        topic.avatar = NetworkUtil.getAvatar(avatar)
                     }
                     val name = it.selectXpath("tr/td[@class='by']/cite/a").text()
                     if (name.isNotEmpty()) {

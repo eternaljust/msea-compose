@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -28,6 +29,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 fun <T : Any> RefreshList(
     lazyPagingItems: LazyPagingItems<T>,
     noMoreDataText: String = "没有更多了",
+    tint: Color = MaterialTheme.colorScheme.primary,
     isRefreshing: Boolean = false,
     onRefresh: (() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
@@ -44,7 +46,7 @@ fun <T : Any> RefreshList(
             SwipeRefreshIndicator(
                 state = state,
                 refreshTriggerDistance = refreshTrigger,
-                contentColor = MaterialTheme.colorScheme.primary
+                contentColor = tint
             )
         }
     ) {
@@ -60,7 +62,8 @@ fun <T : Any> RefreshList(
             refresh(
                 lazyPagingItems = lazyPagingItems,
                 swipeRefreshState = swipeRefreshState,
-                noMoreDataText = noMoreDataText
+                noMoreDataText = noMoreDataText,
+                tint = tint
             )
         }
     }
@@ -71,6 +74,7 @@ fun <T : Any> RefreshListState(
     lazyPagingItems: LazyPagingItems<T>,
     listState: LazyListState,
     noMoreDataText: String = "没有更多了",
+    tint: Color = MaterialTheme.colorScheme.primary,
     isRefreshing: Boolean = false,
     onRefresh: (() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
@@ -87,7 +91,7 @@ fun <T : Any> RefreshListState(
             SwipeRefreshIndicator(
                 state = state,
                 refreshTriggerDistance = refreshTrigger,
-                contentColor = MaterialTheme.colorScheme.primary
+                contentColor = tint
             )
         }
     ) {
@@ -104,7 +108,8 @@ fun <T : Any> RefreshListState(
             refresh(
                 lazyPagingItems = lazyPagingItems,
                 swipeRefreshState = swipeRefreshState,
-                noMoreDataText = noMoreDataText
+                noMoreDataText = noMoreDataText,
+                tint = tint
             )
         }
     }
@@ -113,14 +118,15 @@ fun <T : Any> RefreshListState(
 fun <T : Any> LazyListScope.refresh(
     lazyPagingItems: LazyPagingItems<T>,
     swipeRefreshState: SwipeRefreshState,
-    noMoreDataText: String
+    noMoreDataText: String,
+    tint: Color
 ) {
     // 上拉加载更多的状态：加载中、加载错误以及没有更多数据
     if (!swipeRefreshState.isRefreshing) {
         item {
             lazyPagingItems.apply {
                 when (loadState.append) {
-                    is LoadState.Loading -> LoadingItem()
+                    is LoadState.Loading -> LoadingItem(tint)
                     is LoadState.Error -> ErrorItem { retry() }
                     is LoadState.NotLoading -> {
                         if (loadState.append.endOfPaginationReached) {
@@ -228,7 +234,7 @@ fun NoMoreItem(text: String) {
 }
 
 @Composable
-fun LoadingItem() {
+fun LoadingItem(tint: Color = MaterialTheme.colorScheme.primary) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,7 +242,7 @@ fun LoadingItem() {
         contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
+            color = tint,
             modifier = Modifier
                 .padding(10.dp)
                 .height(50.dp)

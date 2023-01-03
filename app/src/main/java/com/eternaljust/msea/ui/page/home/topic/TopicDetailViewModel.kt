@@ -285,7 +285,7 @@ class TopicDetailViewModel : ViewModel() {
                     val avatar = it.selectXpath("tr/td[@class='pls']//div[@class='avatar']/a/img")
                         .attr("src")
                     if (avatar.isNotEmpty()) {
-                        comment.avatar = avatar
+                        comment.avatar = NetworkUtil.getAvatar(avatar)
                     }
                     val name = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a").text()
                     if (name.isNotEmpty()) {

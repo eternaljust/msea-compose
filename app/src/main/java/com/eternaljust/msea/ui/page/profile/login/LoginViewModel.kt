@@ -111,7 +111,7 @@ class LoginViewModel : ViewModel() {
                     UserInfo.instance.level = level
                 }
                 if (src.isNotEmpty()) {
-                    val avatar = src.replace("&size=small", "" )
+                    val avatar = NetworkUtil.getAvatar(src)
                     println("avatar=$avatar")
                     UserInfo.instance.avatar = avatar
                 }

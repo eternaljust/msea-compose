@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,6 +63,7 @@ fun TopicListPage(
 @Composable
 fun TopicListItemContent(
     item: TopicListModel,
+    isNodeFid125: Boolean = false,
     avatarClick: () -> Unit,
     contentClick: () -> Unit
 ) {
@@ -77,7 +80,9 @@ fun TopicListItemContent(
                     .clickable { avatarClick() },
                 model = item.avatar,
                 placeholder = painterResource(id = R.drawable.icon),
-                contentDescription = null
+                contentDescription = null,
+                colorFilter = if (!isNodeFid125) null else
+                    ColorFilter.tint(Color.LightGray, BlendMode.Color)
             )
             
             Spacer(modifier = Modifier.width(10.dp))
@@ -99,7 +104,8 @@ fun TopicListItemContent(
                     Text(
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = if (isNodeFid125) Color.LightGray else
+                                    MaterialTheme.colorScheme.secondary,
                                 shape = RoundedCornerShape(50)
                             )
                             .padding(horizontal = 5.dp),
@@ -122,25 +128,37 @@ fun TopicListItemContent(
                     Spacer(modifier = Modifier.width(10.dp))
 
                     if (item.icon1.isNotEmpty()) {
-                        TopicAttachmentIcon(item.icon1)
+                        TopicAttachmentIcon(
+                            icon = item.icon1,
+                            isNodeFid125 = isNodeFid125
+                        )
 
                         Spacer(modifier = Modifier.width(5.dp))
                     }
 
                     if (item.icon2.isNotEmpty()) {
-                        TopicAttachmentIcon(item.icon2)
+                        TopicAttachmentIcon(
+                            icon = item.icon2,
+                            isNodeFid125 = isNodeFid125
+                        )
 
                         Spacer(modifier = Modifier.width(5.dp))
                     }
 
                     if (item.icon3.isNotEmpty()) {
-                        TopicAttachmentIcon(item.icon3)
+                        TopicAttachmentIcon(
+                            icon = item.icon3,
+                            isNodeFid125 = isNodeFid125
+                        )
 
                         Spacer(modifier = Modifier.width(5.dp))
                     }
 
                     if (item.icon4.isNotEmpty()) {
-                        TopicAttachmentIcon(item.icon4)
+                        TopicAttachmentIcon(
+                            icon = item.icon4,
+                            isNodeFid125 = isNodeFid125
+                        )
                     }
                 }
             }
@@ -162,8 +180,9 @@ fun TopicListItemContent(
                 append(item.title)
             }
 
-            val color = if (item.attachmentColorRed) Color.Red else
-                ColorTheme(light = Color.Black, dark = Color.White)
+            val color = if (isNodeFid125) Color.Gray else
+                if (item.attachmentColorRed) Color.Red else
+                    ColorTheme(light = Color.Black, dark = Color.White)
             withStyle(
                 style = SpanStyle( color = color )
             ) {
@@ -191,29 +210,32 @@ fun TopicListItemContent(
 }
 
 @Composable
-fun TopicAttachmentIcon(icon: String) = when (icon) {
+fun TopicAttachmentIcon(
+    icon: String,
+    isNodeFid125: Boolean = false
+) = when (icon) {
     "image" -> Icon(
         painter = painterResource(id = R.drawable.ic_baseline_image_24),
         contentDescription = "帖子包含图片",
-        tint = MaterialTheme.colorScheme.primary,
+        tint = if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(20.dp)
     )
     "fire" -> Icon(
         painter = painterResource(id = R.drawable.ic_baseline_local_fire_department_24),
         contentDescription = "帖子高热度",
-        tint = Color.Red,
+        tint = if (isNodeFid125) Color.Gray else Color.Red,
         modifier = Modifier.size(20.dp)
     )
     "hand" -> Icon(
         painter = painterResource(id = R.drawable.ic_baseline_waving_hand_24),
         contentDescription = "帖子评价指数",
-        tint = MaterialTheme.colorScheme.secondary,
+        tint = if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondary,
         modifier = Modifier.size(20.dp)
     )
     "link" -> Icon(
         painter = painterResource(id = R.drawable.ic_baseline_link_24),
         contentDescription = "帖子包含链接",
-        tint = Color.Blue,
+        tint = if (isNodeFid125) Color.Gray else Color.Blue,
         modifier = Modifier.size(20.dp)
     )
     "premium" -> Icon(

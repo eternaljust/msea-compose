@@ -1,8 +1,9 @@
 package com.eternaljust.msea.ui.page.node.list
 
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,12 +18,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicListItemContent
-import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -45,9 +43,28 @@ fun NodeListPage(
 
     Scaffold(
         topBar = {
-            NormalTopAppBar(
-                title = "节点：${viewModel.viewStates.title}",
-                onClick = { viewModel.dispatch(NodeListViewAction.PopBack) }
+            TopAppBar(
+                title = { Text("节点：${viewModel.viewStates.title}") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            viewModel.dispatch(NodeListViewAction.PopBack)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "返回"
+                        )
+                    }
+                },
+                colors = if (!viewModel.isNodeFid125) mseaTopAppBarColors() else {
+                    TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = Color.Gray,
+                        titleContentColor = Color.White,
+                        actionIconContentColor = Color.White,
+                        navigationIconContentColor = Color.White
+                    )
+                }
             )
         },
         content = { paddingValues ->
@@ -60,10 +77,15 @@ fun NodeListPage(
                 val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
 
                 RefreshList(
-                    lazyPagingItems = lazyPagingItems
+                    lazyPagingItems = lazyPagingItems,
+                    tint = if (viewModel.isNodeFid125) Color.Gray else
+                        MaterialTheme.colorScheme.primary
                 ) {
                     stickyHeader {
-                        NodeListHeader(viewStates.header)
+                        NodeListHeader(
+                            model = viewStates.header,
+                            isNodeFid125 = viewModel.isNodeFid125
+                        )
                     }
 
                     itemsIndexed(lazyPagingItems) { _, item ->
@@ -75,7 +97,8 @@ fun NodeListPage(
                                 },
                                 contentClick = {
                                     navController.navigate(RouteName.TOPIC_DETAIL + "/${item.tid}")
-                                }
+                                },
+                                isNodeFid125 = viewModel.isNodeFid125
                             )
                         }
                     }
@@ -86,11 +109,16 @@ fun NodeListPage(
 }
 
 @Composable
-fun NodeListHeader(model: NodeListHeaderModel) {
+fun NodeListHeader(
+    model: NodeListHeaderModel,
+    isNodeFid125: Boolean
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp),
+        colors = if (!isNodeFid125) CardDefaults.cardColors() else
+            CardDefaults.cardColors(containerColor = Color.LightGray)
     ) {
         Row(
             modifier = Modifier
@@ -108,7 +136,7 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                 Text(text = "今日：")
 
                 if (model.today.isNotEmpty()) {
-                    Text(text = model.today, color = Color.Red)
+                    Text(text = model.today, color = GetTextColor(isNodeFid125))
                 }
                 
                 if (model.todayImage.isNotEmpty()) {
@@ -117,7 +145,7 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                     Icon(
                         painter = painterResource(id = paint),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = GetIconTintColor(isNodeFid125)
                     )
                 }
             }
@@ -128,7 +156,7 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                 Text(text = "主题：")
 
                 if (model.topic.isNotEmpty()) {
-                    Text(text = model.topic, color = Color.Red)
+                    Text(text = model.topic, color = GetTextColor(isNodeFid125))
                 }
             }
 
@@ -138,7 +166,7 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                 Text(text = "排名：")
 
                 if (model.rank.isNotEmpty()) {
-                    Text(text = model.rank, color = Color.Red)
+                    Text(text = model.rank, color = GetTextColor(isNodeFid125))
                 }
 
                 if (model.rankImage.isNotEmpty()) {
@@ -147,10 +175,20 @@ fun NodeListHeader(model: NodeListHeaderModel) {
                     Icon(
                         painter = painterResource(id = paint),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = GetIconTintColor(isNodeFid125)
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun GetTextColor(isNodeFid125: Boolean): Color {
+    return if (isNodeFid125) Color.Gray else Color.Red
+}
+
+@Composable
+private fun GetIconTintColor(isNodeFid125: Boolean): Color {
+    return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondary
 }

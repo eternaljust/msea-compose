@@ -49,7 +49,7 @@ class DrawerViewModel : ViewModel() {
             val document = NetworkUtil.getRequest(url)
             val src = document.selectXpath("//div[@class='h cl']//img").attr("src")
             if (src.isNotEmpty()) {
-                val avatar = src.replace("&size=small", "" )
+                val avatar = NetworkUtil.getAvatar(src)
                 println("avatar=$avatar")
                 UserInfo.instance.avatar = avatar
             }
