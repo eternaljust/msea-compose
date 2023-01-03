@@ -68,7 +68,7 @@ class ProfileTopicViewModel : ViewModel() {
                 }
                 val fid = it.selectXpath("td/a[@class='xg1']").attr("href")
                 if (fid.isNotEmpty()) {
-                    topic.fid = fid
+                    topic.fid = NetworkUtil.getFid(fid)
                 }
                 val reply = it.selectXpath("td[@class='num']/a").text()
                 if (reply.isNotEmpty()) {

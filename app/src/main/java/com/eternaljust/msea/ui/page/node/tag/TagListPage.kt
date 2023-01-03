@@ -84,7 +84,10 @@ fun TagListPage(
                                     navController.navigate(route)
                                 },
                                 contentClick = {
-                                    val topic = TopicDetailRouteModel(tid = it.tid)
+                                    val topic = TopicDetailRouteModel(
+                                        tid = it.tid,
+                                        isNodeFid125 = it.fid == "125"
+                                    )
                                     val args = String.format("/%s", Uri.encode(topic.toJson()))
                                     navController.navigate(RouteName.TOPIC_DETAIL + args)
                                 }

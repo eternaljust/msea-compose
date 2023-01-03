@@ -70,8 +70,9 @@ class TagListViewModel : ViewModel() {
                     tag.forum = forum
                 }
                 val fid = it.selectXpath("td[@class='by']/a").attr("href")
+                println("fid---$fid")
                 if (fid.isNotEmpty()) {
-                    tag.fid = fid
+                    tag.fid = NetworkUtil.getFid(fid)
                 }
                 val name = it.selectXpath("td[@class='by'][2]/cite/a").text()
                 if (name.isNotEmpty()) {

@@ -143,6 +143,16 @@ class NetworkUtil private constructor() {
             return ""
         }
 
+        fun getFid(text: String): String {
+            if (text.contains("forum-") && text.contains("-1.html")) {
+                val ids = text.split("forum-")
+                return ids.last().replace("-1.html", "")
+            } else if (text.contains("fid=")) {
+                return text.split("fid=")[1]
+            }
+            return ""
+        }
+
         private fun getCookies(): String {
             val cookie = UserInfo.instance.salt + "; " + UserInfo.instance.auth
             println("Cookie = $cookie")

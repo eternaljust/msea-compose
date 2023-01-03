@@ -82,11 +82,8 @@ class NodeViewModel : ViewModel() {
                         var model = NodeListModel()
 
                         val forum = dl.selectXpath("td/h2/a").attr("href")
-                        if (forum.contains("forum-")) {
-                            val id = forum.split("forum-")[1].split("-")[0]
-                            model.fid = id
-                        } else if (forum.contains("fid=")) {
-                            model.fid = forum.split("fid=")[1]
+                        if (forum.isNotEmpty()) {
+                            model.fid = NetworkUtil.getFid(forum)
                         }
                         val title = dl.selectXpath("td/h2/a").text()
                         if (title.isNotEmpty()) {
@@ -130,11 +127,8 @@ class NodeViewModel : ViewModel() {
                         var model = NodeListModel()
 
                         val forum = dl.selectXpath("div[@class='fl_icn_g']/a").attr("href")
-                        if (forum.contains("forum-")) {
-                            val id = forum.split("forum-")[1].split("-")[0]
-                            model.fid = id
-                        } else if (forum.contains("fid=")) {
-                            model.fid = forum.split("fid=")[1]
+                        if (forum.isNotEmpty()) {
+                            model.fid = NetworkUtil.getFid(forum)
                         }
                         val title = dl.selectXpath("dl/dt/a").text()
                         if (title.isNotEmpty()) {
