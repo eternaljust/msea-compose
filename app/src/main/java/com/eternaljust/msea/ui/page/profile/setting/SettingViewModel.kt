@@ -132,7 +132,7 @@ enum class SettingListItem : SettingList {
             get() = "day_sign"
 
         override val title: String
-            get() = "签到提醒\n每日推送通知"
+            get() = "签到提醒\n每日通知"
     },
 
     DARK_MODE {

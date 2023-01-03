@@ -197,8 +197,10 @@ fun MyApp() {
 
                                     currentDestination?.route?.let {
                                         if (it != BottomBarScreen.Home.route) {
+                                            val text = if (it == BottomBarScreen.Notice.route)
+                                                "Make search easier" else "让搜索更简单"
                                             Text(
-                                                text = "Make search easier / 让搜索更简单",
+                                                text = text,
                                                 style = MaterialTheme.typography.labelSmall
                                             )
                                         }

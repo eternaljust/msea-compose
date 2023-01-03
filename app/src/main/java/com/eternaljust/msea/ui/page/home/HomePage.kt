@@ -38,7 +38,7 @@ fun HomePage(
             TabRow(selectedTabIndex = pagerState.currentPage) {
                 items.forEachIndexed { index, item ->
                     Tab(
-                        text = { AutosizeText(text = item.title) },
+                        text = { Text( text = item.title ) },
                         selected = pagerState.currentPage == index,
                         onClick = {
                             scope.launch {

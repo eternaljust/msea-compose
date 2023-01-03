@@ -184,11 +184,17 @@ fun CreditSystemListItemContent(item: CreditSystemListModel) {
     ) {
         Text(text = item.action)
 
-        Text(text = item.count)
+        Text(
+            text = item.count,
+            color = MaterialTheme.colorScheme.primary
+        )
 
         Text(text = item.cycles)
 
-        Text(text = item.bit)
+        Text(
+            text = item.bit,
+            color = MaterialTheme.colorScheme.primary
+        )
 
         Text(text = item.violation)
 
