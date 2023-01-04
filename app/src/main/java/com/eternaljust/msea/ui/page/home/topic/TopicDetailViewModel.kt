@@ -57,6 +57,11 @@ class TopicDetailViewModel : ViewModel() {
             is TopicDetailViewAction.Support -> support(action.action)
             is TopicDetailViewAction.RecommendAdd -> recommendAdd()
             is TopicDetailViewAction.RecommendSubtract -> recommendSubtract()
+            is TopicDetailViewAction.GetReplyParam -> getReplyParam(
+                action = action.action,
+                username = action.username
+            )
+            is TopicDetailViewAction.Reply -> reply()
         }
     }
 
@@ -172,8 +177,94 @@ class TopicDetailViewModel : ViewModel() {
         }
     }
 
+    private fun getReplyParam(
+        action: String,
+        username: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val params = TopicReplyParamModel()
+            params.username = username
+
+            val url = HTMLURL.BASE + "/$action"
+            val document = NetworkUtil.getRequest(url)
+            val noticeauthor = document.selectXpath("//input[@name='noticeauthor']")
+                .attr("value")
+            println("noticeauthor---$noticeauthor")
+            if (noticeauthor.isNotEmpty()) {
+                params.noticeauthor = noticeauthor
+            }
+            val noticeauthormsg = document.selectXpath("//input[@name='noticeauthormsg']")
+                .attr("value")
+            println("noticeauthormsg---$noticeauthormsg")
+            if (noticeauthormsg.isNotEmpty()) {
+                params.noticeauthormsg = noticeauthormsg
+            }
+            val reppid = document.selectXpath("//input[@name='reppid']")
+                .attr("value")
+            println("reppid---$reppid")
+            if (reppid.isNotEmpty()) {
+                params.reppid = reppid
+            }
+            val reppost = document.selectXpath("//input[@name='reppost']")
+                .attr("value")
+            println("reppost---$reppost")
+            if (reppost.isNotEmpty()) {
+                params.reppost = reppost
+            }
+            val noticetrimstr = document.selectXpath("//input[@name='noticetrimstr']")
+                .attr("value")
+            println("noticetrimstr---$noticetrimstr")
+            if (noticetrimstr.isNotEmpty()) {
+                params.noticetrimstr = noticetrimstr
+            }
+            val form = document.selectXpath("//form[@id='postform']")
+                .attr("action")
+            println("form---$form")
+            if (form.isNotEmpty()) {
+                params.action = form
+            }
+
+            viewStates = viewStates.copy(replyParams = params)
+            commentDialog(isShow = true)
+        }
+    }
+
+    private fun reply() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val time = Instant.now().epochSecond
+            val url = HTMLURL.BASE + "/${viewStates.replyParams.action}"
+            val message = NetworkUtil.urlEncode(viewStates.commentText)
+            val msg = NetworkUtil.urlEncode(viewStates.replyParams.noticeauthormsg)
+            val str = NetworkUtil.urlEncode(viewStates.replyParams.noticetrimstr)
+
+            val encodedParams = mapOf(
+                "message" to message,
+                "noticeauthormsg" to msg,
+                "noticetrimstr" to str
+            )
+            val params = mapOf(
+                "posttime" to time.toString(),
+                "reppid" to viewStates.replyParams.reppid,
+                "reppost" to viewStates.replyParams.reppost,
+                "noticeauthor" to viewStates.replyParams.noticeauthor,
+            )
+            val document = NetworkUtil.postRequest(url, params, encodedParams)
+            val result = document.html()
+            if (result.isNotEmpty()) {
+                _viewEvents.send(TopicDetailViewEvent.Message("评论成功"))
+                _viewEvents.send(TopicDetailViewEvent.Refresh)
+            } else {
+                _viewEvents.send(TopicDetailViewEvent.Message("评论失败，请稍后重试"))
+            }
+            commentDialog(isShow = false)
+        }
+    }
+
     private fun commentDialog(isShow: Boolean) {
         viewStates = viewStates.copy(showCommentDialog = isShow)
+        if (!isShow) {
+            viewStates = viewStates.copy(replyParams = TopicReplyParamModel())
+        }
     }
 
     private fun commentChange(text: String) {
@@ -375,7 +466,8 @@ data class TopicDetailViewState(
     val showCommentDialog: Boolean = false,
     val commentText: String = "",
     var favoriteCount: String = "",
-    var recommendAddCount: String = ""
+    var recommendAddCount: String = "",
+    var replyParams: TopicReplyParamModel = TopicReplyParamModel()
 )
 
 sealed class TopicDetailViewEvent {
@@ -394,11 +486,13 @@ sealed class TopicDetailViewAction {
     object Comment : TopicDetailViewAction()
     object RecommendAdd : TopicDetailViewAction()
     object RecommendSubtract : TopicDetailViewAction()
+    object Reply : TopicDetailViewAction()
 
     data class SetTid(val tid: String) : TopicDetailViewAction()
     data class CommentShowDialog(val isShow: Boolean) : TopicDetailViewAction()
     data class CommentTextChange(val text: String) : TopicDetailViewAction()
     data class Support(val action: String) : TopicDetailViewAction()
+    data class GetReplyParam(val action: String, val username: String) : TopicDetailViewAction()
 }
 
 class TopicDetailModel {
@@ -431,6 +525,16 @@ class TopicCommentModel {
     var blockquoteTime = ""
     var blockquoteContent = ""
     var sup = ""
+}
+
+class TopicReplyParamModel {
+    var noticeauthor = ""
+    var noticetrimstr = ""
+    var noticeauthormsg = ""
+    var reppid = ""
+    var reppost = ""
+    var username = ""
+    var action = ""
 }
 
 @Parcelize

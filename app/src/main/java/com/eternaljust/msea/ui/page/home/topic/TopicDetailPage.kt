@@ -171,13 +171,23 @@ fun TopicDetailPage(
                     .padding(paddingValues)
                     .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
+                val msg = viewModel.viewStates.replyParams.noticeauthormsg
+                var title = "帖子主题回复"
+                if (msg.isNotEmpty()) {
+                    title = "回复@${viewModel.viewStates.replyParams.username}: $msg"
+                }
                 TopicAlertDialog(
+                    title = title,
                     commentText = viewModel.viewStates.commentText,
                     commentTextChange = {
                         viewModel.dispatch(TopicDetailViewAction.CommentTextChange(it))
                     },
                     commentConfirm = {
-                        viewModel.dispatch(TopicDetailViewAction.Comment)
+                        if (viewModel.viewStates.replyParams.noticetrimstr.isNotEmpty()) {
+                            viewModel.dispatch(TopicDetailViewAction.Reply)
+                        } else {
+                            viewModel.dispatch(TopicDetailViewAction.Comment)
+                        }
                     },
                     showCommentDialog = viewModel.viewStates.showCommentDialog,
                     commentDialogClick = {
@@ -236,10 +246,14 @@ fun TopicDetailPage(
                                 supportClick = { action ->
                                     viewModel.dispatch(TopicDetailViewAction.Support(action = action))
                                 },
-                                replyClick = {
-                                    viewModel.viewModelScope.launch {
-                                        scaffoldState.showSnackbar(message = "回复他人的评论功能正在努力开发中💪")
-                                    }
+                                replyClick = { action ->
+                                    viewModel.dispatch(TopicDetailViewAction.GetReplyParam(
+                                        action = action,
+                                        username = it.name
+                                    ))
+//                                    viewModel.viewModelScope.launch {
+//                                        scaffoldState.showSnackbar(message = "回复他人的评论功能正在努力开发中💪")
+//                                    }
                                 }
                             )
                         }
@@ -253,6 +267,7 @@ fun TopicDetailPage(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopicAlertDialog(
+    title: String,
     commentText: String,
     commentTextChange: (String) -> Unit,
     commentConfirm: () -> Unit,
@@ -262,7 +277,7 @@ fun TopicAlertDialog(
     if (showCommentDialog) {
         AlertDialog(
             onDismissRequest = { commentDialogClick(false) },
-            title = { Text(text = "帖子主题回复") },
+            title = { Text(text = title) },
             text = {
                 TextField(
                     modifier = Modifier.height(100.dp),
