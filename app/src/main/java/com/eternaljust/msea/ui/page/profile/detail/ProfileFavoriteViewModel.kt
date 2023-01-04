@@ -33,7 +33,31 @@ class ProfileFavoriteViewModel : ViewModel() {
     fun dispatch(action: ProfileFavoriteListViewAction) {
         when (action) {
             is ProfileFavoriteListViewAction.PopBack -> popBack()
+            is ProfileFavoriteListViewAction.Delete -> delete()
+            is ProfileFavoriteListViewAction.DeleteAction -> {
+                viewStates = viewStates.copy(action = action.action)
+            }
+            is ProfileFavoriteListViewAction.DeleteShowDialog -> showDeleteDialog(action.isShow)
         }
+    }
+
+    private fun delete() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.BASE + "/${viewStates.action}"
+            val document = NetworkUtil.postRequest(url, emptyMap())
+            val result = document.html()
+            if (result.isNotEmpty()) {
+                _viewEvents.send(ProfileFavoriteListViewEvent.Message("删除成功"))
+                _viewEvents.send(ProfileFavoriteListViewEvent.Refresh)
+            } else {
+                _viewEvents.send(ProfileFavoriteListViewEvent.Message("删除失败，请稍后重试"))
+            }
+            showDeleteDialog(isShow = false)
+        }
+    }
+
+    private fun showDeleteDialog(isShow: Boolean) {
+        viewStates = viewStates.copy(showDeleteDialog = isShow)
     }
 
     private suspend fun loadData(page: Int) : List<ProfileFavoriteListModel> {
@@ -60,6 +84,15 @@ class ProfileFavoriteViewModel : ViewModel() {
                     system.tid = tid.split("thread-").last()
                         .split("-").first()
                 }
+                val action = it.selectXpath("a[1]").attr("href")
+                if (action.isNotEmpty()) {
+                    system.action = action
+                }
+                val id = it.selectXpath("a[1]").attr("id")
+                if (id.isNotEmpty()) {
+                    system.action = system.action + "&deletesubmit=true&handlekey=$id"
+                }
+                println("action---${system.action}")
 
                 list.add(system)
             }
@@ -76,19 +109,29 @@ class ProfileFavoriteViewModel : ViewModel() {
 }
 
 data class ProfileFavoriteListViewState(
-    val pagingData: Flow<PagingData<ProfileFavoriteListModel>>
+    val pagingData: Flow<PagingData<ProfileFavoriteListModel>>,
+    val showDeleteDialog: Boolean = false,
+    val action: String = ""
 )
 
 sealed class ProfileFavoriteListViewEvent {
     object PopBack : ProfileFavoriteListViewEvent()
+    object Refresh : ProfileFavoriteListViewEvent()
+
+    data class Message(val message: String) : ProfileFavoriteListViewEvent()
 }
 
 sealed class ProfileFavoriteListViewAction {
     object PopBack: ProfileFavoriteListViewAction()
+    object Delete: ProfileFavoriteListViewAction()
+
+    data class DeleteAction(val action: String) : ProfileFavoriteListViewAction()
+    data class DeleteShowDialog(val isShow: Boolean) : ProfileFavoriteListViewAction()
 }
 
 class ProfileFavoriteListModel {
     var time = ""
     var title = ""
     var tid = ""
+    var action = ""
 }
