@@ -46,7 +46,7 @@ class ProfileFavoriteViewModel : ViewModel() {
 
             li.forEach {
                 println("li---${it.html()}")
-                var system = ProfileFavoriteListModel()
+                val system = ProfileFavoriteListModel()
                 val time = it.selectXpath("span[@class='xg1']").text()
                 if (time.isNotEmpty()) {
                     system.time = time

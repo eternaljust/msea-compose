@@ -25,7 +25,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
 
@@ -102,7 +102,7 @@ fun InteractiveListItemContent(
 
                 withStyle(
                     style = SpanStyle(
-                        color = ColorTheme(light = Color.Black, dark = Color.White)
+                        color = colorTheme(light = Color.Black, dark = Color.White)
                     )
                 ) {
                     append(item.content)

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.eternaljust.msea.ui.page.home.sign.SignViewAction
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.configPager
@@ -49,9 +48,9 @@ class TagListViewModel : ViewModel() {
         withContext(Dispatchers.IO) {
             val url = HTMLURL.TAG_LIST + "&id=$tid"
             val document = NetworkUtil.getRequest(url)
-            var tr = document.selectXpath("//div[@class='bm_c']/table/tbody/tr")
+            val tr = document.selectXpath("//div[@class='bm_c']/table/tbody/tr")
             tr.forEach {
-                var tag = TagListModel()
+                val tag = TagListModel()
 
                 val gif = it.selectXpath("td[@class='icn']/a/img").attr("src")
                 if (gif.isNotEmpty()) {
@@ -61,9 +60,9 @@ class TagListViewModel : ViewModel() {
                 if (title.isNotEmpty()) {
                     tag.title = title
                 }
-                val tid = it.selectXpath("th/a").attr("href")
-                if (tid.isNotEmpty()) {
-                    tag.tid = tid.split("thread-").last().split("-").first()
+                val id = it.selectXpath("th/a").attr("href")
+                if (id.isNotEmpty()) {
+                    tag.tid = id.split("thread-").last().split("-").first()
                 }
                 val forum = it.selectXpath("td[@class='by']/a").text()
                 if (forum.isNotEmpty()) {

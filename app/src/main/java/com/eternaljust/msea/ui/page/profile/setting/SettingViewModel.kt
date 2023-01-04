@@ -17,7 +17,7 @@ class SettingViewModel : ViewModel() {
     val itemGroups: List<List<SettingListItem>>
         get() {
             val isDynamic = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            var themeList = mutableListOf(
+            val themeList = mutableListOf(
                 SettingListItem.DARK_MODE
             )
             if (isDynamic) {

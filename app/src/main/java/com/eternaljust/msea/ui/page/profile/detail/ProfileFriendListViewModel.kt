@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.eternaljust.msea.ui.page.node.list.NodeListViewAction
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.UserInfo
@@ -38,7 +37,7 @@ class FriendListViewModel : ViewModel() {
             val li = document.selectXpath("//ul[@class='buddy cl']/li")
 
             li.forEach {
-                var friend = FriendListModel()
+                val friend = FriendListModel()
                 val avatar = it.selectXpath("div[@class='avt']/a/img").attr("src")
                 if (avatar.isNotEmpty()) {
                     friend.avatar = NetworkUtil.getAvatar(avatar)
@@ -79,7 +78,6 @@ class FriendListModel {
     var avatar = ""
     var hot = ""
     var topic = ""
-    var integral = ""
 }
 
 class FriendVisitorTraceListViewModel(
@@ -105,11 +103,10 @@ class FriendVisitorTraceListViewModel(
         withContext(Dispatchers.IO) {
             val url = HTMLURL.FRIEND_LIST + "&uid=${UserInfo.instance.uid}&view=${tabItem.id}&page=${page}"
             val document = NetworkUtil.getRequest(url)
-            val count = document.selectXpath("//div[@class='tbmu cl']/p/span[@class='xw1']").text()
             val li = document.selectXpath("//ul[@class='buddy cl']/li")
 
             li.forEach {
-                var friend = FriendVisitorTraceListModel()
+                val friend = FriendVisitorTraceListModel()
                 val avatar = it.selectXpath("div[@class='avt']/a/img").attr("src")
                 if (avatar.isNotEmpty()) {
                     friend.avatar = NetworkUtil.getAvatar(avatar)

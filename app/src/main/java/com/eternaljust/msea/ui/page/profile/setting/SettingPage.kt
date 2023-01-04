@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,7 +26,6 @@ import com.eternaljust.msea.utils.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.marosseleng.compose.material3.datetimepickers.time.domain.noSeconds
 import com.marosseleng.compose.material3.datetimepickers.time.ui.dialog.TimePickerDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -150,7 +148,7 @@ fun SettingPage(
                                         if (it) {
                                             if (notificationPermissionState.status.isGranted) {
                                                 viewModel.dispatch(
-                                                    SettingViewAction.UpdateDaysignChecked(it)
+                                                    SettingViewAction.UpdateDaysignChecked(true)
                                                 )
                                                 RemindersManager.startReminder(context)
                                             } else {
@@ -159,7 +157,7 @@ fun SettingPage(
                                             }
                                         } else {
                                             viewModel.dispatch(
-                                                SettingViewAction.UpdateDaysignChecked(it)
+                                                SettingViewAction.UpdateDaysignChecked(false)
                                             )
                                             RemindersManager.stopReminder(context)
                                         }

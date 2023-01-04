@@ -28,13 +28,9 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
-import com.eternaljust.msea.ui.page.node.tag.TagViewAction
-import com.eternaljust.msea.ui.page.node.tag.TagViewEvent
-import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
 
@@ -260,7 +256,7 @@ fun NodeListItemContent(
             append("  ")
             withStyle(
                 style = SpanStyle(
-                    color = ColorTheme(light = Color.Black, dark = Color.White)
+                    color = colorTheme(light = Color.Black, dark = Color.White)
                 )
             ) {
                 append(item.time)

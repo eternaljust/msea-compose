@@ -66,8 +66,7 @@ fun ProfileFriendPage(
                     }
 
                     HorizontalPager(count = items.size, state = pagerState) {
-                        val item = items[pagerState.currentPage]
-                        when (item) {
+                        when (val item = items[pagerState.currentPage]) {
                             ProfileFriendTabItem.FRIEND -> FriendListPage(
                                 scaffoldState = scaffoldState,
                                 navController = navController

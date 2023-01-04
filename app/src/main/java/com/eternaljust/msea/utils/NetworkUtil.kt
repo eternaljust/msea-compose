@@ -184,9 +184,9 @@ class NetworkUtil private constructor() {
             if (href.isNotEmpty() && href.contains("formhash")) {
                 val hash = href.split("&").last()
                 if (hash.contains("=")) {
-                    val formhash = hash.split("=").last()
-                    println("formhash=${formhash}")
-                    UserInfo.instance.formhash = formhash
+                    val formhash1 = hash.split("=").last()
+                    println("formhash=${formhash1}")
+                    UserInfo.instance.formhash = formhash1
                 }
             }
         }

@@ -47,6 +47,7 @@ fun isAppInstalled(
             val apps = pm.getPackagesForUid(i)
             if (apps != null) {
                 for (app in apps) {
+                    @Suppress("DEPRECATION")
                     val info = pm.getPackageInfo(app!!, 0)
                     if (info != null && info.packageName == packageName) {
                         return true

@@ -27,10 +27,11 @@ object DataStoreUtil {
             is Boolean -> getBooleanData(key, default)
             else -> throw IllegalArgumentException("This type can't be readied into DataStore")
         }
+        @Suppress("UNCHECKED_CAST")
         return res as U
     }
 
-    suspend fun <U> setData(
+    private suspend fun <U> setData(
         key: String,
         value: U
     ) {

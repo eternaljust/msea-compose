@@ -66,8 +66,7 @@ fun ProfileCreditPage(
                     }
 
                     HorizontalPager(count = items.size, state = pagerState) {
-                        val item = items[pagerState.currentPage]
-                        when (item) {
+                        when (items[pagerState.currentPage]) {
                             ProfileCreditTabItem.LOG -> CreditLogPage(
                                 scaffoldState = scaffoldState,
                                 navController = navController

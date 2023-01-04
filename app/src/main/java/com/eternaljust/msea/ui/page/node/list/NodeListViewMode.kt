@@ -57,14 +57,14 @@ class NodeListViewModel : ViewModel() {
             if (title.isNotEmpty()) {
                 viewStates = viewStates.copy(title = title)
             }
-            var header = NodeListHeaderModel()
+            val header = NodeListHeaderModel()
             val today = document.selectXpath("//h1[@class='xs2']/span[@class='xs1 xw0 i']/strong[1]").text()
             if (today.isNotEmpty()) {
                 header.today = today
             }
-            val topic = document.selectXpath("//h1[@class='xs2']/span[@class='xs1 xw0 i']/strong[2]").text()
-            if (topic.isNotEmpty()) {
-                header.topic = topic
+            val topicText = document.selectXpath("//h1[@class='xs2']/span[@class='xs1 xw0 i']/strong[2]").text()
+            if (topicText.isNotEmpty()) {
+                header.topic = topicText
             }
             val rank = document.selectXpath("//h1[@class='xs2']/span[@class='xs1 xw0 i']/strong[3]").text()
             if (rank.isNotEmpty()) {
@@ -91,7 +91,7 @@ class NodeListViewModel : ViewModel() {
             withContext(Dispatchers.Default) {
                 val tbody = document.selectXpath("//div[@id='threadlist']//table/tbody")
                 tbody.forEach {
-                    var topic = TopicListModel()
+                    val topic = TopicListModel()
 
                     val avatar = it.selectXpath("tr/td[@class='icn']/a/img").attr("src")
                     if (avatar.isNotEmpty()) {
@@ -117,9 +117,9 @@ class NodeListViewModel : ViewModel() {
                     if (examine.isNotEmpty()) {
                         topic.examine = examine
                     }
-                    val title = it.selectXpath("tr/th[@class='new']/a[@class='s xst']").text()
-                    if (title.isNotEmpty()) {
-                        topic.title = title
+                    val title1 = it.selectXpath("tr/th[@class='new']/a[@class='s xst']").text()
+                    if (title1.isNotEmpty()) {
+                        topic.title = title1
                     }
                     val thread = it.selectXpath("tr/th[@class='new']/a[@class='s xst']").attr("href")
                     if (thread.contains("thread-")) {

@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -33,10 +33,10 @@ class TagViewModel : ViewModel() {
 
             val url = HTMLURL.TAG_LIST
             val document = NetworkUtil.getRequest(url)
-            var taglist = document.selectXpath("//div[@class='taglist mtm mbm']/a")
+            val taglist = document.selectXpath("//div[@class='taglist mtm mbm']/a")
 
             taglist.forEach {
-                var item = TagItemModel()
+                val item = TagItemModel()
 
                 val title = it.attr("title")
                 if (title.isNotEmpty()) {

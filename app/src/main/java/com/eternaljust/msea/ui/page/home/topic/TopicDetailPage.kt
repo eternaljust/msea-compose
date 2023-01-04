@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,24 +23,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
-import com.eternaljust.msea.ui.theme.ColorTheme
-import com.eternaljust.msea.ui.theme.GetIconTintColorPrimary
-import com.eternaljust.msea.ui.theme.GetIconTintColorSecondary
+import com.eternaljust.msea.ui.theme.colorTheme
+import com.eternaljust.msea.ui.theme.getIconTintColorPrimary
+import com.eternaljust.msea.ui.theme.getIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.*
 import com.eternaljust.msea.utils.*
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -237,8 +230,8 @@ fun TopicDetailPage(
                                         val uid = NetworkUtil.getUid(url)
                                         navController.navigate(RouteName.PROFILE_DETAIL + "/$uid")
                                     } else if (url.contains("tid") || url.contains("thread")) {
-                                        val tid = NetworkUtil.getTid(url)
-                                        val topic = TopicDetailRouteModel(tid = tid)
+                                        val id = NetworkUtil.getTid(url)
+                                        val topic = TopicDetailRouteModel(tid = id)
                                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                                         navController.navigate(RouteName.TOPIC_DETAIL + args)
                                     }
@@ -251,9 +244,6 @@ fun TopicDetailPage(
                                         action = action,
                                         username = it.name
                                     ))
-//                                    viewModel.viewModelScope.launch {
-//                                        scaffoldState.showSnackbar(message = "回复他人的评论功能正在努力开发中💪")
-//                                    }
                                 }
                             )
                         }
@@ -339,13 +329,13 @@ fun TopicDetailHeader(
                         modifier = Modifier.size(20.dp),
                         painter = painterResource(id = R.drawable.ic_baseline_grid_view_24),
                         contentDescription = "节点",
-                        tint = GetIconTintColorPrimary(isNodeFid125)
+                        tint = getIconTintColorPrimary(isNodeFid125)
                     )
 
                     Text(
                         modifier = Modifier.clickable { nodeClick("-1") },
                         text = "节点",
-                        color = GetIconTintColorPrimary(isNodeFid125)
+                        color = getIconTintColorPrimary(isNodeFid125)
                     )
 
                     if (topic.indexTitle.isNotEmpty()) {
@@ -354,7 +344,7 @@ fun TopicDetailHeader(
                         Text(
                             modifier = Modifier.clickable { nodeClick(topic.gid) },
                             text = topic.indexTitle,
-                            color = GetIconTintColorPrimary(isNodeFid125)
+                            color = getIconTintColorPrimary(isNodeFid125)
                         )
                     }
 
@@ -364,7 +354,7 @@ fun TopicDetailHeader(
                         Text(
                             modifier = Modifier.clickable { nodeListClick(topic.nodeFid) },
                             text = topic.nodeTitle,
-                            color = GetIconTintColorPrimary(isNodeFid125)
+                            color = getIconTintColorPrimary(isNodeFid125)
                         )
                     }
                 }
@@ -373,7 +363,7 @@ fun TopicDetailHeader(
                     Row(
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(50))
-                            .background(GetIconTintColorSecondary(isNodeFid125))
+                            .background(getIconTintColorSecondary(isNodeFid125))
                             .clickable { recommendAdd() },
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
@@ -423,7 +413,7 @@ fun TopicDetailHeader(
                         Row(
                             modifier = Modifier
                                 .clip(shape = RoundedCornerShape(50))
-                                .background(GetIconTintColorSecondary(isNodeFid125))
+                                .background(getIconTintColorSecondary(isNodeFid125))
                                 .clickable { recommendSubtract() },
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
@@ -448,14 +438,14 @@ fun TopicDetailHeader(
                             modifier = Modifier.size(20.dp),
                             painter = painterResource(id = R.drawable.ic_baseline_tag_24),
                             contentDescription = "节点",
-                            tint = GetIconTintColorPrimary(isNodeFid125)
+                            tint = getIconTintColorPrimary(isNodeFid125)
                         )
 
                         topic.tags.forEach {
                             Column(
                                 modifier = Modifier
                                     .clip(shape = RoundedCornerShape(50.dp))
-                                    .background(GetIconTintColorSecondary(isNodeFid125))
+                                    .background(getIconTintColorSecondary(isNodeFid125))
                                     .clickable { tagClick(it) },
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
@@ -482,7 +472,7 @@ private fun NodeArrowIcon(isNodeFid125: Boolean) {
         modifier = Modifier.size(20.dp),
         painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_ios_24),
         contentDescription = null,
-        tint = GetIconTintColorPrimary(isNodeFid125)
+        tint = getIconTintColorPrimary(isNodeFid125)
     )
 }
 
@@ -541,7 +531,7 @@ fun TopicDetailItemContent(
             Text(
                 modifier = Modifier
                     .background(
-                        color = GetIconTintColorSecondary(isNodeFid125),
+                        color = getIconTintColorSecondary(isNodeFid125),
                         shape = RoundedCornerShape(50)
                     )
                     .padding(horizontal = 5.dp),
@@ -560,7 +550,7 @@ fun TopicDetailItemContent(
                     .padding(horizontal = 8.dp)
                     .clip(shape = RoundedCornerShape(4))
                     .background(
-                        ColorTheme(
+                        colorTheme(
                             light = Color(0xFFF9F9F9),
                             dark = Color(0xFF2C2C2E)
                         )
@@ -621,13 +611,13 @@ fun TopicDetailItemContent(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(id = R.drawable.ic_baseline_sms_24),
                     contentDescription = "回复",
-                    tint = GetTextSecondaryContainer(isNodeFid125)
+                    tint = getTextSecondaryContainer(isNodeFid125)
                 )
 
                 Text(
                     text = " 回复",
                     style = MaterialTheme.typography.labelMedium,
-                    color = GetTextSecondaryContainer(isNodeFid125)
+                    color = getTextSecondaryContainer(isNodeFid125)
                 )
             }
         }
@@ -645,13 +635,13 @@ fun TopicDetailItemContent(
                     modifier = Modifier.size(20.dp),
                     imageVector = Icons.Default.ThumbUp,
                     contentDescription = "支持",
-                    tint = GetTextSecondaryContainer(isNodeFid125)
+                    tint = getTextSecondaryContainer(isNodeFid125)
                 )
 
                 Text(
                     text = " 支持",
                     style = MaterialTheme.typography.labelMedium,
-                    color = GetTextSecondaryContainer(isNodeFid125)
+                    color = getTextSecondaryContainer(isNodeFid125)
                 )
 
                 Text(
@@ -669,6 +659,6 @@ fun TopicDetailItemContent(
 }
 
 @Composable
-private fun GetTextSecondaryContainer(isNodeFid125: Boolean): Color {
+private fun getTextSecondaryContainer(isNodeFid125: Boolean): Color {
     return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondaryContainer
 }

@@ -1,6 +1,5 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
-import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.eternaljust.msea.ui.page.home.sign.SignTab
-import com.eternaljust.msea.ui.page.home.sign.SignTabItem
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.configPager
@@ -67,7 +64,7 @@ class ProfileDetailViewModel : ViewModel() {
                 url = HTMLURL.BASE + "/space-username-${username}.html"
             }
             val document = NetworkUtil.getRequest(url)
-            var text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
+            val text = document.selectXpath("//div[@id='messagetext']/p[1]").text()
             if (text.isNotEmpty()) {
                 _viewEvents.send(ProfileDetailViewEvent.Message(text))
                 return@launch
@@ -148,13 +145,13 @@ class ProfileDetailViewModel : ViewModel() {
                     println("group=$group")
                     if (group.isNotEmpty()) {
                         var lv = ""
-                        val text = it.selectXpath("span[@class='xi2']/a").text()
-                        if (text.isNotEmpty()) {
-                            lv = text
+                        val text1 = it.selectXpath("span[@class='xi2']/a").text()
+                        if (text1.isNotEmpty()) {
+                            lv = text1
                         } else {
-                            val text1 = it.text()
-                            if (text1.isNotEmpty()) {
-                                lv = text1.replace(group, "")
+                            val text2 = it.text()
+                            if (text2.isNotEmpty()) {
+                                lv = text2.replace(group, "")
                             }
                         }
                         lv = lv.replace(" ", "")
@@ -259,7 +256,7 @@ class ProfileDetailFriendViewModel : ViewModel() {
             }
             val li = document.selectXpath("//ul[@class='buddy cl']/li[@class='bbda cl']")
             li.forEach {
-                var friend = ProfileDetailFriendModel()
+                val friend = ProfileDetailFriendModel()
                 val avatar = it.selectXpath("div[@class='avt']/a/img").attr("src")
                 if (avatar.isNotEmpty()) {
                     friend.avatar = NetworkUtil.getAvatar(avatar)

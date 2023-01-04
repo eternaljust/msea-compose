@@ -24,8 +24,6 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
 

@@ -5,10 +5,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
-import androidx.activity.ComponentActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.eternaljust.msea.MainActivity
 import com.eternaljust.msea.R
@@ -112,13 +110,9 @@ class AlarmReceiver : BroadcastReceiver() {
      * and then reschedule the reminder again
      * */
     override fun onReceive(context: Context, intent: Intent) {
-        val notificationManager = ContextCompat.getSystemService(
-            context,
-            NotificationManager::class.java
-        ) as NotificationManager
         val channelId = context.getString(R.string.reminder_notification_channel_id_sign)
 
-        notificationManager.sendReminderNotification(
+        sendReminderNotification(
             applicationContext = context,
             channelId = channelId
         )
@@ -127,7 +121,7 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 }
 
-fun NotificationManager.sendReminderNotification(
+fun sendReminderNotification(
     applicationContext: Context,
     channelId: String,
 ) {

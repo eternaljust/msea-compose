@@ -100,10 +100,10 @@ class SignViewModel : ViewModel() {
                 daySign.monthTitle = title
             }
 
-            var list = mutableListOf<CalendarDayModel>()
+            val list = mutableListOf<CalendarDayModel>()
             val weeks = document.selectXpath("//ul[@class='wq_week']/li")
             weeks.forEach {
-                var model = CalendarDayModel()
+                val model = CalendarDayModel()
                 val text = it.text()
                 if (text.isNotEmpty()) {
                     model.title = text
@@ -117,7 +117,7 @@ class SignViewModel : ViewModel() {
             }
             val dates = document.selectXpath("//ul[@class='wq_date']/li")
             dates.forEach {
-                var model = CalendarDayModel()
+                val model = CalendarDayModel()
                 val text = it.text()
                 if (text.isNotEmpty()) {
                     model.title = text

@@ -33,7 +33,7 @@ class CreditLogViewModel : ViewModel() {
 
             tr.forEach {
                 if (it.html().contains("td")) {
-                    var log = CreditLogListModel()
+                    val log = CreditLogListModel()
                     val action = it.selectXpath("td[1]").text()
                     if (action.isNotEmpty()) {
                         log.action = action
@@ -96,7 +96,7 @@ class CreditSystemViewModel : ViewModel() {
 
             tr.forEach {
                 if (it.html().contains("td")) {
-                    var system = CreditSystemListModel()
+                    val system = CreditSystemListModel()
                     val action = it.selectXpath("td[1]/a").text()
                     if (action.isNotEmpty()) {
                         system.action = action
@@ -136,7 +136,6 @@ data class CreditSystemListViewState(
 )
 
 class CreditSystemListModel {
-    var rid = ""
     var action = ""
     var count = ""
     var cycles = ""
@@ -168,7 +167,7 @@ class CreditRuleViewModel : ViewModel() {
 
             tr.forEach {
                 if (it.html().contains("td")) {
-                    var rule = CreditRuleListModel()
+                    val rule = CreditRuleListModel()
                     val action = it.selectXpath("td[1]").text()
                     if (action.isNotEmpty()) {
                         rule.action = action

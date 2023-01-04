@@ -9,7 +9,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
-import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -46,9 +45,9 @@ class ProfileTopicViewModel : ViewModel() {
         withContext(Dispatchers.IO) {
             val url = HTMLURL.PROFILE_TOPIC_LIST + "&uid=$uid&page=${page}"
             val document = NetworkUtil.getRequest(url)
-            var tr = document.selectXpath("//div[@class='bm_c']//table/tbody/tr")
+            val tr = document.selectXpath("//div[@class='bm_c']//table/tbody/tr")
             tr.forEach {
-                var topic = ProfileTopicListModel()
+                val topic = ProfileTopicListModel()
 
                 val gif = it.selectXpath("td[@class='icn']/a/img").attr("src")
                 if (gif.isNotEmpty()) {

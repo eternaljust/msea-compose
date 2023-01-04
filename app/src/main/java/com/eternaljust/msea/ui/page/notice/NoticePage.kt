@@ -18,7 +18,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
-import okhttp3.Route
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -62,8 +61,7 @@ fun NoticePage(
                 }
 
                 HorizontalPager(count = items.size, state = pagerState) {
-                    val item = items[pagerState.currentPage]
-                    when (item) {
+                    when (items[pagerState.currentPage]) {
                         NoticeTabItem.MYPOST -> MyPostPage(
                             scaffoldState = scaffoldState,
                             navController = navController

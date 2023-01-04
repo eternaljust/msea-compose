@@ -31,7 +31,7 @@ class SystemViewModel : ViewModel() {
             val dl = document.selectXpath("//div[@class='nts']/dl")
 
             dl.forEach {
-                var system = SystemListModel()
+                val system = SystemListModel()
                 val time = it.selectXpath("dt/span[@class='xg1 xw0']").text()
                 if (time.isNotEmpty()) {
                     system.time = time

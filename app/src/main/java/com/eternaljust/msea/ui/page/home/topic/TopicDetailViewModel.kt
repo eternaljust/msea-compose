@@ -13,7 +13,7 @@ import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.configPager
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -189,37 +189,31 @@ class TopicDetailViewModel : ViewModel() {
             val document = NetworkUtil.getRequest(url)
             val noticeauthor = document.selectXpath("//input[@name='noticeauthor']")
                 .attr("value")
-            println("noticeauthor---$noticeauthor")
             if (noticeauthor.isNotEmpty()) {
                 params.noticeauthor = noticeauthor
             }
             val noticeauthormsg = document.selectXpath("//input[@name='noticeauthormsg']")
                 .attr("value")
-            println("noticeauthormsg---$noticeauthormsg")
             if (noticeauthormsg.isNotEmpty()) {
                 params.noticeauthormsg = noticeauthormsg
             }
             val reppid = document.selectXpath("//input[@name='reppid']")
                 .attr("value")
-            println("reppid---$reppid")
             if (reppid.isNotEmpty()) {
                 params.reppid = reppid
             }
             val reppost = document.selectXpath("//input[@name='reppost']")
                 .attr("value")
-            println("reppost---$reppost")
             if (reppost.isNotEmpty()) {
                 params.reppost = reppost
             }
             val noticetrimstr = document.selectXpath("//input[@name='noticetrimstr']")
                 .attr("value")
-            println("noticetrimstr---$noticetrimstr")
             if (noticetrimstr.isNotEmpty()) {
                 params.noticetrimstr = noticetrimstr
             }
             val form = document.selectXpath("//form[@id='postform']")
                 .attr("action")
-            println("form---$form")
             if (form.isNotEmpty()) {
                 params.action = form
             }
@@ -277,181 +271,177 @@ class TopicDetailViewModel : ViewModel() {
         withContext(Dispatchers.IO) {
             val url = HTMLURL.BASE + "/thread-$tid-${page}-1.html"
             val document = NetworkUtil.getRequest(url)
-            withContext(Dispatchers.Default) {
-                if (page == 1) {
-                    val topic = TopicDetailModel()
-                    topic.url = url
-                    val title = document.selectXpath("//td[@class='plc ptm pbn vwthd']/h1/span").text()
-                    if (title.isNotEmpty()) {
-                        topic.title = title
-                    }
-                    val text1 = document.selectXpath("//td[@class='plc ptm pbn vwthd']/div[@class='ptn']/span[2]").text()
-                    val text2 = document.selectXpath("//td[@class='plc ptm pbn vwthd']/div[@class='ptn']/span[5]").text()
-                    if (text1.isNotEmpty() && text2.isNotEmpty()) {
-                        topic.commentCount = "查看: $text1  |  回复: $text2  |  tid($tid)"
-                    }
-                    val title1 = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[3]").text()
-                    if (title1.isNotEmpty()) {
-                        topic.indexTitle = title1
-                    }
-                    val gid = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[3]").attr("href")
-                    if (gid.contains("gid=")) {
-                        topic.gid = gid.split("gid=").last()
-                    }
-                    val title2 = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[4]").text()
-                    if (title2.isNotEmpty()) {
-                        topic.nodeTitle = title2
-                    }
-                    val fid = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[4]").attr("href")
-                    if (fid.contains("forum-")) {
-                        topic.nodeFid = fid.split("forum-").last().split("-").first()
-                    } else if (fid.contains("fid=")) {
-                        topic.nodeFid = fid.split("fid=").last()
-                    }
-
-                    val span = document.selectXpath("//span[@class='tag iconfont icon-tag-fill']/a")
-                    var tags = mutableListOf<TagItemModel>()
-                    span.forEach {
-                        val tag = TagItemModel()
-                        val title = it.attr("title")
-                        if (title.isNotEmpty()) {
-                            tag.title = title
-                        }
-                        val id = it.attr("href")
-                        if (id.contains("id=")) {
-                            tag.tid = id.split("id=").last()
-                        }
-
-                        tags.add(tag)
-                    }
-                    topic.tags = tags
-                    val xpath = "//div[@class='pob cl']//a[@id='k_favorite']"
-                    val favorite = document.selectXpath(xpath)
-                        .attr("href")
-                    if (favorite.contains("ac=favorite")) {
-                        topic.favorite = favorite
-                    }
-                    val count = document.selectXpath("$xpath//span[@id='favoritenumber']").text()
-                    if (count.isNotEmpty()) {
-                        viewStates = viewStates.copy(favoriteCount = count)
-                    }
-
-                    val action = document.selectXpath("//div[@id='f_pst']/form")
-                        .attr("action")
-                    if (action.isNotEmpty()) {
-                        topic.action = action
-                    }
-                    val addXpath = "//div[@class='mtw mbm hm cl']/a[@id='recommend_add']"
-                    val add = document.selectXpath(addXpath).attr("href")
-                    if (add.isNotEmpty()) {
-                        topic.recommendAdd = add
-                    }
-                    val addCount = document.selectXpath("${addXpath}//span[@id='recommendv_add']").text()
-                    if (addCount.isNotEmpty()) {
-                        viewStates = viewStates.copy(recommendAddCount = addCount)
-                    }
-                    val subtractXpath = "//div[@class='mtw mbm hm cl']/a[@id='recommend_subtract']"
-                    val subtract = document.selectXpath(subtractXpath).attr("href")
-                    if (subtract.isNotEmpty()) {
-                        topic.recommendSubtract = subtract
-                    }
-
-                    viewStates = viewStates.copy(topic = topic)
+            if (page == 1) {
+                val topic = TopicDetailModel()
+                topic.url = url
+                val title = document.selectXpath("//td[@class='plc ptm pbn vwthd']/h1/span").text()
+                if (title.isNotEmpty()) {
+                    topic.title = title
+                }
+                val text1 = document.selectXpath("//td[@class='plc ptm pbn vwthd']/div[@class='ptn']/span[2]").text()
+                val text2 = document.selectXpath("//td[@class='plc ptm pbn vwthd']/div[@class='ptn']/span[5]").text()
+                if (text1.isNotEmpty() && text2.isNotEmpty()) {
+                    topic.commentCount = "查看: $text1  |  回复: $text2  |  tid($tid)"
+                }
+                val title1 = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[3]").text()
+                if (title1.isNotEmpty()) {
+                    topic.indexTitle = title1
+                }
+                val gid = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[3]").attr("href")
+                if (gid.contains("gid=")) {
+                    topic.gid = gid.split("gid=").last()
+                }
+                val title2 = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[4]").text()
+                if (title2.isNotEmpty()) {
+                    topic.nodeTitle = title2
+                }
+                val fid = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[4]").attr("href")
+                if (fid.contains("forum-")) {
+                    topic.nodeFid = fid.split("forum-").last().split("-").first()
+                } else if (fid.contains("fid=")) {
+                    topic.nodeFid = fid.split("fid=").last()
                 }
 
-                if (page > 1) {
-                    val pageNumber = document.selectXpath("//div[@class='pgs mtm mbm cl']//label/span").text()
-                    println("pageNumber---$pageNumber")
-                    if (pageNumber.isNotEmpty()) {
-                        val number = pageNumber.replace("/ ", "").replace(" 页", "")
-                        if (page > number.toInt()) {
-                            return@withContext list
-                        }
-                    } else {
-                        return@withContext list
+                val span = document.selectXpath("//span[@class='tag iconfont icon-tag-fill']/a")
+                val tags = mutableListOf<TagItemModel>()
+                span.forEach {
+                    val tag = TagItemModel()
+                    val tagTitle = it.attr("title")
+                    if (tagTitle.isNotEmpty()) {
+                        tag.title = tagTitle
                     }
+                    val id = it.attr("href")
+                    if (id.contains("id=")) {
+                        tag.tid = id.split("id=").last()
+                    }
+
+                    tags.add(tag)
+                }
+                topic.tags = tags
+                val xpath = "//div[@class='pob cl']//a[@id='k_favorite']"
+                val favorite = document.selectXpath(xpath)
+                    .attr("href")
+                if (favorite.contains("ac=favorite")) {
+                    topic.favorite = favorite
+                }
+                val count = document.selectXpath("$xpath//span[@id='favoritenumber']").text()
+                if (count.isNotEmpty()) {
+                    viewStates = viewStates.copy(favoriteCount = count)
                 }
 
-                val node = document.selectXpath("//div/table[@class='plhin']/tbody")
-                node.forEach { it ->
-                    var comment = TopicCommentModel()
-                    val avatar = it.selectXpath("tr/td[@class='pls']//div[@class='avatar']/a/img")
-                        .attr("src")
-                    if (avatar.isNotEmpty()) {
-                        comment.avatar = NetworkUtil.getAvatar(avatar)
-                    }
-                    val name = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a").text()
-                    if (name.isNotEmpty()) {
-                        comment.name = name
-                    }
-                    val uid = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a")
-                        .attr("href")
-                    if (uid.contains("uid-")) {
-                        comment.uid = NetworkUtil.getUid(uid)
-                    }
-                    val time = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/em")
-                        .text()
-                    if (time.isNotEmpty()) {
-                        comment.time = time
-                    }
-                    val sup = it.selectXpath("tr/td[@class='plc']//div[@class='pi']/strong")
-                        .text()
-                    if (sup.isNotEmpty()) {
-                        comment.sup = sup
-                    }
-                    val reply = it.selectXpath("tr/td[@class='plc']//div[@class='pob cl']//a[@class='iconfont icon-message-fill']")
-                        .attr("href")
-                    if (reply.contains("action=reply")) {
-                        comment.reply = reply
-                    }
-                    val xpath = "tr/td[@class='plc']//div[@class='pob cl']//a[@class='iconfont icon-like-fill']"
-                    val support = it.selectXpath(xpath)
-                        .attr("href")
-                    if (support.contains("do=support")) {
-                        comment.support = support
-                    }
-                    val count = it.selectXpath("$xpath/span").text()
-                    if (count.isNotEmpty()) {
-                        comment.supportCount = count
-                    }
+                val action = document.selectXpath("//div[@id='f_pst']/form")
+                    .attr("action")
+                if (action.isNotEmpty()) {
+                    topic.action = action
+                }
+                val addXpath = "//div[@class='mtw mbm hm cl']/a[@id='recommend_add']"
+                val add = document.selectXpath(addXpath).attr("href")
+                if (add.isNotEmpty()) {
+                    topic.recommendAdd = add
+                }
+                val addCount = document.selectXpath("${addXpath}//span[@id='recommendv_add']").text()
+                if (addCount.isNotEmpty()) {
+                    viewStates = viewStates.copy(recommendAddCount = addCount)
+                }
+                val subtractXpath = "//div[@class='mtw mbm hm cl']/a[@id='recommend_subtract']"
+                val subtract = document.selectXpath(subtractXpath).attr("href")
+                if (subtract.isNotEmpty()) {
+                    topic.recommendSubtract = subtract
+                }
 
-                    var td = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']")
-                    val content = td.html()
-                    if (content.contains("font") || content.contains("strong")
-                        || content.contains("color") || content.contains("quote")
-                        || content.contains("</a>") || content.contains("<img")) {
-                        if (content.contains("quote")) {
-                            comment.isText = true
-                            val xpath = "tr/td[@class='plc']//td[@class='t_f']/div[@class='quote']/blockquote"
-                            val time = it.selectXpath("$xpath//font[@color='#999999']").text()
-                            println("time---$time")
-                            comment.blockquoteTime = time
-                            val text = it.selectXpath(xpath).text()
-                            comment.blockquoteContent = text.replace(time, "").removePrefix(" ")
-                            val quote = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']").text()
-                            if (quote.isNotEmpty()) {
-                                comment.content = quote.replace(text, "").removePrefix(" ")
-                            }
-                        } else {
-                            comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
-                            comment.isText = false
-                        }
-                        if (comment.content.contains("file=")) {
-                            comment.content = comment.content.replace("file=", "src=")
-                        } else if (comment.content.contains("src=")) {
-                            comment.content = comment.content.replace("src=\"static/image/common/none.gif\"", "")
+                viewStates = viewStates.copy(topic = topic)
+            }
+
+            if (page > 1) {
+                val pageNumber = document.selectXpath("//div[@class='pgs mtm mbm cl']//label/span").text()
+                println("pageNumber---$pageNumber")
+                if (pageNumber.isNotEmpty()) {
+                    val number = pageNumber.replace("/ ", "").replace(" 页", "")
+                    if (page > number.toInt()) return@withContext list
+                } else {
+                    return@withContext list
+                }
+            }
+
+            val node = document.selectXpath("//div/table[@class='plhin']/tbody")
+            node.forEach {
+                val comment = TopicCommentModel()
+                val avatar = it.selectXpath("tr/td[@class='pls']//div[@class='avatar']/a/img")
+                    .attr("src")
+                if (avatar.isNotEmpty()) {
+                    comment.avatar = NetworkUtil.getAvatar(avatar)
+                }
+                val name = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a").text()
+                if (name.isNotEmpty()) {
+                    comment.name = name
+                }
+                val uid = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a")
+                    .attr("href")
+                if (uid.contains("uid-")) {
+                    comment.uid = NetworkUtil.getUid(uid)
+                }
+                val time = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/em")
+                    .text()
+                if (time.isNotEmpty()) {
+                    comment.time = time
+                }
+                val sup = it.selectXpath("tr/td[@class='plc']//div[@class='pi']/strong")
+                    .text()
+                if (sup.isNotEmpty()) {
+                    comment.sup = sup
+                }
+                val reply = it.selectXpath("tr/td[@class='plc']//div[@class='pob cl']//a[@class='iconfont icon-message-fill']")
+                    .attr("href")
+                if (reply.contains("action=reply")) {
+                    comment.reply = reply
+                }
+                val xpath = "tr/td[@class='plc']//div[@class='pob cl']//a[@class='iconfont icon-like-fill']"
+                val support = it.selectXpath(xpath)
+                    .attr("href")
+                if (support.contains("do=support")) {
+                    comment.support = support
+                }
+                val count = it.selectXpath("$xpath/span").text()
+                if (count.isNotEmpty()) {
+                    comment.supportCount = count
+                }
+
+                val td = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']")
+                val content = td.html()
+                if (content.contains("font") || content.contains("strong")
+                    || content.contains("color") || content.contains("quote")
+                    || content.contains("</a>") || content.contains("<img")) {
+                    if (content.contains("quote")) {
+                        comment.isText = true
+                        val xpath1 = "tr/td[@class='plc']//td[@class='t_f']/div[@class='quote']/blockquote"
+                        val time1 = it.selectXpath("$xpath1//font[@color='#999999']").text()
+                        println("time---$time1")
+                        comment.blockquoteTime = time1
+                        val text = it.selectXpath(xpath1).text()
+                        comment.blockquoteContent = text.replace(time1, "").removePrefix(" ")
+                        val quote = it.selectXpath("tr/td[@class='plc']//td[@class='t_f']").text()
+                        if (quote.isNotEmpty()) {
+                            comment.content = quote.replace(text, "").removePrefix(" ")
                         }
                     } else {
-                        val text = td.text()
-                        if (text.isNotEmpty()) {
-                            comment.content = text
-                        }
+                        comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
+                        comment.isText = false
                     }
-                    println("content---${comment.content}")
+                    if (comment.content.contains("file=")) {
+                        comment.content = comment.content.replace("file=", "src=")
+                    } else if (comment.content.contains("src=")) {
+                        comment.content = comment.content.replace("src=\"static/image/common/none.gif\"", "")
+                    }
+                } else {
+                    val text = td.text()
+                    if (text.isNotEmpty()) {
+                        comment.content = text
+                    }
+                }
+                println("content---${comment.content}")
 
-                    if (comment.name.isNotEmpty()) {
-                        list.add(comment)
-                    }
+                if (comment.name.isNotEmpty()) {
+                    list.add(comment)
                 }
             }
         }
@@ -512,13 +502,11 @@ class TopicDetailModel {
 
 class TopicCommentModel {
     var uid = ""
-    var pid = ""
     var reply = ""
     var support = ""
     var supportCount = ""
     var name = ""
     var avatar = ""
-    var lv = ""
     var time = ""
     var content = ""
     var isText = true

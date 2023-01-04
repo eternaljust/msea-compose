@@ -36,7 +36,7 @@ import com.eternaljust.msea.ui.page.profile.detail.*
 import com.eternaljust.msea.ui.page.profile.drawer.DrawerPage
 import com.eternaljust.msea.ui.page.profile.login.LoginPage
 import com.eternaljust.msea.ui.page.profile.setting.*
-import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.theme.themeStyleDark
 import com.eternaljust.msea.ui.widget.WebViewModel
@@ -235,7 +235,7 @@ fun MyApp() {
                 bottomBar = {
                     if (mainScreens.contains(currentDestination?.route)) {
                         NavigationBar(
-                            containerColor = ColorTheme(light = Color.White, dark = Color.Black)
+                            containerColor = colorTheme(light = Color.White, dark = Color.Black)
                         ) {
                             screens.forEach { screen ->
                                 NavigationBarItem(

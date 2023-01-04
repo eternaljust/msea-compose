@@ -29,7 +29,7 @@ import androidx.paging.compose.itemsIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
@@ -132,7 +132,7 @@ fun TopicListItemContent(
                     Spacer(modifier = Modifier.width(10.dp))
 
                     if (item.icon1.isNotEmpty()) {
-                        TopicAttachmentIcon(
+                        topicAttachmentIcon(
                             icon = item.icon1,
                             isNodeFid125 = isNodeFid125
                         )
@@ -141,7 +141,7 @@ fun TopicListItemContent(
                     }
 
                     if (item.icon2.isNotEmpty()) {
-                        TopicAttachmentIcon(
+                        topicAttachmentIcon(
                             icon = item.icon2,
                             isNodeFid125 = isNodeFid125
                         )
@@ -150,7 +150,7 @@ fun TopicListItemContent(
                     }
 
                     if (item.icon3.isNotEmpty()) {
-                        TopicAttachmentIcon(
+                        topicAttachmentIcon(
                             icon = item.icon3,
                             isNodeFid125 = isNodeFid125
                         )
@@ -159,7 +159,7 @@ fun TopicListItemContent(
                     }
 
                     if (item.icon4.isNotEmpty()) {
-                        TopicAttachmentIcon(
+                        topicAttachmentIcon(
                             icon = item.icon4,
                             isNodeFid125 = isNodeFid125
                         )
@@ -178,7 +178,7 @@ fun TopicListItemContent(
 
             withStyle(
                 style = SpanStyle(
-                    color = ColorTheme(light = Color.Black, dark = Color.White)
+                    color = colorTheme(light = Color.Black, dark = Color.White)
                 )
             ) {
                 append(item.title)
@@ -186,7 +186,7 @@ fun TopicListItemContent(
 
             val color = if (isNodeFid125) Color.Gray else
                 if (item.attachmentColorRed) Color.Red else
-                    ColorTheme(light = Color.Black, dark = Color.White)
+                    colorTheme(light = Color.Black, dark = Color.White)
             withStyle(
                 style = SpanStyle( color = color )
             ) {
@@ -214,7 +214,7 @@ fun TopicListItemContent(
 }
 
 @Composable
-fun TopicAttachmentIcon(
+fun topicAttachmentIcon(
     icon: String,
     isNodeFid125: Boolean = false
 ) = when (icon) {

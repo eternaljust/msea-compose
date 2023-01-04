@@ -20,7 +20,7 @@ import androidx.paging.compose.itemsIndexed
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.home.topic.TopicListItemContent
-import com.eternaljust.msea.ui.theme.GetIconTintColorSecondary
+import com.eternaljust.msea.ui.theme.getIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
@@ -145,7 +145,7 @@ fun NodeListHeader(
                 Text(text = "今日：")
 
                 if (model.today.isNotEmpty()) {
-                    Text(text = model.today, color = GetTextColor(isNodeFid125))
+                    Text(text = model.today, color = getTextColor(isNodeFid125))
                 }
                 
                 if (model.todayImage.isNotEmpty()) {
@@ -154,7 +154,7 @@ fun NodeListHeader(
                     Icon(
                         painter = painterResource(id = paint),
                         contentDescription = null,
-                        tint = GetIconTintColorSecondary(isNodeFid125)
+                        tint = getIconTintColorSecondary(isNodeFid125)
                     )
                 }
             }
@@ -165,7 +165,7 @@ fun NodeListHeader(
                 Text(text = "主题：")
 
                 if (model.topic.isNotEmpty()) {
-                    Text(text = model.topic, color = GetTextColor(isNodeFid125))
+                    Text(text = model.topic, color = getTextColor(isNodeFid125))
                 }
             }
 
@@ -175,7 +175,7 @@ fun NodeListHeader(
                 Text(text = "排名：")
 
                 if (model.rank.isNotEmpty()) {
-                    Text(text = model.rank, color = GetTextColor(isNodeFid125))
+                    Text(text = model.rank, color = getTextColor(isNodeFid125))
                 }
 
                 if (model.rankImage.isNotEmpty()) {
@@ -184,7 +184,7 @@ fun NodeListHeader(
                     Icon(
                         painter = painterResource(id = paint),
                         contentDescription = null,
-                        tint = GetIconTintColorSecondary(isNodeFid125)
+                        tint = getIconTintColorSecondary(isNodeFid125)
                     )
                 }
             }
@@ -193,6 +193,6 @@ fun NodeListHeader(
 }
 
 @Composable
-private fun GetTextColor(isNodeFid125: Boolean): Color {
+private fun getTextColor(isNodeFid125: Boolean): Color {
     return if (isNodeFid125) Color.Gray else Color.Red
 }

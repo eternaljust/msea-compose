@@ -58,7 +58,7 @@ class NodeViewModel : ViewModel() {
                 category = document.selectXpath("//div[@class='bm bmw  cl']")
             }
             category.forEach { ct ->
-                var node = NodeModel()
+                val node = NodeModel()
 
                 val title = ct.selectXpath("div[@class='bm_h cl']/h2/a").text()
                 if (title.isNotEmpty()) {
@@ -66,7 +66,7 @@ class NodeViewModel : ViewModel() {
                 }
 
                 val span = ct.selectXpath("div[@class='bm_h cl']/span/a")
-                var users = mutableListOf<String>()
+                val users = mutableListOf<String>()
                 span.forEach { a ->
                     val text = a.text()
                     if (text.isNotEmpty()) {
@@ -77,17 +77,17 @@ class NodeViewModel : ViewModel() {
 
                 if (gid == "92") {
                     val tr = ct.selectXpath("div[@class='bm_c']/table/tbody/tr")
-                    var models = mutableListOf<NodeListModel>()
+                    val models = mutableListOf<NodeListModel>()
                     tr.forEach { dl ->
-                        var model = NodeListModel()
+                        val model = NodeListModel()
 
                         val forum = dl.selectXpath("td/h2/a").attr("href")
                         if (forum.isNotEmpty()) {
                             model.fid = NetworkUtil.getFid(forum)
                         }
-                        val title = dl.selectXpath("td/h2/a").text()
-                        if (title.isNotEmpty()) {
-                            model.title = title
+                        val title1 = dl.selectXpath("td/h2/a").text()
+                        if (title1.isNotEmpty()) {
+                            model.title = title1
                         }
                         val today = dl.selectXpath("td/h2/em[@class='xw0 xi1']").text()
                         if (today.isNotEmpty()) {
@@ -122,17 +122,17 @@ class NodeViewModel : ViewModel() {
                     node.list = models
                 } else {
                     val td = ct.selectXpath("div[@class='bm_c']/table/tbody/tr/td[@class='fl_g']")
-                    var models = mutableListOf<NodeListModel>()
+                    val models = mutableListOf<NodeListModel>()
                     td.forEach { dl ->
-                        var model = NodeListModel()
+                        val model = NodeListModel()
 
                         val forum = dl.selectXpath("div[@class='fl_icn_g']/a").attr("href")
                         if (forum.isNotEmpty()) {
                             model.fid = NetworkUtil.getFid(forum)
                         }
-                        val title = dl.selectXpath("dl/dt/a").text()
-                        if (title.isNotEmpty()) {
-                            model.title = title
+                        val title1 = dl.selectXpath("dl/dt/a").text()
+                        if (title1.isNotEmpty()) {
+                            model.title = title1
                         }
                         val today = dl.selectXpath("dl/dt/em[@class='xw0 xi1']").text()
                         if (today.isNotEmpty()) {

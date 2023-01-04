@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.theme.ColorTheme
+import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
@@ -172,7 +172,7 @@ private fun SignHeader(
                             items(daySign.calendars) {
                                 val backgroundColor = if (it.isToday)
                                     MaterialTheme.colorScheme.primary else
-                                    ColorTheme(light = Color.White, dark = Color.Black)
+                                    colorTheme(light = Color.White, dark = Color.Black)
                                 Column(
                                     modifier = Modifier
                                         .size(40.dp)
@@ -184,7 +184,7 @@ private fun SignHeader(
                                 ) {
                                     val color = if (it.isToday) Color.White else
                                         if (it.isWeekend) MaterialTheme.colorScheme.primary else
-                                            ColorTheme(light = Color.Black, dark = Color.White)
+                                            colorTheme(light = Color.Black, dark = Color.White)
                                     Text(
                                         text = it.title,
                                         color = color

@@ -3,8 +3,6 @@ package com.eternaljust.msea.ui.page.profile.detail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,13 +18,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshGrid
-import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi

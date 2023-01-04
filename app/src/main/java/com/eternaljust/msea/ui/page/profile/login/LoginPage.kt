@@ -193,16 +193,12 @@ fun LoginPage(
                                 },
                                 leadingIcon = {
                                     if (item.imageVector != null) {
-                                        item.imageVector.let {
-                                            Icon(imageVector = it, contentDescription = item.title)
-                                        }
+                                        Icon(imageVector = item.imageVector, contentDescription = item.title)
                                     } else if (item.painter != null) {
-                                        item.painter.let {
-                                            Icon(
-                                                painter = painterResource(id = it),
-                                                contentDescription = item.title
-                                            )
-                                        }
+                                        Icon(
+                                            painter = painterResource(id = item.painter),
+                                            contentDescription = item.title
+                                        )
                                     }
                                 }
                             )

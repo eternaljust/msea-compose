@@ -31,7 +31,7 @@ class MyPostViewModel : ViewModel() {
             val dl = document.selectXpath("//dl[@class='cl ']")
 
             dl.forEach {
-                var post = PostListModel()
+                val post = PostListModel()
                 val time = it.selectXpath("dt/span[@class='xg1 xw0']").text()
                 if (time.isNotEmpty()) {
                     post.time = time

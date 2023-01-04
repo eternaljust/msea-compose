@@ -70,26 +70,26 @@ val md_theme_dark_surfaceTintColor = Color(0xFF5CE071)
 val seed = Color(0xFF53D769)
 
 @Composable
-fun ColorTheme(
+fun colorTheme(
     light: Color,
     dark: Color
 ): Color {
     val themeStyle = SettingInfo.instance.themeStyle
-    if (themeStyle == 0) {
-        return if (isSystemInDarkTheme()) dark else light
+    return if (themeStyle == 0) {
+        if (isSystemInDarkTheme()) dark else light
     } else if (themeStyle == 1) {
-        return light
+        light
     } else {
-        return dark
+        dark
     }
 }
 
 @Composable
-fun GetIconTintColorSecondary(isNodeFid125: Boolean): Color {
+fun getIconTintColorSecondary(isNodeFid125: Boolean): Color {
     return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondary
 }
 
 @Composable
-fun GetIconTintColorPrimary(isNodeFid125: Boolean): Color {
+fun getIconTintColorPrimary(isNodeFid125: Boolean): Color {
     return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.primary
 }

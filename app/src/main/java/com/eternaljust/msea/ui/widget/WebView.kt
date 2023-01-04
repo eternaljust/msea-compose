@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.widget
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -21,9 +22,9 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.*
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
-
+@SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WebViewPage(
@@ -204,6 +205,7 @@ blockquote {
 
 const val grayStyle = "html {-webkit-filter: grayscale(100%);}"
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebHTML(
     modifier: Modifier = Modifier,
@@ -218,7 +220,7 @@ fun WebHTML(
     val fontPx = MaterialTheme.typography.bodyLarge.fontSize.value.toInt()
     val lineHeight = MaterialTheme.typography.bodyLarge.lineHeight.value.toInt()
     val color = MaterialTheme.colorScheme.primary.value
-    var hex = java.lang.Long.toHexString(color.toLong())
+    val hex = java.lang.Long.toHexString(color.toLong())
     val aColor = hex.substring(0, 8).removePrefix("ff")
     val background = MaterialTheme.colorScheme.background.value
     val backgroundHex = java.lang.Long.toHexString(background.toLong())
@@ -230,8 +232,8 @@ fun WebHTML(
     val style = htmlStyle + gray
     val head = "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"><style>$style</style></head>"
     val body = "<body><div id=\"Wrapper\"<table><tbody><tr>$html</tr></tbody></table></div></body>"
-    val html = "<html>$head$body</html>"
-    println("html---$html")
+    val fullHtml = "<html>$head$body</html>"
+    println("fullHtml---$fullHtml")
     val context = LocalContext.current
 
     BoxWithConstraints(modifier) {
@@ -264,9 +266,10 @@ fun WebHTML(
             // AndroidViews are not supported by preview, bail early
             if (runningInPreview) return@AndroidView
 
-            view.loadDataWithBaseURL(null, html, "text/html", "utf-8",null)
+            view.loadDataWithBaseURL(null, fullHtml, "text/html", "utf-8",null)
 
             view.webViewClient = object : WebViewClient() {
+                @Deprecated("Deprecated in Java")
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
                     url: String?

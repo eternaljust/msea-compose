@@ -128,13 +128,9 @@ private fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNaviga
         NavigationDrawerItem(
             icon = {
                 if (item.imageVector != null) {
-                    item.imageVector.let {
-                        Icon(imageVector = it, contentDescription = null)
-                    }
+                    Icon(imageVector = item.imageVector, contentDescription = null)
                 } else if (item.painter != null) {
-                    item.painter.let {
-                        Icon(painter = painterResource(id = it), contentDescription = null)
-                    }
+                    Icon(painter = painterResource(id = item.painter), contentDescription = null)
                 }
             },
             label = { Text(item.title) },

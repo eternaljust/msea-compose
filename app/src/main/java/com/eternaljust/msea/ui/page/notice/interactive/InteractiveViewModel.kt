@@ -32,7 +32,7 @@ class InteractiveViewModel : ViewModel() {
             val dl = document.selectXpath("//div[@class='nts']/dl")
 
             dl.forEach {
-                var friend = InteractiveFriendListModel()
+                val friend = InteractiveFriendListModel()
                 val time = it.selectXpath("dt/span[@class='xg1 xw0']").text()
                 if (time.isNotEmpty()) {
                     friend.time = time
@@ -85,9 +85,4 @@ class InteractiveFriendListModel {
     var content = ""
     var action = ""
     var actionURL = ""
-}
-
-class FriendGroupModel {
-    var gid = ""
-    var name = ""
 }

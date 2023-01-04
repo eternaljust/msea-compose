@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.eternaljust.msea.ui.widget
 
 import androidx.compose.foundation.layout.*

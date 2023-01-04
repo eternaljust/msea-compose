@@ -1,6 +1,5 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,10 +20,7 @@ import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.RefreshList
-import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -73,7 +69,7 @@ fun FriendListListHeader(
         ) {
             Text(text = "按照好友热度排序")
 
-            Text(text = "当前共有 ${count} 个好友")
+            Text(text = "当前共有 $count 个好友")
         }
     }
 }
