@@ -51,6 +51,20 @@ class NetworkUtil private constructor() {
             builder.build()
         }
 
+        fun getData(url: String): String {
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .build()
+            val response = httpClient
+                .newCall(request)
+                .execute()
+            response.body?.string()?.let {
+                return it
+            }
+            return ""
+        }
+
         fun getRequest(
             url: String
         ): Document {
@@ -194,6 +208,10 @@ class NetworkUtil private constructor() {
 }
 
 object HTMLURL {
+    const val APP_GITHUB = "https://github.com/eternaljust/msea-compose"
+    const val APP_RELEASE = "$APP_GITHUB/releases"
+    const val GET_VERSION = "https://gitee.com/eternaljust/app-config/raw/main/msea-compose/version.json"
+
     const val BASE = "https://www.chongbuluo.com"
 
     const val LOGIN = "$BASE/member.php?mod=logging&action=login&loginsubmit=yes"

@@ -1,26 +1,42 @@
 package com.eternaljust.msea.ui.page.profile.setting
 
+import android.os.Parcelable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.BuildConfig
+import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.fromJson
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
 class AboutViewModel : ViewModel() {
     val items: List<AboutListItem>
-    get() = listOf(
-        AboutListItem.LICENSE,
-        AboutListItem.SDK_LIST,
-        AboutListItem.SOURCE_CODE
-    )
+        get() = listOf(
+            AboutListItem.LICENSE,
+            AboutListItem.SDK_LIST,
+            AboutListItem.SOURCE_CODE
+        )
+    val versionName: String = BuildConfig.VERSION_NAME
+    val versionCode: Int = BuildConfig.VERSION_CODE
 
+    var viewStates by mutableStateOf(AboutViewStates())
+        private set
     private val _viewEvents = Channel<AboutViewEvent>(Channel.BUFFERED)
     val viewEvents = _viewEvents.receiveAsFlow()
 
     fun dispatch(action: AboutViewAction) {
         when (action) {
             is AboutViewAction.PopBack -> popBack()
+            is AboutViewAction.GetVersion -> getVersion()
+            is AboutViewAction.VersionShowDialog -> versionShowDialog(action.isShow)
         }
     }
 
@@ -29,7 +45,28 @@ class AboutViewModel : ViewModel() {
             _viewEvents.send(AboutViewEvent.PopBack)
         }
     }
+
+    private fun getVersion() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.GET_VERSION
+            val content = NetworkUtil.getData(url)
+            println("ConfigVersion---$content")
+            val version = content.fromJson<ConfigVersionModel>()
+            version?.let {
+                viewStates = viewStates.copy(configVersion = it)
+            }
+        }
+    }
+
+    private fun versionShowDialog(isShow: Boolean) {
+        viewStates = viewStates.copy(versionShowDialog = isShow)
+    }
 }
+
+data class AboutViewStates(
+    var configVersion: ConfigVersionModel = ConfigVersionModel(),
+    var versionShowDialog: Boolean = false
+)
 
 sealed class AboutViewEvent {
     object PopBack : AboutViewEvent()
@@ -37,6 +74,9 @@ sealed class AboutViewEvent {
 
 sealed class AboutViewAction {
     object PopBack: AboutViewAction()
+    object GetVersion: AboutViewAction()
+
+    data class VersionShowDialog(val isShow: Boolean) : AboutViewAction()
 }
 
 interface AboutList {
@@ -69,3 +109,11 @@ enum class AboutListItem : AboutList {
             get() = "SDK 目录"
     }
 }
+
+@Parcelize
+data class ConfigVersionModel(
+    var versionCode: Int = 0,
+    var versionName: String = "",
+    var versionContent: String = "",
+    var updateTime: String = ""
+) : Parcelable

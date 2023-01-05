@@ -136,7 +136,7 @@ fun ProfileFavoriteListItemContent(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(0.85f)
+            modifier = Modifier.fillMaxWidth(0.8f)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_baseline_feed_24),

@@ -12,17 +12,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.eternaljust.msea.BuildConfig
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.WebViewModel
-import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.toJson
+import com.eternaljust.msea.utils.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -31,6 +31,8 @@ fun AboutPage(
     navController: NavHostController,
     viewModel: AboutViewModel = viewModel()
 ) {
+    viewModel.dispatch(AboutViewAction.GetVersion)
+
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             when (it) {
@@ -41,6 +43,8 @@ fun AboutPage(
         }
     }
 
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             NormalTopAppBar(
@@ -49,6 +53,45 @@ fun AboutPage(
             )
         },
         content = { paddingValues ->
+            if (viewModel.viewStates.versionShowDialog) {
+                AlertDialog(
+                    title = {
+                        Text(text = "${viewModel.viewStates.configVersion.versionName} 新版本更新")
+                    },
+                    text = {
+                        Column {
+                            Text(text = "发布时间：${viewModel.viewStates.configVersion.updateTime}\n")
+                            Text(text = "更新内容：\n${viewModel.viewStates.configVersion.versionContent}")
+                        }
+                    },
+                    onDismissRequest = {
+                        viewModel.dispatch(AboutViewAction.VersionShowDialog(false))
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                viewModel.dispatch(AboutViewAction.VersionShowDialog(false))
+                            }
+                        ) {
+                            Text(text = "取消")
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.dispatch(AboutViewAction.VersionShowDialog(false))
+                                openSystemBrowser(
+                                    url = HTMLURL.APP_RELEASE,
+                                    context = context
+                                )
+                            }
+                        ) {
+                            Text(text = "更新")
+                        }
+                    }
+                )
+            }
+
             LazyColumn(contentPadding = paddingValues) {
                 stickyHeader {
                     Column(
@@ -67,10 +110,33 @@ fun AboutPage(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        val versionName = BuildConfig.VERSION_NAME
-                        val versionCode = BuildConfig.VERSION_CODE
+                        Row(
+                            modifier = Modifier.clickable {
+                                if (viewModel.versionCode < viewModel.viewStates.configVersion.versionCode) {
+                                    viewModel.dispatch(AboutViewAction.VersionShowDialog(true))
+                                }
+                            },
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(text = "${viewModel.versionName} (${viewModel.versionCode})")
 
-                        Text(text = "$versionName ($versionCode)")
+                            if (viewModel.versionCode < viewModel.viewStates.configVersion.versionCode) {
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                Text(
+                                    modifier = Modifier
+                                        .background(
+                                            color = Color.Red,
+                                            shape = RoundedCornerShape(50)
+                                        )
+                                        .padding(horizontal = 5.dp),
+                                    text = "New",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -79,7 +145,7 @@ fun AboutPage(
                         modifier = Modifier
                             .clickable {
                                 if (it.route == RouteName.SOURCE_CODE) {
-                                    val url = "https://github.com/eternaljust/msea-compose"
+                                    val url = HTMLURL.APP_GITHUB
                                     val web = WebViewModel(url = url)
                                     val args = String.format("/%s", Uri.encode(web.toJson()))
                                     navController.navigate(RouteName.WEBVIEW + args)
