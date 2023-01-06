@@ -24,6 +24,10 @@ class SettingInfo {
     var daysignMinute: Int
         get() = DataStoreUtil.getData(SettingInfoKey.DAY_SIGN_MINUTE, 0)
         set(value) = DataStoreUtil.syncSetData(SettingInfoKey.DAY_SIGN_MINUTE, value)
+
+    var agreePrivacyPolicy: Boolean
+        get() = DataStoreUtil.getData(SettingInfoKey.AGREE_PRIVACY_POLICY, false)
+        set(value) = DataStoreUtil.syncSetData(SettingInfoKey.AGREE_PRIVACY_POLICY, value)
 }
 
 object SettingInfoKey {
@@ -32,4 +36,5 @@ object SettingInfoKey {
     const val DAY_SIGN_SWITCH = "daysignSwitchKey"
     const val DAY_SIGN_HOUR = "daysignHourKey"
     const val DAY_SIGN_MINUTE = "daysignMinuteKey"
+    const val AGREE_PRIVACY_POLICY = "agreePrivacyPolicyKey"
 }

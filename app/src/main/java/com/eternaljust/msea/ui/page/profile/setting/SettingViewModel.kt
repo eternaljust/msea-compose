@@ -33,7 +33,8 @@ class SettingViewModel : ViewModel() {
 //                    SettingListItem.CLEAN_CACHE,
                 ),
                 listOf(
-                    SettingListItem.TERMS_OF_SERVICE
+                    SettingListItem.TERMS_OF_SERVICE,
+                    SettingListItem.PRIVACY_POLICY,
                 )
             )
         }
@@ -181,5 +182,13 @@ enum class SettingListItem : SettingList {
 
         override val title: String
             get() = "使用条款"
+    },
+
+    PRIVACY_POLICY {
+        override val route: String
+            get() = RouteName.PRIVACY_POLICY
+
+        override val title: String
+            get() = "隐私政策"
     }
 }

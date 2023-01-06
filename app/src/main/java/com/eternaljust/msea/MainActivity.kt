@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -13,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -39,14 +45,17 @@ import com.eternaljust.msea.ui.page.profile.setting.*
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.theme.themeStyleDark
+import com.eternaljust.msea.ui.widget.WebURL
 import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.*
+import com.umeng.commonsdk.UMConfigure
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 sealed class BottomBarScreen(
     val route: String,
@@ -88,7 +97,32 @@ class MainActivity : ComponentActivity() {
                 darkTheme = themeStyleDark(),
                 isDynamicColor = SettingInfo.instance.colorScheme
             ) {
-                MyApp()
+                var agreePrivacyPolicy by remember {
+                    mutableStateOf(SettingInfo.instance.agreePrivacyPolicy)
+                }
+
+                if (agreePrivacyPolicy) {
+                    MyApp()
+                } else {
+                    PrivacyPolicy(
+                        cancelClick = {
+                            exitProcess(0)
+                        },
+                        agreeClick = {
+                            SettingInfo.instance.agreePrivacyPolicy = true
+                            agreePrivacyPolicy = true
+                            val channel = "GitHub"
+                            // 友盟正式初始化
+                            UMConfigure.init(
+                                this,
+                                Constants.umAppkey,
+                                channel,
+                                UMConfigure.DEVICE_TYPE_PHONE,
+                                ""
+                            )
+                        }
+                    )
+                }
             }
         }
 
@@ -127,6 +161,158 @@ class MainActivity : ComponentActivity() {
         super.onStop()
 
         println("onStop-----")
+    }
+}
+
+@Composable
+fun PrivacyPolicy(
+    cancelClick: () -> Unit,
+    agreeClick: () -> Unit
+) {
+    var isPrivacy by remember { mutableStateOf(false) }
+    var isTermsOfService by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+        AlertDialog(
+            title = {
+                Text(text = "隐私政策")
+            },
+            text = {
+                val annotatedText = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append("Msea 尊重并保护所有用户的个人隐私权。为了给您提供更好的服务，Msea 会按照")
+                    }
+
+                    pushStringAnnotation(
+                        tag = "privacy",
+                        annotation = ""
+                    )
+
+                    withStyle(
+                        style = SpanStyle(color = MaterialTheme.colorScheme.primary)
+                    ) {
+                        append("《隐私政策》")
+                    }
+                    pop()
+
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append("和")
+                    }
+
+                    pushStringAnnotation(
+                        tag = "service",
+                        annotation = ""
+                    )
+                    withStyle(
+                        style = SpanStyle( color = MaterialTheme.colorScheme.primary )
+                    ) {
+                        append("《使用条款》")
+                    }
+                    pop()
+
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append(
+                            "的规定使用和披露您的个人信息。\n" +
+                                    "点击\"我同意\"即表示您已阅读并同意隐私政策与使用条款。"
+                        )
+                    }
+                }
+
+                ClickableText(
+                    text = annotatedText,
+                    onClick = { offset ->
+                        annotatedText.getStringAnnotations(
+                            tag = "privacy",
+                            start = offset,
+                            end = offset
+                        ).firstOrNull()?.let {
+                            isPrivacy = true
+                        }
+
+                        annotatedText.getStringAnnotations(
+                            tag = "service",
+                            start = offset,
+                            end = offset
+                        ).firstOrNull()?.let {
+                            isTermsOfService = true
+                        }
+                    }
+                )
+            },
+            onDismissRequest = {},
+            dismissButton = {
+                Button(
+                    onClick = cancelClick
+                ) {
+                    Text(text = "不同意并退出")
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = agreeClick
+                ) {
+                    Text(text = "我同意")
+                }
+            }
+        )
+        
+        if (isPrivacy) {
+            AlertDialog(
+                title = { Text(text = "隐私政策") },
+                text = {
+                    WebURL(
+                        modifier = Modifier.fillMaxSize(),
+                        url = Constants.privacyFileUrl
+                    )
+                },
+                onDismissRequest = {},
+                confirmButton = {
+                    Button(
+                        onClick = { isPrivacy = false }
+                    ) {
+                        Text(text = "确认")
+                    }
+                }
+            )
+        }
+
+        if (isTermsOfService) {
+            AlertDialog(
+                title = { Text(text = "使用条款") },
+                text = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text(text = Constants.termsOfService)
+                    }
+                },
+                onDismissRequest = {},
+                confirmButton = {
+                    Button(
+                        onClick = { isTermsOfService = false }
+                    ) {
+                        Text(text = "确认")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -482,6 +668,12 @@ private fun NavGraphBuilder.detailsNav(
 
     composable(RouteName.TERMS_OF_SERVICE) {
         TermsOfServicePage(
+            navController = navController
+        )
+    }
+
+    composable(RouteName.PRIVACY_POLICY) {
+        PrivacyPolicyPage(
             navController = navController
         )
     }

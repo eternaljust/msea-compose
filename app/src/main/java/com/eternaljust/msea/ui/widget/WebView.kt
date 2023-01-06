@@ -296,3 +296,47 @@ fun WebHTML(
         }
     }
 }
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun WebURL(
+    modifier: Modifier = Modifier,
+    url: String
+) {
+    var webView by remember { mutableStateOf<WebView?>(null) }
+    val runningInPreview = LocalInspectionMode.current
+
+    BoxWithConstraints(modifier) {
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+
+                    val width =
+                        if (constraints.hasFixedWidth)
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        else
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                    val height =
+                        if (constraints.hasFixedHeight)
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        else
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+
+                    layoutParams = ViewGroup.LayoutParams(
+                        width,
+                        height
+                    )
+                }.also { webView = it }
+            }
+        ) { view ->
+            view.settings.javaScriptEnabled = true
+            view.settings.domStorageEnabled = true
+            view.settings.blockNetworkImage = false
+            view.settings.databaseEnabled = true
+            // AndroidViews are not supported by preview, bail early
+            if (runningInPreview) return@AndroidView
+
+            view.loadUrl(url)
+        }
+    }
+}
