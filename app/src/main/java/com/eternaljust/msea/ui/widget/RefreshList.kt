@@ -14,11 +14,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -45,7 +46,7 @@ fun <T : Any> RefreshList(
             lazyPagingItems.refresh()
         },
         indicator = { state, refreshTrigger ->
-            SwipeRefreshIndicator(
+            RefreshIndicator(
                 state = state,
                 refreshTriggerDistance = refreshTrigger,
                 contentColor = tint
@@ -90,7 +91,7 @@ fun <T : Any> RefreshListState(
             lazyPagingItems.refresh()
         },
         indicator = { state, refreshTrigger ->
-            SwipeRefreshIndicator(
+            RefreshIndicator(
                 state = state,
                 refreshTriggerDistance = refreshTrigger,
                 contentColor = tint
@@ -159,7 +160,7 @@ fun <T : Any> RefreshGrid(
             lazyPagingItems.refresh()
         },
         indicator = { state, refreshTrigger ->
-            SwipeRefreshIndicator(
+            RefreshIndicator(
                 state = state,
                 refreshTriggerDistance = refreshTrigger,
                 contentColor = MaterialTheme.colorScheme.primary
@@ -206,6 +207,19 @@ fun <T : Any> RefreshGrid(
             }
         )
     }
+}
+
+@Composable
+fun RefreshIndicator(
+    state: SwipeRefreshState,
+    refreshTriggerDistance: Dp,
+    contentColor: Color = MaterialTheme.colorScheme.primary
+) {
+    SwipeRefreshIndicator(
+        state = state,
+        refreshTriggerDistance = refreshTriggerDistance,
+        contentColor = contentColor
+    )
 }
 
 @Composable

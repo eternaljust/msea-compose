@@ -1,16 +1,17 @@
-@file:Suppress("IMPLICIT_CAST_TO_ANY")
-
 package com.eternaljust.msea.ui.page.home.topic
 
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,30 +25,51 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.theme.colorTheme
-import com.eternaljust.msea.ui.widget.RefreshList
+import com.eternaljust.msea.ui.widget.RefreshIndicator
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.toJson
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@Suppress("DEPRECATION")
 @Composable
 fun TopicListPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     viewModel: TopicListViewModel = viewModel()
 ) {
-    val viewStates = viewModel.viewStates
-    val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    if (viewModel.isFirstLoad) {
+        viewModel.dispatch(TopicListViewAction.LoadData)
+    }
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = viewModel.viewStates.isRefreshing
+    )
+    val listState = rememberLazyListState()
 
-    RefreshList(
-        lazyPagingItems = lazyPagingItems
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = {
+            viewModel.dispatch(TopicListViewAction.LoadData)
+        },
+        indicator = { state, refreshTrigger ->
+            RefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger
+            )
+        }
     ) {
-        itemsIndexed(lazyPagingItems) { _, item ->
-            item?.let {
+        swipeRefreshState.isRefreshing = viewModel.viewStates.isRefreshing
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            state = listState
+        ) {
+            itemsIndexed(viewModel.viewStates.list) { index, item ->
                 TopicListItemContent(
                     item = item,
                     avatarClick = {
@@ -59,6 +81,14 @@ fun TopicListPage(
                         navController.navigate(RouteName.TOPIC_DETAIL + args)
                     }
                 )
+
+                DisposableEffect(Unit) {
+                    if ((index + 1) % viewModel.pageSize == 0 &&
+                        index == viewModel.viewStates.list.lastIndex) {
+                        viewModel.dispatch(TopicListViewAction.LoadMoreData)
+                    }
+                    onDispose {}
+                }
             }
         }
     }
@@ -213,6 +243,7 @@ fun TopicListItemContent(
     Divider(modifier = Modifier)
 }
 
+@Suppress("IMPLICIT_CAST_TO_ANY")
 @Composable
 fun topicAttachmentIcon(
     icon: String,
