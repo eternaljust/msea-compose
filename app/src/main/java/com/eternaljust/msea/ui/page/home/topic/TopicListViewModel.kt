@@ -21,8 +21,8 @@ class TopicListViewModel(
         val sofa by lazy { TopicListViewModel(tabItem = TopicTabItem.SOFA) }
     }
 
-    var pageSize = 50
-        private set
+    val pageSize: Int
+        get() = 50
     var isFirstLoad = true
         private set
 

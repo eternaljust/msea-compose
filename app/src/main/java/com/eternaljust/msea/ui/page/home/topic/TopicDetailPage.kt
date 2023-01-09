@@ -5,12 +5,15 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,10 +26,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
@@ -35,7 +37,11 @@ import com.eternaljust.msea.ui.theme.getIconTintColorPrimary
 import com.eternaljust.msea.ui.theme.getIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.*
 import com.eternaljust.msea.utils.*
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 
+@Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TopicDetailPage(
@@ -46,10 +52,15 @@ fun TopicDetailPage(
     viewModel: TopicDetailViewModel = viewModel()
 ) {
     viewModel.dispatch(TopicDetailViewAction.SetTid(tid = tid))
+    if (viewModel.isFirstLoad) {
+        viewModel.dispatch(TopicDetailViewAction.LoadData)
+    }
 
     val viewStates = viewModel.viewStates
-    val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
     val context = LocalContext.current
+    val swipeRefreshState = rememberSwipeRefreshState(
+        isRefreshing = viewModel.viewStates.isRefreshing
+    )
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
@@ -69,7 +80,7 @@ fun TopicDetailPage(
                     scaffoldState.showSnackbar(message = it.message)
                 }
                 is TopicDetailViewEvent.Refresh -> {
-                    lazyPagingItems.refresh()
+                    viewModel.dispatch(TopicDetailViewAction.LoadData)
                 }
                 is TopicDetailViewEvent.Login -> {
                     navController.navigate(route = RouteName.LOGIN)
@@ -97,6 +108,57 @@ fun TopicDetailPage(
                     }
                 },
                 actions = {
+                    if (viewModel.viewStates.pageNumber > 1 &&
+                        viewModel.viewStates.pageLoadCompleted) {
+                        Box {
+                            IconButton(
+                                onClick = {
+                                    viewModel.dispatch(TopicDetailViewAction.ShowPageNumberMenu(true))
+                                }
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(32.dp),
+                                    painter = painterResource(id = R.drawable.ic_baseline_swap_horiz_24),
+                                    contentDescription = "选择分页"
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = viewModel.viewStates.showPageNumberMenuExpanded,
+                                onDismissRequest = {
+                                    viewModel.dispatch(TopicDetailViewAction.ShowPageNumberMenu(false))
+                                }
+                            ) {
+                                (1..viewModel.viewStates.pageNumber).forEach { index ->
+                                    DropdownMenuItem(
+                                        text = { Text("第 $index 页") },
+                                        leadingIcon = {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_baseline_keyboard_double_arrow_right_24),
+                                                contentDescription = "第 $index 页"
+                                            )
+                                        },
+                                        onClick = {
+                                            viewModel.dispatch(TopicDetailViewAction.ShowPageNumberMenu(false))
+                                            if (index == 1) {
+                                                viewModel.dispatch(TopicDetailViewAction.LoadData)
+                                            } else {
+                                                viewModel.dispatch(TopicDetailViewAction.LoadPageNumber(index))
+
+                                                viewModel.viewModelScope.launch {
+                                                    scaffoldState.showSnackbar(message = "开始加载第 $index 页")
+                                                }
+                                            }
+                                        },
+                                        enabled = index != viewModel.page
+                                    )
+
+                                    Divider()
+                                }
+                            }
+                        }
+                    }
+
                     if (viewModel.viewStates.topic.title.isNotEmpty() && !isNodeFid125) {
                         IconButton(
                             onClick = {
@@ -187,43 +249,58 @@ fun TopicDetailPage(
                         viewModel.dispatch(TopicDetailViewAction.CommentShowDialog(it))
                     }
                 )
-                
-                RefreshListState(
-                    lazyPagingItems = lazyPagingItems,
-                    listState = listState,
-                    tint = if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.primary
-                ) {
-                    stickyHeader{
-                        TopicDetailHeader(
-                            topic = viewStates.topic,
-                            isNodeFid125 = isNodeFid125,
-                            recommendAddCount = viewStates.recommendAddCount,
-                            nodeClick = {
-                                navController.navigate(RouteName.NODE_DETAIL + "/$it")
-                            },
-                            nodeListClick = {
-                                navController.navigate(RouteName.NODE_LIST + "/$it")
-                            },
-                            tagClick = {
-                                val args = String.format("/%s", Uri.encode(it.toJson()))
-                                navController.navigate(RouteName.TAG_LIST + args)
-                            },
-                            recommendAdd = {
-                                viewModel.dispatch(TopicDetailViewAction.RecommendAdd)
-                            },
-                            recommendSubtract = {
-                                viewModel.dispatch(TopicDetailViewAction.RecommendSubtract)
-                            }
+
+                SwipeRefresh(
+                    state = swipeRefreshState,
+                    onRefresh = {
+                        viewModel.dispatch(TopicDetailViewAction.LoadData)
+                    },
+                    indicator = { state, refreshTrigger ->
+                        RefreshIndicator(
+                            state = state,
+                            refreshTriggerDistance = refreshTrigger,
+                            contentColor = if (isNodeFid125) Color.Gray else
+                                MaterialTheme.colorScheme.primary
                         )
                     }
+                ) {
+                    swipeRefreshState.isRefreshing = viewModel.viewStates.isRefreshing
 
-                    itemsIndexed(lazyPagingItems) { _, item ->
-                        item?.let {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        state = listState
+                    ) {
+                        stickyHeader{
+                            TopicDetailHeader(
+                                topic = viewStates.topic,
+                                isNodeFid125 = isNodeFid125,
+                                recommendAddCount = viewStates.recommendAddCount,
+                                nodeClick = {
+                                    navController.navigate(RouteName.NODE_DETAIL + "/$it")
+                                },
+                                nodeListClick = {
+                                    navController.navigate(RouteName.NODE_LIST + "/$it")
+                                },
+                                tagClick = {
+                                    val args = String.format("/%s", Uri.encode(it.toJson()))
+                                    navController.navigate(RouteName.TAG_LIST + args)
+                                },
+                                recommendAdd = {
+                                    viewModel.dispatch(TopicDetailViewAction.RecommendAdd)
+                                },
+                                recommendSubtract = {
+                                    viewModel.dispatch(TopicDetailViewAction.RecommendSubtract)
+                                }
+                            )
+                        }
+
+                        itemsIndexed(viewModel.viewStates.list) { index, item ->
                             TopicDetailItemContent(
-                                item = it,
+                                item = item,
                                 isNodeFid125 = isNodeFid125,
                                 avatarClick = {
-                                    navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                                    navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
                                 },
                                 userOrTopicClick = { url ->
                                     if (url.contains("uid")) {
@@ -242,10 +319,18 @@ fun TopicDetailPage(
                                 replyClick = { action ->
                                     viewModel.dispatch(TopicDetailViewAction.GetReplyParam(
                                         action = action,
-                                        username = it.name
+                                        username = item.name
                                     ))
                                 }
                             )
+
+                            DisposableEffect(Unit) {
+                                if (viewModel.viewStates.pageLoadCompleted &&
+                                    index == viewModel.viewStates.list.lastIndex) {
+                                    viewModel.dispatch(TopicDetailViewAction.LoadMoreData)
+                                }
+                                onDispose {}
+                            }
                         }
                     }
                 }
@@ -380,7 +465,7 @@ fun TopicDetailHeader(
                                     vertical = 3.dp,
                                     horizontal = 5.dp
                                 ),
-                                text = recommendAddCount,
+                                text = "顶 $recommendAddCount",
                                 color = Color.White,
                                 style = MaterialTheme.typography.labelMedium
                             )
@@ -422,6 +507,16 @@ fun TopicDetailHeader(
                                 painter = painterResource(id = R.drawable.ic_baseline_arrow_drop_down_24),
                                 contentDescription = "踩",
                                 tint = Color.White
+                            )
+
+                            Text(
+                                modifier = Modifier.padding(
+                                    vertical = 3.dp,
+                                    horizontal = 5.dp
+                                ),
+                                text = "踩",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelMedium
                             )
                         }
                     }

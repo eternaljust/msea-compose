@@ -6,32 +6,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.UserInfo
-import com.eternaljust.msea.utils.configPager
 import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.Instant
 
 class TopicDetailViewModel : ViewModel() {
     private var tid = ""
 
-    private val pager by lazy {
-        configPager(PagingConfig(pageSize = 30, prefetchDistance = 1)) {
-            loadData(page = it)
-        }
-    }
+    private var pageSize = 30
+    var isFirstLoad = true
+        private set
 
-    var viewStates by mutableStateOf(TopicDetailViewState(pagingData = pager))
+    var page = 1
+        private set
+
+    var viewStates by mutableStateOf(TopicDetailViewState())
         private set
     private val _viewEvents = Channel<TopicDetailViewEvent>(Channel.BUFFERED)
     val viewEvents = _viewEvents.receiveAsFlow()
@@ -42,6 +38,7 @@ class TopicDetailViewModel : ViewModel() {
             is TopicDetailViewAction.Favorite -> favorite()
             is TopicDetailViewAction.Share -> share()
             is TopicDetailViewAction.SetTid -> tid = action.tid
+            is TopicDetailViewAction.ShowPageNumberMenu -> showPageNumberMenu(action.isShow)
             is TopicDetailViewAction.CommentShowDialog -> {
                 viewModelScope.launch {
                     if (UserInfo.instance.auth.isEmpty()) {
@@ -62,6 +59,26 @@ class TopicDetailViewModel : ViewModel() {
                 username = action.username
             )
             is TopicDetailViewAction.Reply -> reply()
+            is TopicDetailViewAction.LoadData -> {
+                if (viewStates.pageLoadCompleted) {
+                    isFirstLoad = false
+                    page = 1
+                    loadMoreData()
+                }
+            }
+            is TopicDetailViewAction.LoadMoreData -> {
+                if (page < viewStates.pageNumber) {
+                    page += 1
+                    loadMoreData()
+                }
+            }
+            is TopicDetailViewAction.LoadPageNumber -> {
+                viewStates = viewStates.copy(list = emptyList())
+                if (action.page <= viewStates.pageNumber) {
+                    page = action.page
+                    loadMoreData()
+                }
+            }
         }
     }
 
@@ -254,6 +271,10 @@ class TopicDetailViewModel : ViewModel() {
         }
     }
 
+    private fun showPageNumberMenu(isShow: Boolean) {
+        viewStates = viewStates.copy(showPageNumberMenuExpanded = isShow)
+    }
+
     private fun commentDialog(isShow: Boolean) {
         viewStates = viewStates.copy(showCommentDialog = isShow)
         if (!isShow) {
@@ -265,10 +286,15 @@ class TopicDetailViewModel : ViewModel() {
         viewStates = viewStates.copy(commentText = text)
     }
 
-    private suspend fun loadData(page: Int) : List<TopicCommentModel> {
-        val list = mutableListOf<TopicCommentModel>()
+    private fun loadMoreData() {
+        println("page---$page")
+        viewStates = viewStates.copy(pageLoadCompleted = false)
+        if (page == 1) {
+            viewStates = viewStates.copy(isRefreshing = true)
+        }
+        var list = mutableListOf<TopicCommentModel>()
 
-        withContext(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.BASE + "/thread-$tid-${page}-1.html"
             val document = NetworkUtil.getRequest(url)
             if (page == 1) {
@@ -329,6 +355,13 @@ class TopicDetailViewModel : ViewModel() {
                     viewStates = viewStates.copy(favoriteCount = count)
                 }
 
+                val pageNumber = document.selectXpath("//div[@class='pgs mtm mbm cl']//label/span").text()
+                if (pageNumber.isNotEmpty()) {
+                    val number = pageNumber.replace("/ ", "").replace(" 页", "")
+                    viewStates = viewStates.copy(pageNumber = number.toInt())
+                    println("pageNumber---${viewStates.pageNumber}")
+                }
+
                 val action = document.selectXpath("//div[@id='f_pst']/form")
                     .attr("action")
                 if (action.isNotEmpty()) {
@@ -352,18 +385,13 @@ class TopicDetailViewModel : ViewModel() {
                 viewStates = viewStates.copy(topic = topic)
             }
 
-            if (page > 1) {
-                val pageNumber = document.selectXpath("//div[@class='pgs mtm mbm cl']//label/span").text()
-                println("pageNumber---$pageNumber")
-                if (pageNumber.isNotEmpty()) {
-                    val number = pageNumber.replace("/ ", "").replace(" 页", "")
-                    if (page > number.toInt()) return@withContext list
-                } else {
-                    return@withContext list
-                }
+            val node = document.selectXpath("//div/table[@class='plhin']/tbody")
+            pageSize = if (node.count() > 30) {
+                node.count()
+            } else {
+                30
             }
 
-            val node = document.selectXpath("//div/table[@class='plhin']/tbody")
             node.forEach {
                 val comment = TopicCommentModel()
                 val avatar = it.selectXpath("tr/td[@class='pls']//div[@class='avatar']/a/img")
@@ -442,17 +470,45 @@ class TopicDetailViewModel : ViewModel() {
 
                 if (comment.name.isNotEmpty()) {
                     list.add(comment)
+                    println("list.count()---${list.count()}")
+                    if (viewStates.list.count() < 10 &&
+                        list.count() == viewStates.list.count()) {
+                        if (page == 1 && viewStates.isRefreshing) {
+                            viewStates = viewStates.copy(list = emptyList())
+                        }
+                    } else if (list.count() == 10) {
+                        if (page == 1 && viewStates.isRefreshing) {
+                            viewStates = viewStates.copy(list = emptyList())
+                        }
+                        viewStates = viewStates.copy(
+                            list = viewStates.list + list,
+                            isRefreshing = false
+                        )
+                        list = mutableListOf()
+                    }
+                    // 列表最后一个
+                    node.last()?.let { last ->
+                        if (last == it) {
+                            viewStates = viewStates.copy(
+                                list = viewStates.list + list,
+                                isRefreshing = false,
+                                pageLoadCompleted = true
+                            )
+                        }
+                    }
                 }
             }
         }
-
-        return list
     }
 }
 
 data class TopicDetailViewState(
     val topic: TopicDetailModel = TopicDetailModel(),
-    val pagingData: Flow<PagingData<TopicCommentModel>>,
+    val list: List<TopicCommentModel> = emptyList(),
+    val isRefreshing: Boolean = false,
+    val pageNumber: Int = 1,
+    val showPageNumberMenuExpanded: Boolean = false,
+    val pageLoadCompleted: Boolean = true,
     val showCommentDialog: Boolean = false,
     val commentText: String = "",
     var favoriteCount: String = "",
@@ -471,6 +527,8 @@ sealed class TopicDetailViewEvent {
 
 sealed class TopicDetailViewAction {
     object PopBack : TopicDetailViewAction()
+    object LoadData : TopicDetailViewAction()
+    object LoadMoreData : TopicDetailViewAction()
     object Favorite : TopicDetailViewAction()
     object Share : TopicDetailViewAction()
     object Comment : TopicDetailViewAction()
@@ -483,6 +541,8 @@ sealed class TopicDetailViewAction {
     data class CommentTextChange(val text: String) : TopicDetailViewAction()
     data class Support(val action: String) : TopicDetailViewAction()
     data class GetReplyParam(val action: String, val username: String) : TopicDetailViewAction()
+    data class ShowPageNumberMenu(val isShow: Boolean) : TopicDetailViewAction()
+    data class LoadPageNumber(val page: Int) : TopicDetailViewAction()
 }
 
 class TopicDetailModel {
