@@ -8,7 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.BuildConfig
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.profile.setting.ConfigVersionModel
 import com.eternaljust.msea.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +41,7 @@ class DrawerViewModel : ViewModel() {
         when (action) {
             is DrawerViewAction.Login -> login()
             is DrawerViewAction.GetProfile -> getProfile()
+            is DrawerViewAction.GetVersion -> getVersion()
             is DrawerViewAction.LogoutDialog -> updaterLogoutDialog(action.show)
         }
     }
@@ -149,6 +152,19 @@ class DrawerViewModel : ViewModel() {
         }
     }
 
+    private fun getVersion() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = HTMLURL.GET_VERSION
+            val content = NetworkUtil.getData(url)
+            println("ConfigVersion---$content")
+            val version = content.fromJson<ConfigVersionModel>()
+            version?.let {
+                val isNewVersion = BuildConfig.VERSION_CODE < version.versionCode
+                viewStates = viewStates.copy(isNewVersion = isNewVersion)
+            }
+        }
+    }
+
     private fun login() {
         viewStates = viewStates.copy(isLogin = UserInfo.instance.auth.isNotEmpty())
     }
@@ -161,12 +177,14 @@ class DrawerViewModel : ViewModel() {
 data class DrawerViewState(
     val isLogin: Boolean = UserInfo.instance.auth.isNotEmpty(),
     val showLogout: Boolean = false,
-    val userInfo: UserInfo = UserInfo.instance
+    val userInfo: UserInfo = UserInfo.instance,
+    val isNewVersion: Boolean = false
 )
 
 sealed class DrawerViewAction {
     object Login : DrawerViewAction()
     object GetProfile : DrawerViewAction()
+    object GetVersion : DrawerViewAction()
 
     data class LogoutDialog(val show: Boolean) : DrawerViewAction()
 }

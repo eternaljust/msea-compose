@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,8 +39,11 @@ fun DrawerPage(
             .collect {
                 println("drawerState = $it")
                 viewModel.dispatch(DrawerViewAction.Login)
-                if (it == DrawerValue.Open && viewModel.viewStates.isLogin) {
-                    viewModel.dispatch(DrawerViewAction.GetProfile)
+                if (it == DrawerValue.Open) {
+                    if (viewModel.viewStates.isLogin) {
+                        viewModel.dispatch(DrawerViewAction.GetProfile)
+                    }
+                    viewModel.dispatch(DrawerViewAction.GetVersion)
                 }
             }
     }
@@ -102,6 +106,7 @@ fun DrawerPage(
 
             DrawerList(
                 items = viewModel.settingItems,
+                isNewVersion = viewModel.viewStates.isNewVersion,
                 onClick = { item ->
                     onClick(item)
                 }
@@ -123,12 +128,24 @@ fun DrawerPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DrawerList(items: List<DrawerNavigationItem>, onClick: (DrawerNavigationItem) -> Unit) {
+private fun DrawerList(
+    items: List<DrawerNavigationItem>,
+    isNewVersion: Boolean = false,
+    onClick: (DrawerNavigationItem) -> Unit
+) {
     items.forEach { item ->
         NavigationDrawerItem(
             icon = {
                 if (item.imageVector != null) {
-                    Icon(imageVector = item.imageVector, contentDescription = null)
+                    if (item == DrawerNavigationItem.About) {
+                        Icon(
+                            imageVector = item.imageVector,
+                            contentDescription = null,
+                            tint = if (isNewVersion) Color.Red else LocalContentColor.current
+                        )
+                    } else {
+                        Icon(imageVector = item.imageVector, contentDescription = null)
+                    }
                 } else if (item.painter != null) {
                     Icon(painter = painterResource(id = item.painter), contentDescription = null)
                 }
