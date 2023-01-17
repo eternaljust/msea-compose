@@ -42,6 +42,7 @@ class DrawerViewModel : ViewModel() {
             is DrawerViewAction.Login -> login()
             is DrawerViewAction.GetProfile -> getProfile()
             is DrawerViewAction.GetVersion -> getVersion()
+            is DrawerViewAction.LoadVersion -> loadVersion()
             is DrawerViewAction.LogoutDialog -> updaterLogoutDialog(action.show)
         }
     }
@@ -152,16 +153,22 @@ class DrawerViewModel : ViewModel() {
         }
     }
 
-    private fun getVersion() {
+
+    private fun loadVersion() {
         viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.GET_VERSION
             val content = NetworkUtil.getData(url)
             println("ConfigVersion---$content")
-            val version = content.fromJson<ConfigVersionModel>()
-            version?.let {
-                val isNewVersion = BuildConfig.VERSION_CODE < version.versionCode
-                viewStates = viewStates.copy(isNewVersion = isNewVersion)
-            }
+            SettingInfo.instance.configVersion = content
+            SettingInfo.instance.cycleCount = 0
+            getVersion()
+        }
+    }
+    private fun getVersion() {
+        val version = SettingInfo.instance.configVersion.fromJson<ConfigVersionModel>()
+        version?.let {
+            val isNewVersion = BuildConfig.VERSION_CODE < version.versionCode
+            viewStates = viewStates.copy(version = version, isNewVersion = isNewVersion)
         }
     }
 
@@ -178,6 +185,7 @@ data class DrawerViewState(
     val isLogin: Boolean = UserInfo.instance.auth.isNotEmpty(),
     val showLogout: Boolean = false,
     val userInfo: UserInfo = UserInfo.instance,
+    val version: ConfigVersionModel = ConfigVersionModel(),
     val isNewVersion: Boolean = false
 )
 
@@ -185,6 +193,7 @@ sealed class DrawerViewAction {
     object Login : DrawerViewAction()
     object GetProfile : DrawerViewAction()
     object GetVersion : DrawerViewAction()
+    object LoadVersion : DrawerViewAction()
 
     data class LogoutDialog(val show: Boolean) : DrawerViewAction()
 }

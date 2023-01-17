@@ -7,10 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eternaljust.msea.BuildConfig
-import com.eternaljust.msea.utils.HTMLURL
-import com.eternaljust.msea.utils.NetworkUtil
-import com.eternaljust.msea.utils.RouteName
-import com.eternaljust.msea.utils.fromJson
+import com.eternaljust.msea.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -47,14 +44,11 @@ class AboutViewModel : ViewModel() {
     }
 
     private fun getVersion() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val url = HTMLURL.GET_VERSION
-            val content = NetworkUtil.getData(url)
-            println("ConfigVersion---$content")
-            val version = content.fromJson<ConfigVersionModel>()
-            version?.let {
-                viewStates = viewStates.copy(configVersion = it)
-            }
+        val content = SettingInfo.instance.configVersion
+        println("ConfigVersion---$content")
+        val version = content.fromJson<ConfigVersionModel>()
+        version?.let {
+            viewStates = viewStates.copy(configVersion = it)
         }
     }
 
@@ -112,6 +106,7 @@ enum class AboutListItem : AboutList {
 
 @Parcelize
 data class ConfigVersionModel(
+    var cycleCount: Int = 0,
     var versionCode: Int = 0,
     var versionName: String = "",
     var versionContent: String = "",
