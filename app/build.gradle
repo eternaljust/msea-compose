@@ -12,8 +12,8 @@ android {
         applicationId "com.eternaljust.msea"
         minSdk 29
         targetSdk 33
-        versionCode 9
-        versionName "1.0.0"
+        versionCode 10
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
