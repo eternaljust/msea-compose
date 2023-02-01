@@ -455,10 +455,14 @@ class TopicDetailViewModel : ViewModel() {
                         comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='t_fsz']").html()
                         comment.isText = false
                     }
+                    if (comment.content.isEmpty()) {
+                        comment.content = it.selectXpath("tr/td[@class='plc']//div[@class='pct']").html()
+                    }
+                    if (comment.content.contains("src=")) {
+                        comment.content = comment.content.replace("src=\"static/image/common/none.gif\"", "")
+                    }
                     if (comment.content.contains("file=")) {
                         comment.content = comment.content.replace("file=", "src=")
-                    } else if (comment.content.contains("src=")) {
-                        comment.content = comment.content.replace("src=\"static/image/common/none.gif\"", "")
                     }
                 } else {
                     val text = td.text()
