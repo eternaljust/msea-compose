@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -20,7 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.utils.openSystemBrowser
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -51,9 +56,22 @@ fun LoginPage(
 
     Scaffold(
         topBar = {
-            NormalTopAppBar(
-                title = "登录",
-                onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
+            TopAppBar(
+                title = { Text("登录") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "返回"
+                        )
+                    }
+                },
+                actions = {
+                    InvitationRegisterButton()
+                },
+                colors = mseaTopAppBarColors()
             )
         },
         content = { paddingValues ->
@@ -233,6 +251,23 @@ fun LoginPage(
             }
         }
     )
+}
+
+@Composable
+fun InvitationRegisterButton() {
+    val context = LocalContext.current
+
+    TextButton(onClick = {
+        openSystemBrowser(
+            url = "https://www.chongbuluo.com/thread-926-1-1.html",
+            context = context
+        )
+    }) {
+        Text(
+            text = "邀请码注册",
+            color = Color.White
+        )
+    }
 }
 
 @Composable

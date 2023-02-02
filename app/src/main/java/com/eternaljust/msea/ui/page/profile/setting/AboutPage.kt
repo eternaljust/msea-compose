@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,9 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.profile.login.InvitationRegisterButton
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.WebViewModel
+import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -47,9 +51,24 @@ fun AboutPage(
 
     Scaffold(
         topBar = {
-            NormalTopAppBar(
-                title = "关于 Msea",
-                onClick = { viewModel.dispatch(AboutViewAction.PopBack) }
+            TopAppBar(
+                title = { Text("关于 Msea") },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { viewModel.dispatch(AboutViewAction.PopBack) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "返回"
+                        )
+                    }
+                },
+                actions = {
+                    if (UserInfo.instance.auth.isEmpty()) {
+                        InvitationRegisterButton()
+                    }
+                },
+                colors = mseaTopAppBarColors()
             )
         },
         content = { paddingValues ->
