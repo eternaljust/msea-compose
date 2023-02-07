@@ -106,11 +106,14 @@ class MainActivity : ComponentActivity() {
                 } else {
                     PrivacyPolicy(
                         cancelClick = {
+                            // 友盟+会自动校验在用户不同意隐私政策时，是否采集其信息。
+                            UMConfigure.submitPolicyGrantResult(this, false)
                             exitProcess(0)
                         },
                         agreeClick = {
                             SettingInfo.instance.agreePrivacyPolicy = true
                             agreePrivacyPolicy = true
+                            UMConfigure.submitPolicyGrantResult(this, true)
                             val channel = "GitHub"
                             // 友盟正式初始化
                             UMConfigure.init(
