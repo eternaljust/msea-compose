@@ -28,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eternaljust.msea.ui.page.home.HomePage
+import com.eternaljust.msea.ui.page.home.search.SearchPage
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailPage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
@@ -522,33 +523,27 @@ fun TopAppBarAcitons(
     when (route) {
         BottomBarScreen.Home.route -> {
             IconButton(
-                modifier = Modifier.size(50.dp),
+                onClick = { navController.navigate(route = RouteName.SEARCH) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "搜索"
+                )
+            }
+
+            IconButton(
                 onClick = { navController.navigate(route = RouteName.SIGN) }
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
-                        contentDescription = "签到"
-                    )
-
-                    Text(text = "签到")
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
+                    contentDescription = "签到"
+                )
             }
 
 //            IconButton(onClick = { /* doSomething() */ }) {
 //                Icon(
 //                    imageVector = Icons.Default.FormatListNumbered,
 //                    contentDescription = "排行榜"
-//                )
-//            }
-//
-//            IconButton(onClick = { /* doSomething() */ }) {
-//                Icon(
-//                    imageVector = Icons.Default.Search,
-//                    contentDescription = "搜索"
 //                )
 //            }
         }
@@ -777,5 +772,12 @@ private fun NavGraphBuilder.detailsNav(
                 gid = id
             )
         }
+    }
+
+    composable(RouteName.SEARCH) {
+        SearchPage(
+            scaffoldState = scaffoldState,
+            navController = navController
+        )
     }
 }

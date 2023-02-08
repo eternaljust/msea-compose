@@ -35,6 +35,7 @@ object RouteName {
     const val LICENSE = "license"
     const val SOURCE_CODE = "source_code"
     const val SDK_LIST = "sdk_list"
+    const val SEARCH = "search"
 }
 
 fun isAppInstalled(
