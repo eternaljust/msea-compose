@@ -10,7 +10,10 @@ import androidx.navigation.NavHostController
 fun SearchPostPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
-    viewModel: SearchViewModel = viewModel()
+    keyword: String,
+    viewModel: SearchPostViewModel = viewModel()
 ) {
-    Text(text = "帖子")
+    Text(text = "帖子$keyword")
+    println("---post---$keyword")
+    viewModel.dispatch(SearchPostAction.SearchKeyword(keyword))
 }
