@@ -153,6 +153,9 @@ class NetworkUtil private constructor() {
                 return uids.last().split("-").first()
             } else if (text.contains("mod=viewthread&tid=")) {
                 return text.split("mod=viewthread&tid=").last()
+            } else if (text.contains("&ptid=")) {
+                return text.split("&ptid=").last()
+                    .split("&pid=").first()
             }
             return ""
         }

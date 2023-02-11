@@ -322,11 +322,7 @@ class TopicDetailViewModel : ViewModel() {
                     topic.nodeTitle = title2
                 }
                 val fid = document.selectXpath("//div[@class='bm cl']/div[@class='z']/a[4]").attr("href")
-                if (fid.contains("forum-")) {
-                    topic.nodeFid = fid.split("forum-").last().split("-").first()
-                } else if (fid.contains("fid=")) {
-                    topic.nodeFid = fid.split("fid=").last()
-                }
+                topic.nodeFid = NetworkUtil.getFid(fid)
 
                 val span = document.selectXpath("//span[@class='tag iconfont icon-tag-fill']/a")
                 val tags = mutableListOf<TagItemModel>()

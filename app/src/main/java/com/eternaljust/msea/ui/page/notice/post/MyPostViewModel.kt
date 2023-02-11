@@ -31,31 +31,51 @@ class MyPostViewModel : ViewModel() {
             val dl = document.selectXpath("//dl[@class='cl ']")
 
             dl.forEach {
+                val isForum = it.html().contains("您的主题") && it.html().contains("移动到")
                 val post = PostListModel()
                 val time = it.selectXpath("dt/span[@class='xg1 xw0']").text()
                 if (time.isNotEmpty()) {
                     post.time = time
                 }
-                val avatar = it.selectXpath("dd[@class='m avt mbn']/a/img").attr("src")
-                if (avatar.isNotEmpty()) {
-                    post.avatar = NetworkUtil.getAvatar(avatar)
+                if (isForum) {
+                    val avatar = it.selectXpath("dd[@class='m avt mbn']/img").attr("src")
+                    if (avatar.isNotEmpty()) {
+                        post.avatar = NetworkUtil.getAvatar(avatar)
+                    }
+                } else {
+                    val avatar = it.selectXpath("dd[@class='m avt mbn']/a/img").attr("src")
+                    if (avatar.isNotEmpty()) {
+                        post.avatar = NetworkUtil.getAvatar(avatar)
+                    }
                 }
-                val name = it.selectXpath("dd[@class='ntc_body']/a[1]").text()
+                val namePath = if (!isForum) "dd[@class='ntc_body']/a[1]" else
+                    "dd[@class='ntc_body']/a[2]"
+                val name = it.selectXpath(namePath).text()
                 if (name.isNotEmpty()) {
                     post.name = name
                 }
-                val href = it.selectXpath("dd[@class='ntc_body']/a[1]").attr("href")
+                val href = it.selectXpath(namePath).attr("href")
                 if (href.contains("uid-")) {
                     post.uid = NetworkUtil.getUid(href)
                 }
-                val title = it.selectXpath("dd[@class='ntc_body']/a[2]").text()
+                val threadPath = if (!isForum) "dd[@class='ntc_body']/a[2]" else
+                    "dd[@class='ntc_body']/a[1]"
+                val title = it.selectXpath(threadPath).text()
                 if (title.isNotEmpty()) {
                     post.title = title
                 }
-                val thread = it.selectXpath("dd[@class='ntc_body']/a[2]").attr("href")
-                if (thread.contains("&ptid=")) {
-                    post.ptid = thread.split("&ptid=").last()
-                        .split("&pid=").first()
+                val thread = it.selectXpath(threadPath).attr("href")
+                if (thread.isNotEmpty()) {
+                    post.ptid = NetworkUtil.getTid(thread)
+                }
+                if (isForum) {
+                    val forumPath = "dd[@class='ntc_body']/a[3]"
+                    val forum = it.selectXpath(forumPath).text()
+                    if (forum.isNotEmpty()) {
+                        post.forum = forum
+                    }
+                    val id = it.selectXpath(forumPath).attr("href")
+                    post.fid = NetworkUtil.getFid(id)
                 }
 
                 list.add(post)
@@ -71,10 +91,12 @@ data class MyPostListViewState(
 )
 
 class PostListModel {
+    var fid = ""
     var ptid = ""
     var uid = ""
     var avatar = ""
     var name = ""
     var time = ""
     var title = ""
+    var forum = ""
 }

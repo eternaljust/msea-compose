@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,9 @@ fun MyPostPage(
                         val topic = TopicDetailRouteModel(tid = it.ptid)
                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                         navController.navigate(RouteName.TOPIC_DETAIL + args)
+                    },
+                    forumClick = {
+                        navController.navigate(RouteName.NODE_LIST + "/${item.fid}")
                     }
                 )
             }
@@ -66,7 +70,8 @@ fun MyPostPage(
 fun MyPostListItemContent(
     item: PostListModel,
     avatarClick: () -> Unit,
-    contentClick: () -> Unit
+    contentClick: () -> Unit,
+    forumClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -78,7 +83,11 @@ fun MyPostListItemContent(
             modifier = Modifier
                 .size(45.dp)
                 .clip(shape = RoundedCornerShape(5))
-                .clickable { avatarClick() },
+                .clickable {
+                    if (item.forum.isEmpty()) {
+                        avatarClick()
+                    }
+                },
             model = item.avatar,
             placeholder = painterResource(id = R.drawable.icon),
             contentDescription = null
@@ -95,43 +104,112 @@ fun MyPostListItemContent(
                 fontWeight = FontWeight.Normal
             )
 
-            val annotatedText = buildAnnotatedString {
-                pushStringAnnotation(
-                    tag = "avatar",
-                    annotation = ""
-                )
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary
+            var annotatedText = AnnotatedString(text = "")
+            if (item.forum.isEmpty()) {
+                annotatedText = buildAnnotatedString {
+                    pushStringAnnotation(
+                        tag = "avatar",
+                        annotation = ""
                     )
-                ) {
-                    append(item.name)
-                }
-                pop()
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        append(item.name)
+                    }
+                    pop()
 
-                append("  ")
-                withStyle(
-                    style = SpanStyle(
-                        color = colorTheme(light = Color.Black, dark = Color.White)
-                    )
-                ) {
-                    append("回复了您的帖子")
-                }
-                append("  ")
+                    append("  ")
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append("回复了您的帖子")
+                    }
+                    append("  ")
 
-                pushStringAnnotation(
-                    tag = "content",
-                    annotation = ""
-                )
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary
+                    pushStringAnnotation(
+                        tag = "content",
+                        annotation = ""
                     )
-                ) {
-                    append(item.title)
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        append(item.title)
+                    }
+                    pop()
                 }
-                pop()
+            } else {
+                annotatedText = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append("您的主题  ")
+                    }
+
+                    pushStringAnnotation(
+                        tag = "content",
+                        annotation = ""
+                    )
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        append(item.title)
+                    }
+                    pop()
+
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append("  被  ")
+                    }
+
+                    pushStringAnnotation(
+                        tag = "avatar",
+                        annotation = ""
+                    )
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        append(item.name)
+                    }
+                    pop()
+
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorTheme(light = Color.Black, dark = Color.White)
+                        )
+                    ) {
+                        append("  移动到  ")
+                    }
+
+                    pushStringAnnotation(
+                        tag = "forum",
+                        annotation = ""
+                    )
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        append(item.forum)
+                    }
+                    pop()
+                }
             }
+
             ClickableText(
                 text = annotatedText,
                 onClick = { offset ->
@@ -149,6 +227,14 @@ fun MyPostListItemContent(
                         end = offset
                     ).firstOrNull()?.let {
                         contentClick()
+                    }
+
+                    annotatedText.getStringAnnotations(
+                        tag = "forum",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        forumClick()
                     }
                 }
             )
