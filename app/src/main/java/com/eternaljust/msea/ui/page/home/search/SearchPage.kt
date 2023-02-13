@@ -16,6 +16,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -43,10 +45,17 @@ fun SearchPage(
                     keyboardController?.hide()
 
                     viewModel.viewModelScope.launch {
-                        scaffoldState.showSnackbar(
-                            message = if (viewModel.viewStates.keyword.isEmpty()) "请输入搜索关键字！"
-                            else "正在搜索\"${viewModel.viewStates.keyword}\"中"
-                        )
+                        if (UserInfo.instance.auth.isEmpty()) {
+                            navController.navigate(RouteName.LOGIN)
+                            scaffoldState.showSnackbar(
+                                message = "站内搜索请先登录"
+                            )
+                        } else {
+                            scaffoldState.showSnackbar(
+                                message = if (viewModel.viewStates.keyword.isEmpty()) "请输入搜索关键字！"
+                                else "正在搜索\"${viewModel.viewStates.keyword}\"中"
+                            )
+                        }
                     }
                 }
             }

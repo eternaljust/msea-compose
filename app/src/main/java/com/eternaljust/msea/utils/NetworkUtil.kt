@@ -237,6 +237,7 @@ object HTMLURL {
     const val TOPIC_DETAIL = "$BASE/thread"
     const val FRIEND_DETAIL_LIST = "$BASE/home.php?mod=space&do=friend&from=space"
     const val SEARCH_USER = "$BASE/home.php?mod=spacecp&ac=search&searchsubmit=yes"
+    const val SEARCH_POST = "$BASE/search.php?mod=forum&searchsubmit=yes&orderby=lastpost&ascdesc=desc"
 }
 
 sealed class HttpResult<out T> {
