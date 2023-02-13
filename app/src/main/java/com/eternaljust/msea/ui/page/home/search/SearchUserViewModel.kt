@@ -13,7 +13,11 @@ import kotlinx.coroutines.launch
 class SearchUserViewModel: ViewModel() {
     var viewStates by mutableStateOf(SearchUserViewState())
         private set
+    val pageSize: Int
+        get() = 100
+
     private var keyword = ""
+    private var pageLoadCompleted = true
 
     fun dispatch(action: SearchUserAction) {
         when (action) {
@@ -30,7 +34,10 @@ class SearchUserViewModel: ViewModel() {
 
     private fun loadMoreData() {
         println("---开始搜索用户：$keyword")
-        val list = mutableListOf<UserListModel>()
+        pageLoadCompleted = false
+        viewStates = viewStates.copy(isRefreshing = true)
+
+        var list = mutableListOf<UserListModel>()
         viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.SEARCH_USER + "&username=$keyword"
             val document = NetworkUtil.getRequest(url)
@@ -55,15 +62,37 @@ class SearchUserViewModel: ViewModel() {
                 }
                 println("user=${user.avatar}-${user.name}-${user.content}-${user.uid}")
                 list.add(user)
-            }
 
-            viewStates = viewStates.copy(list = list)
+                if (list.count() == 10) {
+                    if (viewStates.isRefreshing) {
+                        viewStates = viewStates.copy(list = emptyList())
+                    }
+                    viewStates = viewStates.copy(
+                        list = viewStates.list + list,
+                        isRefreshing = false
+                    )
+                    list = mutableListOf()
+                }
+                // 列表最后一个
+                lis.last()?.let { last ->
+                    if (last == it) {
+                        pageLoadCompleted = true
+                        if (lis.count() != pageSize) {
+                            viewStates = viewStates.copy(
+                                list = viewStates.list + list,
+                                isRefreshing = false
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 data class SearchUserViewState(
-    val list: List<UserListModel> = emptyList()
+    val list: List<UserListModel> = emptyList(),
+    val isRefreshing: Boolean = false
 )
 sealed class SearchUserAction {
     data class SearchKeyword(val content: String) : SearchUserAction()

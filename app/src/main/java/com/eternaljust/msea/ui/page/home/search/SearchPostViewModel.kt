@@ -46,7 +46,7 @@ class SearchPostViewModel: ViewModel() {
         println("---开始搜索帖子：$keyword")
         pageLoadCompleted = false
         if (page == 1) {
-            viewStates = viewStates.copy(isRefreshing = true)
+            viewStates = viewStates.copy(list = emptyList(), isRefreshing = true)
         }
 
         var list = mutableListOf<SearchPostListModel>()

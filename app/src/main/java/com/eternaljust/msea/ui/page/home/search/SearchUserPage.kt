@@ -5,9 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,6 +22,7 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.UserInfo
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -30,7 +33,9 @@ fun SearchUserPage(
     viewModel: SearchUserViewModel = viewModel()
 ) {
     println("---user---$keyword")
-    viewModel.dispatch(SearchUserAction.SearchKeyword(keyword))
+    if (UserInfo.instance.auth.isNotEmpty()) {
+        viewModel.dispatch(SearchUserAction.SearchKeyword(keyword))
+    }
 
     Column(
         modifier = Modifier
@@ -39,14 +44,18 @@ fun SearchUserPage(
         verticalArrangement = Arrangement.Center
     ) {
         if (viewModel.viewStates.list.isEmpty()) {
-            Text("没有找到\"${keyword}\"相关用户")
+            if (keyword.isNotEmpty()) {
+                Text("没有找到\"${keyword}\"相关用户")
+            }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 stickyHeader {
-                    SearchUserListHeader(viewModel.viewStates.list.count())
+                    SearchListHeader(
+                        count = "以下是查找到的用户列表(${viewModel.viewStates.list.count()})个"
+                    )
                 }
 
                 items(viewModel.viewStates.list) {
@@ -63,8 +72,8 @@ fun SearchUserPage(
 }
 
 @Composable
-fun SearchUserListHeader(
-    count: Int
+fun SearchListHeader(
+    count: String
 ) {
     Card(
         modifier = Modifier
@@ -77,7 +86,7 @@ fun SearchUserListHeader(
                 .padding(5.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "以下是查找到的用户列表(${count})个")
+            Text(text = count)
         }
     }
 }

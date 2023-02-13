@@ -1,6 +1,7 @@
 package com.eternaljust.msea.ui.page.home.search
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,10 +26,12 @@ import com.eternaljust.msea.ui.page.home.topic.*
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshIndicator
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.toJson
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Suppress("DEPRECATION")
 @Composable
 fun SearchPostPage(
@@ -38,7 +41,9 @@ fun SearchPostPage(
     viewModel: SearchPostViewModel = viewModel()
 ) {
     println("---post---$keyword")
-    viewModel.dispatch(SearchPostAction.SearchKeyword(keyword))
+    if (UserInfo.instance.auth.isNotEmpty()) {
+        viewModel.dispatch(SearchPostAction.SearchKeyword(keyword))
+    }
 
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = viewModel.viewStates.isRefreshing
@@ -64,6 +69,14 @@ fun SearchPostPage(
             horizontalAlignment = Alignment.CenterHorizontally,
             state = listState
         ) {
+            if (keyword.isNotEmpty()) {
+                stickyHeader {
+                    SearchListHeader(
+                        count = "结果: 找到 “${keyword}” 相关内容 ${viewModel.viewStates.list.count()} 个"
+                    )
+                }
+            }
+
             itemsIndexed(viewModel.viewStates.list) { index, item ->
                 SearchPostListItemContent(
                     item = item,
