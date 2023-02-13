@@ -101,6 +101,10 @@ class SearchPostViewModel: ViewModel() {
                 if (plate.isNotEmpty()) {
                     search.plate = plate
                 }
+                val fid = it.selectXpath("p[3]/span[3]/a").attr("href")
+                if (fid.isNotEmpty()) {
+                    search.fid = NetworkUtil.getFid(fid)
+                }
                 list.add(search)
 
                 if (list.count() == 9) {
@@ -142,6 +146,7 @@ sealed class SearchPostAction {
 }
 
 class SearchPostListModel {
+    var fid = ""
     var tid = ""
     var title = ""
     var content = ""

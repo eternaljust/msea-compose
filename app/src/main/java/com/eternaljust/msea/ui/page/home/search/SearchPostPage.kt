@@ -13,6 +13,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -73,6 +74,9 @@ fun SearchPostPage(
                         val topic = TopicDetailRouteModel(tid = item.tid)
                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                         navController.navigate(RouteName.TOPIC_DETAIL + args)
+                    },
+                    forumClick = {
+                        navController.navigate(RouteName.NODE_LIST + "/${item.fid}")
                     }
                 )
 
@@ -92,7 +96,8 @@ fun SearchPostPage(
 fun SearchPostListItemContent(
     item: SearchPostListModel,
     avatarClick: () -> Unit,
-    contentClick: () -> Unit
+    contentClick: () -> Unit,
+    forumClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -150,11 +155,16 @@ fun SearchPostListItemContent(
                 append(" - ")
             }
 
+            pushStringAnnotation(
+                tag = "forum",
+                annotation = ""
+            )
             withStyle(
                 style = SpanStyle( color = Color.Gray )
             ) {
                 append(item.plate)
             }
+            pop()
         }
 
         ClickableText(
@@ -166,6 +176,14 @@ fun SearchPostListItemContent(
                     end = offset
                 ).firstOrNull()?.let {
                     avatarClick()
+                }
+
+                annotatedText.getStringAnnotations(
+                    tag = "forum",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    forumClick()
                 }
             }
         )
@@ -209,6 +227,7 @@ fun SearchKeywordTextItem(
                 .toSpanStyle()
         else LocalTextStyle.current
             .copy(color = colorTheme(light = Color.Black, dark = Color.White)).toSpanStyle()
+        var annotatedText = AnnotatedString("")
 
         val components = text.split(keyword)
         val texts = components.filter {
@@ -216,71 +235,86 @@ fun SearchKeywordTextItem(
         }
         if (texts.count() == 1) {
             when (keyword) {
-                text.commonPrefixWith(keyword) -> {
-                    Text(
-                        buildAnnotatedString {
-                            withStyle(
-                                style = style1
-                            ) {
-                                append(keyword)
-                            }
-
-                            withStyle(
-                                style = style2
-                            ) {
-                                append(texts.first())
-                            }
+                text.commonPrefixWith(keyword), text.commonSuffixWith(keyword) -> {
+                    val isPrefix = text.commonPrefixWith(keyword) == keyword
+                    annotatedText = buildAnnotatedString {
+                        if (isTitle) {
+                            pushStringAnnotation(
+                                tag = "title",
+                                annotation = ""
+                            )
                         }
-                    )
-                }
-                text.commonSuffixWith(keyword) -> {
-                    Text(
-                        buildAnnotatedString {
-                            withStyle(
-                                style = style2
-                            ) {
-                                append(texts.first())
-                            }
 
-                            withStyle(
-                                style = style1
-                            ) {
-                                append(keyword)
-                            }
+                        withStyle(
+                            style = if (isPrefix) style1 else style2
+                        ) {
+                            if (isPrefix) append(keyword) else append(texts.first())
                         }
-                    )
+
+                        withStyle(
+                            style = if (isPrefix) style2 else style1
+                        ) {
+                            if (isPrefix) append(texts.first()) else append(keyword)
+                        }
+
+                        if (isTitle) {
+                            pop()
+                        }
+                    }
                 }
                 else -> {
                     Text(text)
                 }
             }
         } else {
-            Text(
-                buildAnnotatedString {
-                    val last = texts.last()
-                    texts.forEach {
-                        if (it != last) {
-                            withStyle(
-                                style = style2
-                            ) {
-                                append(it)
-                            }
+            annotatedText = buildAnnotatedString {
+                if (isTitle) {
+                    pushStringAnnotation(
+                        tag = "title",
+                        annotation = ""
+                    )
+                }
 
-                            withStyle(
-                                style = style1
-                            ) {
-                                append(keyword)
-                            }
-                        } else {
-                            withStyle(
-                                style = style2
-                            ) {
-                                append(it)
-                            }
+                val last = texts.last()
+                texts.forEach {
+                    if (it != last) {
+                        withStyle(
+                            style = style2
+                        ) {
+                            append(it)
+                        }
+
+                        withStyle(
+                            style = style1
+                        ) {
+                            append(keyword)
+                        }
+                    } else {
+                        withStyle(
+                            style = style2
+                        ) {
+                            append(it)
                         }
                     }
                 }
-            )
+
+                if (isTitle) {
+                    pop()
+                }
+            }
         }
+
+        ClickableText(
+            text = annotatedText,
+            onClick = { offset ->
+                annotatedText.getStringAnnotations(
+                    tag = "title",
+                    start = offset,
+                    end = offset
+                ).firstOrNull()?.let {
+                    contentClick?.let { it() }
+                }
+            }
+        )
     }
 }
