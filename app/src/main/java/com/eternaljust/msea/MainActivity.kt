@@ -11,10 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -123,6 +123,14 @@ class MainActivity : ComponentActivity() {
                                 channel,
                                 UMConfigure.DEVICE_TYPE_PHONE,
                                 ""
+                            )
+
+                            StatisticsTool.instance.eventObject(
+                                context = this,
+                                resId = R.string.event_page_home,
+                                keyAndValue = mapOf(
+                                    R.string.key_tab to "虫部落"
+                                )
                             )
                         }
                     )
@@ -323,6 +331,7 @@ fun PrivacyPolicy(
 @OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @Composable
 fun MyApp() {
+    val context = LocalContext.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -441,8 +450,7 @@ fun MyApp() {
                                                 contentDescription = null
                                             )
                                         }
-
-                                         },
+                                    },
                                     label = { Text(screen.title) },
                                     selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                     onClick = {
@@ -454,6 +462,14 @@ fun MyApp() {
                                                 launchSingleTop = true
                                                 restoreState = true
                                             }
+
+                                            StatisticsTool.instance.eventObject(
+                                                context = context,
+                                                resId = R.string.event_page_home,
+                                                keyAndValue = mapOf(
+                                                    R.string.key_tab to screen.title
+                                                )
+                                            )
                                         }
                                     },
                                     colors = NavigationBarItemDefaults.colors(
@@ -520,10 +536,21 @@ fun TopAppBarAcitons(
     route: String,
     navController: NavHostController
 ) {
+    val context = LocalContext.current
+
     when (route) {
         BottomBarScreen.Home.route -> {
             IconButton(
-                onClick = { navController.navigate(route = RouteName.SEARCH) }
+                onClick = {
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_home,
+                        keyAndValue = mapOf(
+                            R.string.key_category to "搜索"
+                        )
+                    )
+                    navController.navigate(route = RouteName.SEARCH)
+                }
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -532,7 +559,16 @@ fun TopAppBarAcitons(
             }
 
             IconButton(
-                onClick = { navController.navigate(route = RouteName.SIGN) }
+                onClick = {
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_home,
+                        keyAndValue = mapOf(
+                            R.string.key_category to "签到"
+                        )
+                    )
+                    navController.navigate(route = RouteName.SIGN)
+                }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
@@ -548,7 +584,18 @@ fun TopAppBarAcitons(
 //            }
         }
         BottomBarScreen.Node.route -> {
-            IconButton(onClick = { navController.navigate(route = RouteName.TAG) }) {
+            IconButton(
+                onClick = {
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_home,
+                        keyAndValue = mapOf(
+                            R.string.key_category to "标签"
+                        )
+                    )
+                    navController.navigate(route = RouteName.TAG)
+                }
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_baseline_tag_24),
                     contentDescription = "标签"

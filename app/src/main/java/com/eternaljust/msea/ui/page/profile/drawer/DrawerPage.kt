@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.SettingInfo
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 import kotlinx.coroutines.launch
 
@@ -34,6 +36,7 @@ fun DrawerPage(
     viewModel: DrawerViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         snapshotFlow { drawerState.currentValue }
@@ -41,6 +44,15 @@ fun DrawerPage(
                 println("drawerState = $it")
                 viewModel.dispatch(DrawerViewAction.Login)
                 if (it == DrawerValue.Open) {
+
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_home,
+                        keyAndValue = mapOf(
+                            R.string.key_category to "菜单"
+                        )
+                    )
+
                     if (viewModel.viewStates.isLogin) {
                         viewModel.dispatch(DrawerViewAction.GetProfile)
                     }

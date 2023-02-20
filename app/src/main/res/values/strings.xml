@@ -5,4 +5,13 @@
     <string name="bottom_navigation_node">节点</string>
     <string name="reminder_notification_channel_id_sign">sign</string>
     <integer name="reminder_alarm_request_id_1">1</integer>
+    <!-- 事件 ID 参数 ID -->
+    <!-- 主页 -->
+    <string name="event_page_home">event_page_home</string>
+    <!-- 功能分类 -->
+    <string name="key_category">key_category</string>
+    <!-- tab 切换 -->
+    <string name="key_tab">key_tab</string>
+    <!-- 加载分页 -->
+    <string name="key_page_load">key_page_load</string>
 </resources>

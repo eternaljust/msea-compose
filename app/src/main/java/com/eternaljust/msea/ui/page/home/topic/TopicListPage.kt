@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.home.topic
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,6 +33,7 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshIndicator
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.toJson
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -42,8 +45,11 @@ fun TopicListPage(
     navController: NavHostController,
     viewModel: TopicListViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
     if (viewModel.isFirstLoad) {
         viewModel.dispatch(TopicListViewAction.LoadData)
+        eventPageLoad(context = context, page = viewModel.page)
     }
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = viewModel.viewStates.isRefreshing
@@ -54,6 +60,7 @@ fun TopicListPage(
         state = swipeRefreshState,
         onRefresh = {
             viewModel.dispatch(TopicListViewAction.LoadData)
+            eventPageLoad(context = context, page = viewModel.page)
         },
         indicator = { state, refreshTrigger ->
             RefreshIndicator(
@@ -86,6 +93,7 @@ fun TopicListPage(
                     if ((index + 1) % viewModel.pageSize == 0 &&
                         index == viewModel.viewStates.list.lastIndex) {
                         viewModel.dispatch(TopicListViewAction.LoadMoreData)
+                        eventPageLoad(context = context, page = viewModel.page)
                     }
                     onDispose {}
                 }
@@ -280,4 +288,17 @@ fun topicAttachmentIcon(
         modifier = Modifier.size(20.dp)
     )
     else -> Color.Unspecified
+}
+
+private fun eventPageLoad(
+    context: Context,
+    page: Int
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_page_home,
+        keyAndValue = mapOf(
+            R.string.key_page_load to page
+        )
+    )
 }

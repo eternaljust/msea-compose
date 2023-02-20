@@ -27,7 +27,8 @@ class TopicListViewModel(
         private set
 
     private var pageLoadCompleted = true
-    private var page = 1
+    var page = 1
+        private set
 
     var viewStates by mutableStateOf(TopicListViewState())
         private set
