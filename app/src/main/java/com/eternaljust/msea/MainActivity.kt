@@ -124,14 +124,6 @@ class MainActivity : ComponentActivity() {
                                 UMConfigure.DEVICE_TYPE_PHONE,
                                 ""
                             )
-
-                            StatisticsTool.instance.eventObject(
-                                context = this,
-                                resId = R.string.event_page_home,
-                                keyAndValue = mapOf(
-                                    R.string.key_tab to "虫部落"
-                                )
-                            )
                         }
                     )
                 }

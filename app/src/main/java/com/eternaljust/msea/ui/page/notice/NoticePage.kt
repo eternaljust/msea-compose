@@ -6,13 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.notice.interactive.InteractivePage
 import com.eternaljust.msea.ui.page.notice.post.MyPostPage
 import com.eternaljust.msea.ui.page.notice.system.SystemPage
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -30,6 +33,8 @@ fun NoticePage(
     val scope = rememberCoroutineScope()
     val items = viewModel.items
     val isLogin = UserInfo.instance.auth.isNotEmpty()
+    val context = LocalContext.current
+    var tabItemChanged = false
 
     Surface(
         modifier = Modifier
@@ -61,19 +66,34 @@ fun NoticePage(
                 }
 
                 HorizontalPager(count = items.size, state = pagerState) {
-                    when (items[pagerState.currentPage]) {
-                        NoticeTabItem.MYPOST -> MyPostPage(
-                            scaffoldState = scaffoldState,
-                            navController = navController
-                        )
-                        NoticeTabItem.INTERACTIVE -> InteractivePage(
-                            scaffoldState = scaffoldState,
-                            navController = navController
-                        )
-                        NoticeTabItem.SYSTEM -> SystemPage(
-                            scaffoldState = scaffoldState,
-                            navController = navController
-                        )
+                    if (it == pagerState.currentPage) {
+                        if (pagerState.currentPage != 0) {
+                            tabItemChanged = true
+                        }
+                        if (tabItemChanged) {
+                            StatisticsTool.instance.eventObject(
+                                context = context,
+                                resId = R.string.event_page_tab,
+                                keyAndValue = mapOf(
+                                    R.string.key_name_notice to items[pagerState.currentPage].title
+                                )
+                            )
+                        }
+
+                        when (items[pagerState.currentPage]) {
+                            NoticeTabItem.MYPOST -> MyPostPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController
+                            )
+                            NoticeTabItem.INTERACTIVE -> InteractivePage(
+                                scaffoldState = scaffoldState,
+                                navController = navController
+                            )
+                            NoticeTabItem.SYSTEM -> SystemPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController
+                            )
+                        }
                     }
                 }
             }

@@ -8,11 +8,14 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicListPage
 import com.eternaljust.msea.ui.page.home.topic.TopicListViewModel
+import com.eternaljust.msea.utils.StatisticsTool
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -28,6 +31,8 @@ fun HomePage(
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
     val items = viewModel.topicItems
+    val context = LocalContext.current
+    var tabItemChanged = false
 
     Surface(
         modifier = Modifier
@@ -49,17 +54,32 @@ fun HomePage(
             }
 
             HorizontalPager(count = items.size, state = pagerState) {
-                val vm = when (items[pagerState.currentPage]) {
-                    TopicTabItem.NEW -> TopicListViewModel.new
-                    TopicTabItem.HOT -> TopicListViewModel.hot
-                    TopicTabItem.NEWTHREAD -> TopicListViewModel.newthread
-                    TopicTabItem.SOFA -> TopicListViewModel.sofa
+                if (it == pagerState.currentPage) {
+                    if (pagerState.currentPage != 0) {
+                        tabItemChanged = true
+                    }
+                    if (tabItemChanged) {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_tab,
+                            keyAndValue = mapOf(
+                                R.string.key_name_home to items[pagerState.currentPage].title
+                            )
+                        )
+                    }
+
+                    val vm = when (items[pagerState.currentPage]) {
+                        TopicTabItem.NEW -> TopicListViewModel.new
+                        TopicTabItem.HOT -> TopicListViewModel.hot
+                        TopicTabItem.NEWTHREAD -> TopicListViewModel.newthread
+                        TopicTabItem.SOFA -> TopicListViewModel.sofa
+                    }
+                    TopicListPage(
+                        scaffoldState = scaffoldState,
+                        navController = navController,
+                        viewModel = vm
+                    )
                 }
-                TopicListPage(
-                    scaffoldState = scaffoldState,
-                    navController = navController,
-                    viewModel = vm
-                )
             }
         }
     }

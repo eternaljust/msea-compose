@@ -29,8 +29,6 @@ class StatisticsTool {
         }
         println("eventObject---event=${event}, params=$params")
 
-        getApplicationContext()
-
         MobclickAgent.onEventObject(context, event, params)
     }
 }

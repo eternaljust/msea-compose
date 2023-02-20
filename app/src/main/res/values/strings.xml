@@ -14,4 +14,13 @@
     <string name="key_tab">key_tab</string>
     <!-- 加载分页 -->
     <string name="key_page_load">key_page_load</string>
+    <!-- tab 切换页面 -->
+    <string name="event_page_tab">event_page_tab</string>
+    <string name="key_name_home">key_name_home</string>
+    <string name="key_name_notice">key_name_notice</string>
+    <string name="key_name_sign">key_name_sign</string>
+    <string name="key_name_search">key_name_search</string>
+    <string name="key_name_friend">key_name_friend</string>
+    <string name="key_name_credit">key_name_credit</string>
+    <string name="key_name_profile">key_name_profile</string>
 </resources>

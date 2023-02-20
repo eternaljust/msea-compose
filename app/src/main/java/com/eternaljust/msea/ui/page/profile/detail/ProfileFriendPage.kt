@@ -7,10 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.eternaljust.msea.utils.StatisticsTool
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -23,6 +26,9 @@ fun ProfileFriendPage(
     navController: NavHostController,
     viewModel: ProfileFriendViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    var tabItemChanged = false
+
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
             when (it) {
@@ -66,18 +72,33 @@ fun ProfileFriendPage(
                     }
 
                     HorizontalPager(count = items.size, state = pagerState) {
-                        when (val item = items[pagerState.currentPage]) {
-                            ProfileFriendTabItem.FRIEND -> FriendListPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController
-                            )
-                            else -> FriendVisitorTraceListPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController,
-                                viewModel = if (item == ProfileFriendTabItem.VISITOR)
-                                    FriendVisitorTraceListViewModel.visitor else
-                                    FriendVisitorTraceListViewModel.trace
-                            )
+                        if (it == pagerState.currentPage) {
+                            if (pagerState.currentPage != 0) {
+                                tabItemChanged = true
+                            }
+                            if (tabItemChanged) {
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_page_tab,
+                                    keyAndValue = mapOf(
+                                        R.string.key_name_friend to items[pagerState.currentPage].title
+                                    )
+                                )
+                            }
+
+                            when (val item = items[pagerState.currentPage]) {
+                                ProfileFriendTabItem.FRIEND -> FriendListPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController
+                                )
+                                else -> FriendVisitorTraceListPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController,
+                                    viewModel = if (item == ProfileFriendTabItem.VISITOR)
+                                        FriendVisitorTraceListViewModel.visitor else
+                                        FriendVisitorTraceListViewModel.trace
+                                )
+                            }
                         }
                     }
                 }

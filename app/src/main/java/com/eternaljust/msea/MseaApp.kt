@@ -28,13 +28,6 @@ class MseaApp: Application() {
         if (SettingInfo.instance.agreePrivacyPolicy) {
             // 友盟正式初始化
             UMConfigure.init(this, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, "")
-            StatisticsTool.instance.eventObject(
-                context = this,
-                resId = R.string.event_page_home,
-                keyAndValue = mapOf(
-                    R.string.key_tab to "虫部落"
-                )
-            )
         }
     }
 }

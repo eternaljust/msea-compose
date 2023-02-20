@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,12 +30,13 @@ import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 fun SignPage(
     scaffoldState: SnackbarHostState,
@@ -42,6 +44,10 @@ fun SignPage(
     viewModel: SignViewModel = viewModel()
 ) {
     val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+    val items = viewModel.signItems
+    val context = LocalContext.current
+    var tabItemChanged = false
 
     viewModel.dispatch(SignViewAction.GetDaySign)
     LaunchedEffect(Unit) {
@@ -89,11 +95,56 @@ fun SignPage(
                         calendarDialogClick = { viewModel.dispatch(SignViewAction.CalendarShowDialog(it))}
                     )
 
-                    SignList(
-                        items = viewModel.signItems,
-                        scaffoldState = scaffoldState,
-                        navController = navController
-                    )
+                    Column {
+                        TabRow(selectedTabIndex = pagerState.currentPage) {
+                            items.forEachIndexed { index, item ->
+                                Tab(
+                                    text = { AutosizeText(text = item.title) },
+                                    selected = pagerState.currentPage == index,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.scrollToPage(index)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        HorizontalPager(count = items.size, state = pagerState) {
+                            if (it == pagerState.currentPage) {
+                                val item = items[pagerState.currentPage]
+                                if (pagerState.currentPage != 0) {
+                                    tabItemChanged = true
+                                }
+                                if (tabItemChanged) {
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_tab,
+                                        keyAndValue = mapOf(
+                                            R.string.key_name_sign to item.title
+                                        )
+                                    )
+                                }
+
+
+                                if (item == SignTabItem.DAY_SIGN) {
+                                    SignListPage(
+                                        scaffoldState = scaffoldState,
+                                        navController = navController
+                                    )
+                                } else {
+                                    SignDayListPage(
+                                        scaffoldState = scaffoldState,
+                                        navController = navController,
+                                        viewModel = if (item == SignTabItem.TOTAL_DAYS) SignDayListViewModel.days else
+                                            SignDayListViewModel.reward
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -355,52 +406,6 @@ private fun SignHeader(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun SignList(
-    items: List<SignTabItem>,
-    scaffoldState: SnackbarHostState,
-    navController: NavHostController
-) {
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
-
-    Column {
-        TabRow(selectedTabIndex = pagerState.currentPage) {
-            items.forEachIndexed { index, item ->
-                Tab(
-                    text = { AutosizeText(text = item.title) },
-                    selected = pagerState.currentPage == index,
-                    onClick = {
-                        scope.launch {
-                            pagerState.scrollToPage(index)
-                        }
-                    }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        HorizontalPager(count = items.size, state = pagerState) {
-            val item = items[pagerState.currentPage]
-            if (item == SignTabItem.DAY_SIGN) {
-                SignListPage(
-                    scaffoldState = scaffoldState,
-                    navController = navController
-                )
-            } else {
-                SignDayListPage(
-                    scaffoldState = scaffoldState,
-                    navController = navController,
-                    viewModel = if (item == SignTabItem.TOTAL_DAYS) SignDayListViewModel.days else
-                        SignDayListViewModel.reward
-                )
             }
         }
     }

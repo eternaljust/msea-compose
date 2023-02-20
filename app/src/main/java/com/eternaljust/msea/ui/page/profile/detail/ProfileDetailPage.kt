@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,6 +25,7 @@ import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshGrid
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -39,6 +41,9 @@ fun ProfileDetailPage(
     username: String = "",
     viewModel: ProfileDetailViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    var tabItemChanged = false
+
     viewModel.dispatch(ProfileDetailViewAction.SetUid(uid = uid))
     viewModel.dispatch(ProfileDetailViewAction.SetUsername(username = username))
     LaunchedEffect(Unit) {
@@ -99,26 +104,41 @@ fun ProfileDetailPage(
                         val id = uid.ifEmpty { viewModel.viewStates.profile.uid }
                         HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
                             val item = viewModel.profileItems[pagerState.currentPage]
-                            if (item == ProfileDetailTabItem.TOPIC) {
-                                ProfileTopicPage(
-                                    scaffoldState = scaffoldState,
-                                    navController = navController,
-                                    uid = id,
-                                    showTopBar = false
-                                )
-                            } else {
-                                // 自己的好友列表
-                                if (id == UserInfo.instance.uid) {
-                                    FriendListPage(
-                                        scaffoldState = scaffoldState,
-                                        navController = navController
+                            if (it == pagerState.currentPage) {
+                                if (pagerState.currentPage != 0) {
+                                    tabItemChanged = true
+                                }
+                                if (tabItemChanged) {
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_tab,
+                                        keyAndValue = mapOf(
+                                            R.string.key_name_profile to item.title
+                                        )
                                     )
-                                } else {
-                                    ProfileDetailFriendPage(
+                                }
+
+                                if (item == ProfileDetailTabItem.TOPIC) {
+                                    ProfileTopicPage(
                                         scaffoldState = scaffoldState,
                                         navController = navController,
-                                        uid = id
+                                        uid = id,
+                                        showTopBar = false
                                     )
+                                } else {
+                                    // 自己的好友列表
+                                    if (id == UserInfo.instance.uid) {
+                                        FriendListPage(
+                                            scaffoldState = scaffoldState,
+                                            navController = navController
+                                        )
+                                    } else {
+                                        ProfileDetailFriendPage(
+                                            scaffoldState = scaffoldState,
+                                            navController = navController,
+                                            uid = id
+                                        )
+                                    }
                                 }
                             }
                         }

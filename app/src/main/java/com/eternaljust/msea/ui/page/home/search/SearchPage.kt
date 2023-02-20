@@ -9,14 +9,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -36,6 +39,8 @@ fun SearchPage(
     val scope = rememberCoroutineScope()
     val items = viewModel.items
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+    var tabItemChanged = false
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -105,17 +110,32 @@ fun SearchPage(
                     }
 
                     HorizontalPager(count = items.size, state = pagerState) {
-                        when (items[pagerState.currentPage]) {
-                            SearchTabItem.POST -> SearchPostPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController,
-                                keyword = viewModel.viewStates.searchContent
-                            )
-                            SearchTabItem.USER -> SearchUserPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController,
-                                keyword = viewModel.viewStates.searchContent
-                            )
+                        if (it == pagerState.currentPage) {
+                            if (pagerState.currentPage != 0) {
+                                tabItemChanged = true
+                            }
+                            if (tabItemChanged) {
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_page_tab,
+                                    keyAndValue = mapOf(
+                                        R.string.key_name_search to items[pagerState.currentPage].title
+                                    )
+                                )
+                            }
+
+                            when (items[pagerState.currentPage]) {
+                                SearchTabItem.POST -> SearchPostPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController,
+                                    keyword = viewModel.viewStates.searchContent
+                                )
+                                SearchTabItem.USER -> SearchUserPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController,
+                                    keyword = viewModel.viewStates.searchContent
+                                )
+                            }
                         }
                     }
                 }
