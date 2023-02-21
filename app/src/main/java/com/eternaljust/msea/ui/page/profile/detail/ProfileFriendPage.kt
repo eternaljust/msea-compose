@@ -27,7 +27,6 @@ fun ProfileFriendPage(
     viewModel: ProfileFriendViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    var tabItemChanged = false
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -66,6 +65,13 @@ fun ProfileFriendPage(
                                     scope.launch {
                                         pagerState.scrollToPage(index)
                                     }
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_tab,
+                                        keyAndValue = mapOf(
+                                            R.string.key_name_friend to item.title
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -73,19 +79,6 @@ fun ProfileFriendPage(
 
                     HorizontalPager(count = items.size, state = pagerState) {
                         if (it == pagerState.currentPage) {
-                            if (pagerState.currentPage != 0) {
-                                tabItemChanged = true
-                            }
-                            if (tabItemChanged) {
-                                StatisticsTool.instance.eventObject(
-                                    context = context,
-                                    resId = R.string.event_page_tab,
-                                    keyAndValue = mapOf(
-                                        R.string.key_name_friend to items[pagerState.currentPage].title
-                                    )
-                                )
-                            }
-
                             when (val item = items[pagerState.currentPage]) {
                                 ProfileFriendTabItem.FRIEND -> FriendListPage(
                                     scaffoldState = scaffoldState,

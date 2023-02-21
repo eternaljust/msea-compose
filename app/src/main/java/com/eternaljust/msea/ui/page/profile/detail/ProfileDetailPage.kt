@@ -42,7 +42,6 @@ fun ProfileDetailPage(
     viewModel: ProfileDetailViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    var tabItemChanged = false
 
     viewModel.dispatch(ProfileDetailViewAction.SetUid(uid = uid))
     viewModel.dispatch(ProfileDetailViewAction.SetUsername(username = username))
@@ -93,6 +92,13 @@ fun ProfileDetailPage(
                                     viewModel.viewModelScope.launch {
                                         pagerState.scrollToPage(index)
                                     }
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_tab,
+                                        keyAndValue = mapOf(
+                                            R.string.key_name_profile to item.title
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -105,19 +111,6 @@ fun ProfileDetailPage(
                         HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
                             val item = viewModel.profileItems[pagerState.currentPage]
                             if (it == pagerState.currentPage) {
-                                if (pagerState.currentPage != 0) {
-                                    tabItemChanged = true
-                                }
-                                if (tabItemChanged) {
-                                    StatisticsTool.instance.eventObject(
-                                        context = context,
-                                        resId = R.string.event_page_tab,
-                                        keyAndValue = mapOf(
-                                            R.string.key_name_profile to item.title
-                                        )
-                                    )
-                                }
-
                                 if (item == ProfileDetailTabItem.TOPIC) {
                                     ProfileTopicPage(
                                         scaffoldState = scaffoldState,

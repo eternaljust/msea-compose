@@ -34,7 +34,6 @@ fun NoticePage(
     val items = viewModel.items
     val isLogin = UserInfo.instance.auth.isNotEmpty()
     val context = LocalContext.current
-    var tabItemChanged = false
 
     Surface(
         modifier = Modifier
@@ -60,6 +59,13 @@ fun NoticePage(
                                 scope.launch {
                                     pagerState.scrollToPage(index)
                                 }
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_page_tab,
+                                    keyAndValue = mapOf(
+                                        R.string.key_name_notice to item.title
+                                    )
+                                )
                             }
                         )
                     }
@@ -67,19 +73,6 @@ fun NoticePage(
 
                 HorizontalPager(count = items.size, state = pagerState) {
                     if (it == pagerState.currentPage) {
-                        if (pagerState.currentPage != 0) {
-                            tabItemChanged = true
-                        }
-                        if (tabItemChanged) {
-                            StatisticsTool.instance.eventObject(
-                                context = context,
-                                resId = R.string.event_page_tab,
-                                keyAndValue = mapOf(
-                                    R.string.key_name_notice to items[pagerState.currentPage].title
-                                )
-                            )
-                        }
-
                         when (items[pagerState.currentPage]) {
                             NoticeTabItem.MYPOST -> MyPostPage(
                                 scaffoldState = scaffoldState,

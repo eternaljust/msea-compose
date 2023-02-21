@@ -32,7 +32,6 @@ fun HomePage(
     val scope = rememberCoroutineScope()
     val items = viewModel.topicItems
     val context = LocalContext.current
-    var tabItemChanged = false
 
     Surface(
         modifier = Modifier
@@ -48,6 +47,13 @@ fun HomePage(
                             scope.launch {
                                 pagerState.scrollToPage(index)
                             }
+                            StatisticsTool.instance.eventObject(
+                                context = context,
+                                resId = R.string.event_page_tab,
+                                keyAndValue = mapOf(
+                                    R.string.key_name_home to item.title
+                                )
+                            )
                         }
                     )
                 }
@@ -55,18 +61,6 @@ fun HomePage(
 
             HorizontalPager(count = items.size, state = pagerState) {
                 if (it == pagerState.currentPage) {
-                    if (pagerState.currentPage != 0) {
-                        tabItemChanged = true
-                    }
-                    if (tabItemChanged) {
-                        StatisticsTool.instance.eventObject(
-                            context = context,
-                            resId = R.string.event_page_tab,
-                            keyAndValue = mapOf(
-                                R.string.key_name_home to items[pagerState.currentPage].title
-                            )
-                        )
-                    }
 
                     val vm = when (items[pagerState.currentPage]) {
                         TopicTabItem.NEW -> TopicListViewModel.new

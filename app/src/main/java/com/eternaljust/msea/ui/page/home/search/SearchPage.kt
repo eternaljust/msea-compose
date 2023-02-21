@@ -40,7 +40,6 @@ fun SearchPage(
     val items = viewModel.items
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
-    var tabItemChanged = false
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -104,6 +103,13 @@ fun SearchPage(
                                     scope.launch {
                                         pagerState.scrollToPage(index)
                                     }
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_tab,
+                                        keyAndValue = mapOf(
+                                            R.string.key_name_search to item.title
+                                        )
+                                    )
                                 }
                             )
                         }
@@ -111,19 +117,6 @@ fun SearchPage(
 
                     HorizontalPager(count = items.size, state = pagerState) {
                         if (it == pagerState.currentPage) {
-                            if (pagerState.currentPage != 0) {
-                                tabItemChanged = true
-                            }
-                            if (tabItemChanged) {
-                                StatisticsTool.instance.eventObject(
-                                    context = context,
-                                    resId = R.string.event_page_tab,
-                                    keyAndValue = mapOf(
-                                        R.string.key_name_search to items[pagerState.currentPage].title
-                                    )
-                                )
-                            }
-
                             when (items[pagerState.currentPage]) {
                                 SearchTabItem.POST -> SearchPostPage(
                                     scaffoldState = scaffoldState,

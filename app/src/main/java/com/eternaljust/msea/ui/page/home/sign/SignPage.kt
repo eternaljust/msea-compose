@@ -47,7 +47,6 @@ fun SignPage(
     val pagerState = rememberPagerState()
     val items = viewModel.signItems
     val context = LocalContext.current
-    var tabItemChanged = false
 
     viewModel.dispatch(SignViewAction.GetDaySign)
     LaunchedEffect(Unit) {
@@ -105,6 +104,13 @@ fun SignPage(
                                         scope.launch {
                                             pagerState.scrollToPage(index)
                                         }
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_page_tab,
+                                            keyAndValue = mapOf(
+                                                R.string.key_name_sign to item.title
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -115,20 +121,6 @@ fun SignPage(
                         HorizontalPager(count = items.size, state = pagerState) {
                             if (it == pagerState.currentPage) {
                                 val item = items[pagerState.currentPage]
-                                if (pagerState.currentPage != 0) {
-                                    tabItemChanged = true
-                                }
-                                if (tabItemChanged) {
-                                    StatisticsTool.instance.eventObject(
-                                        context = context,
-                                        resId = R.string.event_page_tab,
-                                        keyAndValue = mapOf(
-                                            R.string.key_name_sign to item.title
-                                        )
-                                    )
-                                }
-
-
                                 if (item == SignTabItem.DAY_SIGN) {
                                     SignListPage(
                                         scaffoldState = scaffoldState,
