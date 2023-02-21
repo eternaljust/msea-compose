@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -35,6 +37,8 @@ fun TagListPage(
     tagItem: TagItemModel,
     viewModel: TagListViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
     viewModel.dispatch(TagListViewAction.SetTid(tagItem.tid))
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -84,6 +88,14 @@ fun TagListPage(
                                     )
                                     val args = String.format("/%s", Uri.encode(topic.toJson()))
                                     navController.navigate(RouteName.TOPIC_DETAIL + args)
+
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_topic_detail,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to "标签：${tagItem.title}"
+                                        )
+                                    )
                                 }
                             )
                         }

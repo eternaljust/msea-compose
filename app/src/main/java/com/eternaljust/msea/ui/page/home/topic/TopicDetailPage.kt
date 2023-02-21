@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.home.topic
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -51,13 +52,15 @@ fun TopicDetailPage(
     isNodeFid125: Boolean = false,
     viewModel: TopicDetailViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
     viewModel.dispatch(TopicDetailViewAction.SetTid(tid = tid))
     if (viewModel.isFirstLoad) {
         viewModel.dispatch(TopicDetailViewAction.LoadData)
+        eventObject(context = context, params = mapOf(R.string.key_list_page to viewModel.page.toString()))
     }
 
     val viewStates = viewModel.viewStates
-    val context = LocalContext.current
     val swipeRefreshState = rememberSwipeRefreshState(
         isRefreshing = viewModel.viewStates.isRefreshing
     )
@@ -114,6 +117,7 @@ fun TopicDetailPage(
                             IconButton(
                                 onClick = {
                                     viewModel.dispatch(TopicDetailViewAction.ShowPageNumberMenu(true))
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "分页"))
                                 }
                             ) {
                                 Icon(
@@ -149,6 +153,7 @@ fun TopicDetailPage(
                                                     scaffoldState.showSnackbar(message = "开始加载第 $index 页")
                                                 }
                                             }
+                                            eventObject(context = context, params = mapOf(R.string.key_page_click to index.toString()))
                                         },
                                         enabled = index != viewModel.page
                                     )
@@ -163,6 +168,7 @@ fun TopicDetailPage(
                         IconButton(
                             onClick = {
                                 viewModel.dispatch(TopicDetailViewAction.Share)
+                                eventObject(context = context, params = mapOf(R.string.key_action to "分享"))
                             }
                         ) {
                             Icon(
@@ -177,7 +183,10 @@ fun TopicDetailPage(
                         Row(
                             modifier = Modifier
                                 .padding(horizontal = 8.dp)
-                                .clickable { viewModel.dispatch(TopicDetailViewAction.Favorite) }
+                                .clickable {
+                                    viewModel.dispatch(TopicDetailViewAction.Favorite)
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "收藏"))
+                                }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Star,
@@ -215,6 +224,7 @@ fun TopicDetailPage(
                     },
                     onClick = {
                         viewModel.dispatch(TopicDetailViewAction.CommentShowDialog(isShow = true))
+                        eventObject(context = context, params = mapOf(R.string.key_action to "评论"))
                     },
                     expanded = listState.isScrollInProgress
                 )
@@ -238,15 +248,22 @@ fun TopicDetailPage(
                         viewModel.dispatch(TopicDetailViewAction.CommentTextChange(it))
                     },
                     commentConfirm = {
-                        if (viewModel.viewStates.replyParams.noticetrimstr.isNotEmpty()) {
+                        if (msg.isNotEmpty()) {
                             viewModel.dispatch(TopicDetailViewAction.Reply)
+                            eventObject(context = context, params = mapOf(R.string.key_reply to "回复"))
                         } else {
                             viewModel.dispatch(TopicDetailViewAction.Comment)
+                            eventObject(context = context, params = mapOf(R.string.key_comment to "评论"))
                         }
                     },
                     showCommentDialog = viewModel.viewStates.showCommentDialog,
                     commentDialogClick = {
                         viewModel.dispatch(TopicDetailViewAction.CommentShowDialog(it))
+                        if (msg.isNotEmpty()) {
+                            eventObject(context = context, params = mapOf(R.string.key_reply to "取消"))
+                        } else {
+                            eventObject(context = context, params = mapOf(R.string.key_comment to "取消"))
+                        }
                     }
                 )
 
@@ -254,6 +271,7 @@ fun TopicDetailPage(
                     state = swipeRefreshState,
                     onRefresh = {
                         viewModel.dispatch(TopicDetailViewAction.LoadData)
+                        eventObject(context = context, params = mapOf(R.string.key_list_page to viewModel.page.toString()))
                     },
                     indicator = { state, refreshTrigger ->
                         RefreshIndicator(
@@ -278,19 +296,31 @@ fun TopicDetailPage(
                                 recommendAddCount = viewStates.recommendAddCount,
                                 nodeClick = {
                                     navController.navigate(RouteName.NODE_DETAIL + "/$it")
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "节点"))
+                                    if (it == "-1") {
+                                        eventObject(context = context, params = mapOf(R.string.key_node to "节点"))
+                                    } else {
+                                        eventObject(context = context, params = mapOf(R.string.key_node to "分区"))
+                                    }
                                 },
                                 nodeListClick = {
                                     navController.navigate(RouteName.NODE_LIST + "/$it")
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "节点"))
+                                    eventObject(context = context, params = mapOf(R.string.key_node to "板块"))
                                 },
                                 tagClick = {
                                     val args = String.format("/%s", Uri.encode(it.toJson()))
                                     navController.navigate(RouteName.TAG_LIST + args)
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "标签"))
+                                    eventObject(context = context, params = mapOf(R.string.key_tag to it.title))
                                 },
                                 recommendAdd = {
                                     viewModel.dispatch(TopicDetailViewAction.RecommendAdd)
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "顶"))
                                 },
                                 recommendSubtract = {
                                     viewModel.dispatch(TopicDetailViewAction.RecommendSubtract)
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "踩"))
                                 }
                             )
                         }
@@ -301,26 +331,38 @@ fun TopicDetailPage(
                                 isNodeFid125 = isNodeFid125,
                                 avatarClick = {
                                     navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "头像"))
                                 },
                                 userOrTopicClick = { url ->
                                     if (url.contains("uid")) {
                                         val uid = NetworkUtil.getUid(url)
                                         navController.navigate(RouteName.PROFILE_DETAIL + "/$uid")
+                                        eventObject(context = context, params = mapOf(R.string.key_link to "@用户"))
                                     } else if (url.contains("tid") || url.contains("thread")) {
                                         val id = NetworkUtil.getTid(url)
                                         val topic = TopicDetailRouteModel(tid = id)
                                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                                         navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_topic_detail,
+                                            keyAndValue = mapOf(
+                                                R.string.key_source to "跟帖链接"
+                                            )
+                                        )
+                                        eventObject(context = context, params = mapOf(R.string.key_link to "帖子"))
                                     }
                                 },
                                 supportClick = { action ->
                                     viewModel.dispatch(TopicDetailViewAction.Support(action = action))
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "支持"))
                                 },
                                 replyClick = { action ->
                                     viewModel.dispatch(TopicDetailViewAction.GetReplyParam(
                                         action = action,
                                         username = item.name
                                     ))
+                                    eventObject(context = context, params = mapOf(R.string.key_action to "回复"))
                                 }
                             )
 
@@ -328,6 +370,7 @@ fun TopicDetailPage(
                                 if (viewModel.viewStates.pageLoadCompleted &&
                                     index == viewModel.viewStates.list.lastIndex) {
                                     viewModel.dispatch(TopicDetailViewAction.LoadMoreData)
+                                    eventObject(context = context, params = mapOf(R.string.key_list_page to viewModel.page.toString()))
                                 }
                                 onDispose {}
                             }
@@ -756,4 +799,15 @@ fun TopicDetailItemContent(
 @Composable
 private fun getTextSecondaryContainer(isNodeFid125: Boolean): Color {
     return if (isNodeFid125) Color.Gray else MaterialTheme.colorScheme.secondaryContainer
+}
+
+private fun eventObject(
+    context: Context,
+    params: Map<Int, String>
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_topic_detail,
+        keyAndValue = params
+    )
 }

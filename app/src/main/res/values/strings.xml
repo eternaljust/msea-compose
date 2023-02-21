@@ -13,7 +13,7 @@
     <!-- tab 切换 -->
     <string name="key_tab">key_tab</string>
     <!-- 加载分页 -->
-    <string name="key_load_page">key_load_page</string>
+    <string name="key_list_page">key_list_page</string>
     <!-- tab 切换页面 -->
     <string name="event_page_tab">event_page_tab</string>
     <string name="key_name_home">key_name_home</string>
@@ -43,4 +43,22 @@
     <string name="key_about_update">key_about_update</string>
     <!-- 退出登录 -->
     <string name="key_logout">key_logout</string>
+    <!-- 帖子详情 -->
+    <string name="event_topic_detail">event_topic_detail</string>
+    <!-- 来源页面 -->
+    <string name="key_source">key_source</string>
+    <!-- 动作行为 -->
+    <string name="key_action">key_action</string>
+    <!-- 跟帖链接 -->
+    <string name="key_link">key_link</string>
+    <!-- 节点选择 -->
+    <string name="key_node">key_node</string>
+    <!-- 关联标签 -->
+    <string name="key_tag">key_tag</string>
+    <!-- 跳转分页 -->
+    <string name="key_page_click">key_page_click</string>
+    <!-- 跟帖评论 -->
+    <string name="key_comment">key_comment</string>
+    <!-- 回复他人 -->
+    <string name="key_reply">key_reply</string>
 </resources>

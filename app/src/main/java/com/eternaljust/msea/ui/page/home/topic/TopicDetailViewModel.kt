@@ -262,10 +262,10 @@ class TopicDetailViewModel : ViewModel() {
             val document = NetworkUtil.postRequest(url, params, encodedParams)
             val result = document.html()
             if (result.isNotEmpty()) {
-                _viewEvents.send(TopicDetailViewEvent.Message("评论成功"))
+                _viewEvents.send(TopicDetailViewEvent.Message("回复成功"))
                 _viewEvents.send(TopicDetailViewEvent.Refresh)
             } else {
-                _viewEvents.send(TopicDetailViewEvent.Message("评论失败，请稍后重试"))
+                _viewEvents.send(TopicDetailViewEvent.Message("回复失败，请稍后重试"))
             }
             commentDialog(isShow = false)
         }

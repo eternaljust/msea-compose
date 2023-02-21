@@ -1,6 +1,7 @@
 package com.eternaljust.msea.ui.widget
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Parcelable
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -20,6 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.HTMLURL
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.*
 import kotlinx.parcelize.Parcelize
@@ -285,9 +287,11 @@ fun WebHTML(
                                 userOrTopicClick(it)
                             } else {
                                 openSystemBrowser(it, context)
+                                eventObject(context)
                             }
                         } else {
                             openSystemBrowser(it, context)
+                            eventObject(context)
                         }
                     }
                     return true
@@ -295,6 +299,14 @@ fun WebHTML(
             }
         }
     }
+}
+
+private fun eventObject(context: Context) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_topic_detail,
+        keyAndValue = mapOf(R.string.key_link to "网址")
+    )
 }
 
 @SuppressLint("SetJavaScriptEnabled")

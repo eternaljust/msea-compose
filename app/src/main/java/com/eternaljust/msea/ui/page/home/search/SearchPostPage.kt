@@ -14,6 +14,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -22,10 +23,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.*
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshIndicator
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.toJson
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -49,6 +52,7 @@ fun SearchPostPage(
         isRefreshing = viewModel.viewStates.isRefreshing
     )
     val listState = rememberLazyListState()
+    val context = LocalContext.current
 
     SwipeRefresh(
         state = swipeRefreshState,
@@ -87,6 +91,13 @@ fun SearchPostPage(
                         val topic = TopicDetailRouteModel(tid = item.tid)
                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                         navController.navigate(RouteName.TOPIC_DETAIL + args)
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_topic_detail,
+                            keyAndValue = mapOf(
+                                R.string.key_source to "搜索帖子"
+                            )
+                        )
                     },
                     forumClick = {
                         navController.navigate(RouteName.NODE_LIST + "/${item.fid}")

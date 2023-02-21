@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -31,6 +32,7 @@ import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.toJson
 
 @Composable
@@ -41,6 +43,7 @@ fun MyPostPage(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     RefreshList(
         lazyPagingItems = lazyPagingItems
@@ -56,6 +59,13 @@ fun MyPostPage(
                         val topic = TopicDetailRouteModel(tid = it.ptid)
                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                         navController.navigate(RouteName.TOPIC_DETAIL + args)
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_topic_detail,
+                            keyAndValue = mapOf(
+                                R.string.key_source to "我的帖子"
+                            )
+                        )
                     },
                     forumClick = {
                         navController.navigate(RouteName.NODE_LIST + "/${item.fid}")

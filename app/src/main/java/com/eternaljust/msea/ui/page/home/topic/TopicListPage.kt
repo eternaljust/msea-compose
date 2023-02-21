@@ -86,6 +86,14 @@ fun TopicListPage(
                         val topic = TopicDetailRouteModel(tid = item.tid)
                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                         navController.navigate(RouteName.TOPIC_DETAIL + args)
+
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_topic_detail,
+                            keyAndValue = mapOf(
+                                R.string.key_source to viewModel.tabItem.title
+                            )
+                        )
                     }
                 )
 
@@ -298,7 +306,7 @@ private fun eventPageLoad(
         context = context,
         resId = R.string.event_page_home,
         keyAndValue = mapOf(
-            R.string.key_load_page to page
+            R.string.key_list_page to page.toString()
         )
     )
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,6 +33,7 @@ import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.toJson
 
 @Composable
@@ -95,6 +97,7 @@ private fun NodeContent(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier
@@ -131,6 +134,13 @@ private fun NodeContent(
                                 )
                                 val args = String.format("/%s", Uri.encode(topic.toJson()))
                                 navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_topic_detail,
+                                    keyAndValue = mapOf(
+                                        R.string.key_source to "节点"
+                                    )
+                                )
                             }
                         )
                     }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,6 +25,7 @@ import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.toJson
 import kotlinx.coroutines.launch
 
@@ -36,6 +38,7 @@ fun ProfileFavoritePage(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -107,6 +110,13 @@ fun ProfileFavoritePage(
                                     val topic = TopicDetailRouteModel(tid = it.tid)
                                     val args = String.format("/%s", Uri.encode(topic.toJson()))
                                     navController.navigate(RouteName.TOPIC_DETAIL + args)
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_topic_detail,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to "收藏列表"
+                                        )
+                                    )
                                 },
                                 deleteClick = { action ->
                                     viewModel.dispatch(ProfileFavoriteListViewAction.DeleteAction(action))

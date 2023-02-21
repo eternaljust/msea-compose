@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,6 +25,7 @@ import com.eternaljust.msea.ui.theme.getIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.toJson
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -34,6 +36,8 @@ fun NodeListPage(
     fid: String,
     viewModel: NodeListViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
     viewModel.dispatch(NodeListViewAction.SetFid(fid))
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -106,6 +110,14 @@ fun NodeListPage(
                                     )
                                     val args = String.format("/%s", Uri.encode(topic.toJson()))
                                     navController.navigate(RouteName.TOPIC_DETAIL + args)
+
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_topic_detail,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to "节点：${viewModel.viewStates.title}"
+                                        )
+                                    )
                                 },
                                 isNodeFid125 = viewModel.isNodeFid125
                             )
