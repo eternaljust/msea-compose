@@ -338,13 +338,23 @@ fun MyApp() {
                 navController = navController,
                 drawerState = drawerState,
                 onClick = { item ->
+                    if (item.route != RouteName.LOGOUT) {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_list_drawer,
+                            keyAndValue = mapOf(
+                                R.string.key_item to item.title
+                            )
+                        )
+                    }
+
                     scope.launch { drawerState.close() }
                     if (UserInfo.instance.auth.isEmpty() && item.route != RouteName.SETTING &&
                                 item.route != RouteName.ABOUT) {
                         navController.navigate((RouteName.LOGIN))
                     } else {
                         if (item.route == RouteName.LOGOUT) {
-                            GlobalScope.launch { DataStoreUtil.clear() }
+                            GlobalScope.launch { UserInfo.instance.clear() }
                             scope.launch {
                                 snackbarHostState.showSnackbar(message = "已退出登录")
                             }

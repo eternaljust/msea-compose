@@ -50,7 +50,7 @@ object DataStoreUtil {
         runBlocking { setData(key, value) }
     }
 
-    suspend fun <U> removeData(
+    private suspend fun <U> removeData(
         key: String,
         value: U
     ) {

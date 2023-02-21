@@ -85,6 +85,14 @@ fun SettingPage(
                         viewModel.dispatch(SettingViewAction.UpdateDaysginTime(it))
                         viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
                         RemindersManager.startReminder(context)
+
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_list_drawer,
+                            keyAndValue = mapOf(
+                                R.string.key_setting_time to "${it.hour}:${it.minute}"
+                            )
+                        )
                     },
                     title = { Text(text = "选择签到提醒时间") }
                 )
@@ -95,6 +103,17 @@ fun SettingPage(
                     items(items) { item ->
                         ListItem(
                             modifier = Modifier.clickable {
+                                if (item != SettingListItem.DARK_MODE &&
+                                    item != SettingListItem.COLOR_SCHEME &&
+                                    item != SettingListItem.DAY_SIGN) {
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_list_drawer,
+                                        keyAndValue = mapOf(
+                                            R.string.key_setting to item.title
+                                        )
+                                    )
+                                }
                                 when (item) {
                                     SettingListItem.SHARE -> {
                                         openSystemShare(
@@ -128,7 +147,7 @@ fun SettingPage(
                                 SettingListItemTitle(
                                     item = item,
                                     daysignTime = viewModel.viewStates.daysignTime,
-                                    timePickerEnbled = viewModel.viewStates.daysignChecked,
+                                    timePickerEnabled = viewModel.viewStates.daysignChecked,
                                     timePickerClick = {
                                         viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(true))
                                     }
@@ -147,6 +166,22 @@ fun SettingPage(
                                     item = item,
                                     daysignChecked = viewModel.viewStates.daysignChecked,
                                     daysignCheckedChange = {
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_list_drawer,
+                                            keyAndValue = mapOf(
+                                                R.string.key_setting to item.title
+                                            )
+                                        )
+
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_list_drawer,
+                                            keyAndValue = mapOf(
+                                                R.string.key_setting_sign to if (it) "开启" else "关闭"
+                                            )
+                                        )
+
                                         if (it) {
                                             if (notificationPermissionState.status.isGranted) {
                                                 viewModel.dispatch(
@@ -166,6 +201,21 @@ fun SettingPage(
                                     },
                                     colorSchemeChecked = viewModel.viewStates.colorSchemeChecked,
                                     colorSchemeCheckedChange = {
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_list_drawer,
+                                            keyAndValue = mapOf(
+                                                R.string.key_setting to item.title
+                                            )
+                                        )
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_list_drawer,
+                                            keyAndValue = mapOf(
+                                                R.string.key_setting_color to if (it) "开启" else "关闭"
+                                            )
+                                        )
+
                                         viewModel.dispatch(
                                             SettingViewAction.UpdateColorSchemeChecked(it)
                                         )
@@ -178,6 +228,21 @@ fun SettingPage(
                                     themeStyleItems = viewModel.themeStyleItems,
                                     themeStyleIndex = viewModel.viewStates.themeStyleIndex,
                                     themeStyleTabClick = {
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_list_drawer,
+                                            keyAndValue = mapOf(
+                                                R.string.key_setting to item.title
+                                            )
+                                        )
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_list_drawer,
+                                            keyAndValue = mapOf(
+                                                R.string.key_setting_dark to viewModel.themeStyleItems[it]
+                                            )
+                                        )
+
                                         viewModel.dispatch(
                                             SettingViewAction.UpdateThemeStyleIndex(it)
                                         )
@@ -309,7 +374,7 @@ private fun GetIcon(painter: Int) = Icon(
 fun SettingListItemTitle(
     item: SettingListItem,
     daysignTime: LocalTime,
-    timePickerEnbled: Boolean,
+    timePickerEnabled: Boolean,
     timePickerClick: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -322,7 +387,7 @@ fun SettingListItemTitle(
             Spacer(modifier = Modifier.width(16.dp))
 
             OutlinedButton(
-                enabled = timePickerEnbled,
+                enabled = timePickerEnabled,
                 onClick = timePickerClick
             ) {
                 Text(

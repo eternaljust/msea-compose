@@ -65,7 +65,7 @@ fun AboutPage(
                 },
                 actions = {
                     if (UserInfo.instance.auth.isEmpty()) {
-                        InvitationRegisterButton()
+                        InvitationRegisterButton(fromLogin = false)
                     }
                 },
                 colors = mseaTopAppBarColors()
@@ -85,11 +85,25 @@ fun AboutPage(
                     },
                     onDismissRequest = {
                         viewModel.dispatch(AboutViewAction.VersionShowDialog(false))
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_list_drawer,
+                            keyAndValue = mapOf(
+                                R.string.key_about_update to "取消"
+                            )
+                        )
                     },
                     dismissButton = {
                         Button(
                             onClick = {
                                 viewModel.dispatch(AboutViewAction.VersionShowDialog(false))
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_list_drawer,
+                                    keyAndValue = mapOf(
+                                        R.string.key_about_update to "取消"
+                                    )
+                                )
                             }
                         ) {
                             Text(text = "取消")
@@ -99,6 +113,13 @@ fun AboutPage(
                         Button(
                             onClick = {
                                 viewModel.dispatch(AboutViewAction.VersionShowDialog(false))
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_list_drawer,
+                                    keyAndValue = mapOf(
+                                        R.string.key_about_update to "更新"
+                                    )
+                                )
                                 openSystemBrowser(
                                     url = HTMLURL.APP_RELEASE,
                                     context = context
@@ -133,6 +154,13 @@ fun AboutPage(
                             modifier = Modifier.clickable {
                                 if (viewModel.versionCode < viewModel.viewStates.configVersion.versionCode) {
                                     viewModel.dispatch(AboutViewAction.VersionShowDialog(true))
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_list_drawer,
+                                        keyAndValue = mapOf(
+                                            R.string.key_about to "版本"
+                                        )
+                                    )
                                 }
                             },
                             horizontalArrangement = Arrangement.Center,
@@ -171,6 +199,13 @@ fun AboutPage(
                                 } else {
                                     navController.navigate(it.route)
                                 }
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_list_drawer,
+                                    keyAndValue = mapOf(
+                                        R.string.key_about to it.title
+                                    )
+                                )
                             },
                         headlineText = { Text(text = it.title) },
                         trailingContent = { ListArrowForward() }

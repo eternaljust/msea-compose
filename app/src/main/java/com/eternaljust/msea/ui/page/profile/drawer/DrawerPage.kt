@@ -44,7 +44,6 @@ fun DrawerPage(
                 println("drawerState = $it")
                 viewModel.dispatch(DrawerViewAction.Login)
                 if (it == DrawerValue.Open) {
-
                     StatisticsTool.instance.eventObject(
                         context = context,
                         resId = R.string.event_page_home,
@@ -79,10 +78,26 @@ fun DrawerPage(
             },
             onDismissRequest = {
                 viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
+                StatisticsTool.instance.eventObject(
+                    context = context,
+                    resId = R.string.event_list_drawer,
+                    keyAndValue = mapOf(
+                        R.string.key_logout to "取消"
+                    )
+                )
             },
             dismissButton = {
                 Button(
-                    onClick = { viewModel.dispatch(DrawerViewAction.LogoutDialog(false)) }
+                    onClick = {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_list_drawer,
+                            keyAndValue = mapOf(
+                                R.string.key_logout to "取消"
+                            )
+                        )
+                        viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
+                    }
                 ) {
                     Text(text = "取消")
                 }
@@ -90,6 +105,13 @@ fun DrawerPage(
             confirmButton = {
                 Button(
                     onClick = {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_list_drawer,
+                            keyAndValue = mapOf(
+                                R.string.key_logout to "确认"
+                            )
+                        )
                         viewModel.dispatch(DrawerViewAction.LogoutDialog(false))
                         onClick(DrawerNavigationItem.Logout)
                     }
@@ -139,6 +161,13 @@ fun DrawerPage(
                 DrawerList(
                     items = viewModel.logoutItems,
                     onClick = {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_list_drawer,
+                            keyAndValue = mapOf(
+                                R.string.key_item to DrawerNavigationItem.Logout.title
+                            )
+                        )
                         viewModel.dispatch(DrawerViewAction.LogoutDialog(show = true))
                     }
                 )

@@ -13,7 +13,7 @@
     <!-- tab 切换 -->
     <string name="key_tab">key_tab</string>
     <!-- 加载分页 -->
-    <string name="key_page_load">key_page_load</string>
+    <string name="key_load_page">key_load_page</string>
     <!-- tab 切换页面 -->
     <string name="event_page_tab">event_page_tab</string>
     <string name="key_name_home">key_name_home</string>
@@ -23,4 +23,24 @@
     <string name="key_name_friend">key_name_friend</string>
     <string name="key_name_credit">key_name_credit</string>
     <string name="key_name_profile">key_name_profile</string>
+    <!-- 抽屉菜单 -->
+    <string name="event_list_drawer">event_list_drawer</string>
+    <!-- 列表选项 -->
+    <string name="key_item">key_item</string>
+    <!-- 设置 -->
+    <string name="key_setting">key_setting</string>
+    <!-- 深色模式 -->
+    <string name="key_setting_dark">key_setting_dark</string>
+    <!-- 动态配色 -->
+    <string name="key_setting_color">key_setting_color</string>
+    <!-- 签到通知 -->
+    <string name="key_setting_sign">key_setting_sign</string>
+    <!-- 签到提醒时间 -->
+    <string name="key_setting_time">key_setting_time</string>
+    <!-- 关于 -->
+    <string name="key_about">key_about</string>
+    <!-- 版本更新 -->
+    <string name="key_about_update">key_about_update</string>
+    <!-- 退出登录 -->
+    <string name="key_logout">key_logout</string>
 </resources>

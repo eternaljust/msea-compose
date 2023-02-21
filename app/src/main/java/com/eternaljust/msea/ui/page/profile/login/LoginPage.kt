@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.openSystemBrowser
 import kotlinx.coroutines.launch
 
@@ -254,10 +255,20 @@ fun LoginPage(
 }
 
 @Composable
-fun InvitationRegisterButton() {
+fun InvitationRegisterButton(fromLogin: Boolean = true) {
     val context = LocalContext.current
 
     TextButton(onClick = {
+        if (fromLogin) {
+        } else {
+            StatisticsTool.instance.eventObject(
+                context = context,
+                resId = R.string.event_list_drawer,
+                keyAndValue = mapOf(
+                    R.string.key_about to "邀请码注册"
+                )
+            )
+        }
         openSystemBrowser(
             url = "https://www.chongbuluo.com/thread-926-1-1.html",
             context = context

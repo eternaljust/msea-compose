@@ -56,6 +56,22 @@ class UserInfo {
     var violation: String
         get() = DataStoreUtil.getData(UserInfoKey.VIOLATION, "")
         set(value) = DataStoreUtil.syncSetData(UserInfoKey.VIOLATION, value)
+
+    fun clear() {
+        DataStoreUtil.syncRemoveData(UserInfoKey.AUTH, auth)
+        DataStoreUtil.syncRemoveData(UserInfoKey.SALT, salt)
+        DataStoreUtil.syncRemoveData(UserInfoKey.FORMHASH, formhash)
+        DataStoreUtil.syncRemoveData(UserInfoKey.UID, uid)
+        DataStoreUtil.syncRemoveData(UserInfoKey.NAME, name)
+        DataStoreUtil.syncRemoveData(UserInfoKey.LEVEL, level)
+        DataStoreUtil.syncRemoveData(UserInfoKey.AVATAR, avatar)
+        DataStoreUtil.syncRemoveData(UserInfoKey.FRIEND, friend)
+        DataStoreUtil.syncRemoveData(UserInfoKey.REPLY, reply)
+        DataStoreUtil.syncRemoveData(UserInfoKey.TOPIC, topic)
+        DataStoreUtil.syncRemoveData(UserInfoKey.INTEGRAL, integral)
+        DataStoreUtil.syncRemoveData(UserInfoKey.BITS, bits)
+        DataStoreUtil.syncRemoveData(UserInfoKey.VIOLATION, violation)
+    }
 }
 
 object UserInfoKey {
