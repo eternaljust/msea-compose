@@ -114,6 +114,13 @@ private fun NodeContent(
                         ) {
                             val route = RouteName.PROFILE_DETAIL_USERNAME + "/$it"
                             navController.navigate(route)
+                            StatisticsTool.instance.eventObject(
+                                context = context,
+                                resId = R.string.event_page_profile,
+                                keyAndValue = mapOf(
+                                    R.string.key_source to "分区版主"
+                                )
+                            )
                         }
                     }
 
@@ -126,6 +133,13 @@ private fun NodeContent(
                             nicknameClick = {
                                 val route = RouteName.PROFILE_DETAIL_USERNAME + "/${item.username}"
                                 navController.navigate(route)
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_page_profile,
+                                    keyAndValue = mapOf(
+                                        R.string.key_source to "节点"
+                                    )
+                                )
                             },
                             contentClick = {
                                 val topic = TopicDetailRouteModel(

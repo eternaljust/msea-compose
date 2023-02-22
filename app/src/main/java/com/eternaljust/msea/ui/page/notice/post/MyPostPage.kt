@@ -29,6 +29,7 @@ import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
+import com.eternaljust.msea.ui.page.notice.NoticeTabItem
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
@@ -54,6 +55,13 @@ fun MyPostPage(
                     item = it,
                     avatarClick = {
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_profile,
+                            keyAndValue = mapOf(
+                                R.string.key_source to NoticeTabItem.MYPOST.title
+                            )
+                        )
                     },
                     contentClick = {
                         val topic = TopicDetailRouteModel(tid = it.ptid)

@@ -86,6 +86,13 @@ fun SearchPostPage(
                     item = item,
                     avatarClick = {
                         navController.navigate(RouteName.PROFILE_DETAIL_USERNAME + "/${item.name}")
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_profile,
+                            keyAndValue = mapOf(
+                                R.string.key_source to "搜索帖子"
+                            )
+                        )
                     },
                     contentClick = {
                         val topic = TopicDetailRouteModel(tid = item.tid)

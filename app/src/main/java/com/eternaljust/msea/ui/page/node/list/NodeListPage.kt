@@ -102,6 +102,13 @@ fun NodeListPage(
                                 item = item,
                                 avatarClick = {
                                     navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_profile,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to "节点：${viewModel.viewStates.title}"
+                                        )
+                                    )
                                 },
                                 contentClick = {
                                     val topic = TopicDetailRouteModel(

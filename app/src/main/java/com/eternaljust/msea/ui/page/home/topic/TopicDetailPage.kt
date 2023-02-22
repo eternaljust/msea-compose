@@ -332,24 +332,32 @@ fun TopicDetailPage(
                                 avatarClick = {
                                     navController.navigate(RouteName.PROFILE_DETAIL + "/${item.uid}")
                                     eventObject(context = context, params = mapOf(R.string.key_action to "头像"))
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_profile,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to "跟帖用户"
+                                        )
+                                    )
                                 },
                                 userOrTopicClick = { url ->
                                     if (url.contains("uid")) {
                                         val uid = NetworkUtil.getUid(url)
                                         navController.navigate(RouteName.PROFILE_DETAIL + "/$uid")
                                         eventObject(context = context, params = mapOf(R.string.key_link to "@用户"))
+                                        StatisticsTool.instance.eventObject(
+                                            context = context,
+                                            resId = R.string.event_page_profile,
+                                            keyAndValue = mapOf(
+                                                R.string.key_source to "@用户"
+                                            )
+                                        )
                                     } else if (url.contains("tid") || url.contains("thread")) {
                                         val id = NetworkUtil.getTid(url)
                                         val topic = TopicDetailRouteModel(tid = id)
                                         val args = String.format("/%s", Uri.encode(topic.toJson()))
                                         navController.navigate(RouteName.TOPIC_DETAIL + args)
-                                        StatisticsTool.instance.eventObject(
-                                            context = context,
-                                            resId = R.string.event_topic_detail,
-                                            keyAndValue = mapOf(
-                                                R.string.key_source to "跟帖链接"
-                                            )
-                                        )
+                                        eventObject(context = context, params = mapOf(R.string.key_source to "跟帖链接"))
                                         eventObject(context = context, params = mapOf(R.string.key_link to "帖子"))
                                     }
                                 },

@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,8 +20,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.notice.NoticeTabItem
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -31,6 +34,7 @@ fun FriendListPage(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     RefreshList(
         lazyPagingItems = lazyPagingItems
@@ -45,6 +49,13 @@ fun FriendListPage(
                     item = it,
                     avatarClick = {
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_profile,
+                            keyAndValue = mapOf(
+                                R.string.key_source to ProfileFriendTabItem.FRIEND.title
+                            )
+                        )
                     }
                 )
             }
@@ -139,6 +150,7 @@ fun FriendVisitorTraceListPage(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     RefreshList(
         lazyPagingItems = lazyPagingItems
@@ -153,6 +165,13 @@ fun FriendVisitorTraceListPage(
                     item = it,
                     avatarClick = {
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_profile,
+                            keyAndValue = mapOf(
+                                R.string.key_source to viewModel.tabItem.title
+                            )
+                        )
                     }
                 )
             }

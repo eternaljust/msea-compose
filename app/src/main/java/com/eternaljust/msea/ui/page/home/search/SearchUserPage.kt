@@ -13,6 +13,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -32,7 +34,8 @@ fun SearchUserPage(
     keyword: String,
     viewModel: SearchUserViewModel = viewModel()
 ) {
-    println("---user---$keyword")
+    val context = LocalContext.current
+
     if (UserInfo.instance.auth.isNotEmpty()) {
         viewModel.dispatch(SearchUserAction.SearchKeyword(keyword))
     }
@@ -63,6 +66,13 @@ fun SearchUserPage(
                         item = it,
                         contentClick = {
                             navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                            StatisticsTool.instance.eventObject(
+                                context = context,
+                                resId = R.string.event_page_profile,
+                                keyAndValue = mapOf(
+                                    R.string.key_source to "搜索用户"
+                                )
+                            )
                         }
                     )
                 }

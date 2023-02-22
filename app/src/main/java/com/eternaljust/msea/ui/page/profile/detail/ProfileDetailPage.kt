@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.page.notice.NoticeTabItem
 import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.ui.widget.RefreshGrid
@@ -261,6 +262,7 @@ fun ProfileDetailFriendPage(
     viewModel.dispatch(ProfileDetailFriendViewAction.SetUid(uid = uid))
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier,
@@ -279,6 +281,13 @@ fun ProfileDetailFriendPage(
                             .background(MaterialTheme.colorScheme.background)
                             .clickable {
                                 navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                                StatisticsTool.instance.eventObject(
+                                    context = context,
+                                    resId = R.string.event_page_profile,
+                                    keyAndValue = mapOf(
+                                        R.string.key_source to "个人空间好友"
+                                    )
+                                )
                             },
                         verticalAlignment = Alignment.CenterVertically
                     ) {

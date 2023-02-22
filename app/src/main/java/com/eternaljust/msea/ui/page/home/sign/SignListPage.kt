@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -14,8 +15,10 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
+import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
+import com.eternaljust.msea.utils.StatisticsTool
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -26,6 +29,7 @@ fun SignListPage(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     RefreshList(
         lazyPagingItems = lazyPagingItems,
@@ -41,6 +45,13 @@ fun SignListPage(
                     item = it,
                     nicknameClick = {
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_profile,
+                            keyAndValue = mapOf(
+                                R.string.key_source to SignTabItem.DAY_SIGN.title
+                            )
+                        )
                     }
                 )
             }
@@ -122,6 +133,7 @@ fun SignDayListPage(
 ) {
     val viewStates = viewModel.viewStates
     val lazyPagingItems = viewStates.pagingData.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     RefreshList(
         lazyPagingItems = lazyPagingItems,
@@ -137,6 +149,13 @@ fun SignDayListPage(
                     item = it,
                     nicknameClick = {
                         navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_profile,
+                            keyAndValue = mapOf(
+                                R.string.key_source to viewModel.tabItem.title
+                            )
+                        )
                     }
                 )
             }

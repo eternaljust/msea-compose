@@ -61,4 +61,6 @@
     <string name="key_comment">key_comment</string>
     <!-- 回复他人 -->
     <string name="key_reply">key_reply</string>
+    <!-- 个人空间 -->
+    <string name="event_page_profile">event_page_profile</string>
 </resources>

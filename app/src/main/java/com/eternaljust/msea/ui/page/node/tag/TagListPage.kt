@@ -80,6 +80,13 @@ fun TagListPage(
                                 nicknameClick = { name ->
                                     val route = RouteName.PROFILE_DETAIL_USERNAME + "/$name"
                                     navController.navigate(route)
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_profile,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to "标签：${tagItem.title}"
+                                        )
+                                    )
                                 },
                                 contentClick = {
                                     val topic = TopicDetailRouteModel(

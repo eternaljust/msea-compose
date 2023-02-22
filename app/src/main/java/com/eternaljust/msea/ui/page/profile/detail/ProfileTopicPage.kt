@@ -39,6 +39,7 @@ fun ProfileTopicPage(
     viewModel: ProfileTopicViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val title = if (showTopBar) "主题列表" else "个人空间主题列表"
 
     viewModel.dispatch(ProfileTopicViewAction.SetUid(uid = uid))
     LaunchedEffect(Unit) {
@@ -55,7 +56,7 @@ fun ProfileTopicPage(
         topBar = {
             if (showTopBar) {
                 NormalTopAppBar(
-                    title = "主题列表",
+                    title = title,
                     onClick = { viewModel.dispatch(ProfileTopicViewAction.PopBack) }
                 )
             }
@@ -83,6 +84,13 @@ fun ProfileTopicPage(
                                 nicknameClick = {
                                     val route = RouteName.PROFILE_DETAIL_USERNAME + "/${it.lastName}"
                                     navController.navigate(route)
+                                    StatisticsTool.instance.eventObject(
+                                        context = context,
+                                        resId = R.string.event_page_profile,
+                                        keyAndValue = mapOf(
+                                            R.string.key_source to title
+                                        )
+                                    )
                                 },
                                 contentClick = {
                                     val topic = TopicDetailRouteModel(
@@ -95,7 +103,7 @@ fun ProfileTopicPage(
                                         context = context,
                                         resId = R.string.event_topic_detail,
                                         keyAndValue = mapOf(
-                                            R.string.key_source to "主题列表"
+                                            R.string.key_source to title
                                         )
                                     )
                                 }
