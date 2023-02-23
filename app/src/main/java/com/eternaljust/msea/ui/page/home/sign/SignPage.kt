@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.home.sign
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -31,6 +32,7 @@ import com.eternaljust.msea.ui.widget.AutosizeText
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
+import com.eternaljust.msea.utils.UserInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -64,6 +66,12 @@ fun SignPage(
                     )
                 }
                 is SignViewEvent.Message -> {
+                    eventObject(
+                        context = context,
+                        params = mapOf(
+                            R.string.key_sign_result to it.message
+                        )
+                    )
                     scope.launch {
                         scaffoldState.showSnackbar(message = it.message)
                     }
@@ -87,16 +95,62 @@ fun SignPage(
                 Column {
                     SignHeader(
                         daySign = viewModel.viewStates.daySign,
-                        signClick = { viewModel.dispatch(SignViewAction.Sign)},
+                        signClick = {
+                            viewModel.dispatch(SignViewAction.Sign)
+                            eventObject(
+                                context = context,
+                                params = mapOf(
+                                    R.string.key_action to "签到",
+                                    R.string.key_login to if (UserInfo.instance.auth.isNotEmpty())
+                                        "已登录" else "未登录"
+                                )
+                            )
+                        },
                         signText = viewModel.viewStates.signText,
                         signTextChange = { viewModel.dispatch(SignViewAction.SignTextChange(it))},
-                        signConfirm = { viewModel.dispatch(SignViewAction.SignConfirm)},
+                        signConfirm = {
+                            viewModel.dispatch(SignViewAction.SignConfirm)
+                            eventObject(
+                                context = context,
+                                params = mapOf(
+                                    R.string.key_sign to "发表"
+                                )
+                            )
+                        },
                         showSignDialog = viewModel.viewStates.showSignDialog,
-                        signDialogClick = { viewModel.dispatch(SignViewAction.SignShowDialog(it))},
+                        signDialogClick = {
+                            viewModel.dispatch(SignViewAction.SignShowDialog(it))
+                            eventObject(
+                                context = context,
+                                params = mapOf(
+                                    R.string.key_sign to "取消"
+                                )
+                            )
+                        },
                         showRuleDialog = viewModel.viewStates.showRuleDialog,
-                        ruleDialogClick = { viewModel.dispatch(SignViewAction.RuleShowDialog(it)) },
+                        ruleDialogClick = {
+                            viewModel.dispatch(SignViewAction.RuleShowDialog(it))
+                            if (it) {
+                                eventObject(
+                                    context = context,
+                                    params = mapOf(
+                                        R.string.key_action to "规则"
+                                    )
+                                )
+                            }
+                        },
                         showCalendarDialog = viewModel.viewStates.showCalendarDialog,
-                        calendarDialogClick = { viewModel.dispatch(SignViewAction.CalendarShowDialog(it))}
+                        calendarDialogClick = {
+                            viewModel.dispatch(SignViewAction.CalendarShowDialog(it))
+                            if (it) {
+                                eventObject(
+                                    context = context,
+                                    params = mapOf(
+                                        R.string.key_action to "月历"
+                                    )
+                                )
+                            }
+                        }
                     )
 
                     Column {
@@ -406,4 +460,15 @@ private fun SignHeader(
             }
         }
     }
+}
+
+private fun eventObject(
+    context: Context,
+    params: Map<Int, String>
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_page_sign,
+        keyAndValue = params
+    )
 }

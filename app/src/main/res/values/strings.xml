@@ -75,4 +75,12 @@
     <string name="key_login_question">key_login_question</string>
     <!-- 失败原因 -->
     <string name="key_login_failed">key_login_failed</string>
+    <!-- 签到 -->
+    <string name="event_page_sign">event_page_sign</string>
+    <!-- 登录状态 -->
+    <string name="key_login">key_login</string>
+    <!-- 点击签到 -->
+    <string name="key_sign">key_sign</string>
+    <!-- 签到结果 -->
+    <string name="key_sign_result">key_sign_result</string>
 </resources>
