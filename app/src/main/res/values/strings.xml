@@ -83,4 +83,14 @@
     <string name="key_sign">key_sign</string>
     <!-- 签到结果 -->
     <string name="key_sign_result">key_sign_result</string>
+    <!-- 搜索 -->
+    <string name="event_page_search">event_page_search</string>
+    <!-- 搜索类型 -->
+    <string name="key_search">key_search</string>
+    <!-- 通知 -->
+    <string name="event_page_notice">event_page_notice</string>
+    <!-- 节点 -->
+    <string name="event_page_node">event_page_node</string>
+    <!-- 节点板块 -->
+    <string name="key_forum">key_forum</string>
 </resources>

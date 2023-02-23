@@ -62,6 +62,13 @@ fun MyPostPage(
                                 R.string.key_source to NoticeTabItem.MYPOST.title
                             )
                         )
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_notice,
+                            keyAndValue = mapOf(
+                                R.string.key_action to "个人空间"
+                            )
+                        )
                     },
                     contentClick = {
                         val topic = TopicDetailRouteModel(tid = it.ptid)
@@ -72,6 +79,13 @@ fun MyPostPage(
                             resId = R.string.event_topic_detail,
                             keyAndValue = mapOf(
                                 R.string.key_source to "我的帖子"
+                            )
+                        )
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_notice,
+                            keyAndValue = mapOf(
+                                R.string.key_action to "帖子详情"
                             )
                         )
                     },

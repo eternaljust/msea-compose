@@ -60,6 +60,11 @@ fun SearchPage(
                                 message = "站内搜索请先登录"
                             )
                         } else {
+                            StatisticsTool.instance.eventObject(
+                                context = context,
+                                resId = R.string.event_page_search,
+                                keyAndValue = mapOf(R.string.key_search to items[pagerState.currentPage].title)
+                            )
                             scaffoldState.showSnackbar(
                                 message = if (viewModel.viewStates.keyword.isEmpty()) "请输入搜索关键字！"
                                 else "正在搜索\"${viewModel.viewStates.keyword}\"中"

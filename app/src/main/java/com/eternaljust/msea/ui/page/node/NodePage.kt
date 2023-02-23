@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.node
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -121,6 +122,7 @@ private fun NodeContent(
                                     R.string.key_source to "分区版主"
                                 )
                             )
+                            eventObject(context, mapOf(R.string.key_action to "个人空间"))
                         }
                     }
 
@@ -129,6 +131,7 @@ private fun NodeContent(
                             item = item,
                             nodeClick = {
                                 navController.navigate(RouteName.NODE_LIST + "/${item.fid}")
+                                eventObject(context, mapOf(R.string.key_forum to item.title))
                             },
                             nicknameClick = {
                                 val route = RouteName.PROFILE_DETAIL_USERNAME + "/${item.username}"
@@ -140,6 +143,7 @@ private fun NodeContent(
                                         R.string.key_source to "节点"
                                     )
                                 )
+                                eventObject(context, mapOf(R.string.key_action to "个人空间"))
                             },
                             contentClick = {
                                 val topic = TopicDetailRouteModel(
@@ -155,6 +159,7 @@ private fun NodeContent(
                                         R.string.key_source to "节点"
                                     )
                                 )
+                                eventObject(context, mapOf(R.string.key_action to "帖子详情"))
                             }
                         )
                     }
@@ -440,5 +445,16 @@ private fun NodeCategoryIcon(fid: String) = when (fid) {
         contentDescription = "默认",
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
+    )
+}
+
+private fun eventObject(
+    context: Context,
+    params: Map<Int, String>
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_page_node,
+        keyAndValue = params
     )
 }

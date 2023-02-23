@@ -58,6 +58,13 @@ fun InteractivePage(
                                 R.string.key_source to NoticeTabItem.INTERACTIVE.title
                             )
                         )
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_notice,
+                            keyAndValue = mapOf(
+                                R.string.key_action to "个人空间"
+                            )
+                        )
                     }
                 )
             }
