@@ -132,6 +132,14 @@ fun DrawerPage(
                     navController.navigate(route = RouteName.LOGIN) {
                         popUpTo(navController.graph.findStartDestination().id)
                     }
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_login,
+                        keyAndValue = mapOf(
+                            R.string.key_source to "抽屉菜单",
+                            R.string.key_location to "抽屉菜单-未登录"
+                        )
+                    )
                 },
                 levelClick = {}
             )

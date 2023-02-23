@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.login
 
+import android.content.Context
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -39,6 +40,7 @@ fun LoginPage(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -48,6 +50,9 @@ fun LoginPage(
                 }
                 navController.popBackStack()
             } else if (it is LoginViewEvent.Message) {
+                if (!it.message.contains("欢迎您回来")) {
+                    eventObject(context = context, params = mapOf(R.string.key_login_failed to it.message))
+                }
                 scope.launch {
                     scaffoldState.showSnackbar(message = it.message)
                 }
@@ -245,6 +250,13 @@ fun LoginPage(
                     onClick = {
                         keyboardController?.hide()
                         viewModel.dispatch(LoginViewAction.Login)
+                        eventObject(
+                            context = context,
+                            params = mapOf(
+                                R.string.key_login_type to viewModel.viewStates.loginfield.title,
+                                R.string.key_login_question to viewModel.viewStates.question.title
+                            )
+                        )
                     }
                 ) {
                     Text(text = if (viewModel.viewStates.loginEnabled) "登录" else "登录中...")
@@ -259,8 +271,7 @@ fun InvitationRegisterButton(fromLogin: Boolean = true) {
     val context = LocalContext.current
 
     TextButton(onClick = {
-        if (fromLogin) {
-        } else {
+        if (!fromLogin) {
             StatisticsTool.instance.eventObject(
                 context = context,
                 resId = R.string.event_list_drawer,
@@ -269,6 +280,12 @@ fun InvitationRegisterButton(fromLogin: Boolean = true) {
                 )
             )
         }
+        eventObject(
+            context = context,
+            params = mapOf(
+            R.string.key_register to if (fromLogin) "登录" else "关于"
+            )
+        )
         openSystemBrowser(
             url = "https://www.chongbuluo.com/thread-926-1-1.html",
             context = context
@@ -290,4 +307,15 @@ private fun loginSpacer(): Modifier {
 @Composable
 private fun LoginSpacer() {
     Spacer(modifier = Modifier.height(10.dp))
+}
+
+private fun eventObject(
+    context: Context,
+    params: Map<Int, String>
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_page_login,
+        keyAndValue = params
+    )
 }

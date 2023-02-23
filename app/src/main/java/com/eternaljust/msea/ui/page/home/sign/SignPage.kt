@@ -57,6 +57,11 @@ fun SignPage(
                 }
                 is SignViewEvent.Login -> {
                     navController.navigate(route = RouteName.LOGIN)
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_login,
+                        keyAndValue = mapOf(R.string.key_source to "签到")
+                    )
                 }
                 is SignViewEvent.Message -> {
                     scope.launch {

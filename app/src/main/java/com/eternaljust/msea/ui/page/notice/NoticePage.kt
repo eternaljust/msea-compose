@@ -46,7 +46,16 @@ fun NoticePage(
             verticalArrangement = Arrangement.Center
         ) {
             if (!isLogin) {
-                Button(onClick = { navController.navigate(RouteName.LOGIN) }) {
+                Button(
+                    onClick = {
+                        navController.navigate(RouteName.LOGIN)
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_login,
+                            keyAndValue = mapOf(R.string.key_source to "通知")
+                        )
+                    }
+                ) {
                     Text(text = "登录")
                 }
             } else {

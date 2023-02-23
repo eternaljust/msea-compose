@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -84,13 +85,11 @@ fun ProfileTopicPage(
                                 nicknameClick = {
                                     val route = RouteName.PROFILE_DETAIL_USERNAME + "/${it.lastName}"
                                     navController.navigate(route)
-                                    StatisticsTool.instance.eventObject(
-                                        context = context,
-                                        resId = R.string.event_page_profile,
-                                        keyAndValue = mapOf(
-                                            R.string.key_source to title
-                                        )
-                                    )
+
+                                    eventObject(context = context, params = mapOf( R.string.key_source to title ))
+                                    if (showTopBar) {
+                                        eventObject(context = context, params = mapOf( R.string.key_action to "用户名" ))
+                                    }
                                 },
                                 contentClick = {
                                     val topic = TopicDetailRouteModel(
@@ -106,6 +105,9 @@ fun ProfileTopicPage(
                                             R.string.key_source to title
                                         )
                                     )
+                                    if (showTopBar) {
+                                        eventObject(context = context, params = mapOf( R.string.key_action to "帖子" ))
+                                    }
                                 }
                             )
                         }
@@ -214,4 +216,15 @@ fun ProfileTopicListItemContent(
     }
 
     Divider(modifier = Modifier)
+}
+
+private fun eventObject(
+    context: Context,
+    params: Map<Int, String>
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_page_profile,
+        keyAndValue = params
+    )
 }

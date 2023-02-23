@@ -1,5 +1,6 @@
 package com.eternaljust.msea.ui.page.profile.detail
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -281,11 +282,11 @@ fun ProfileDetailFriendPage(
                             .background(MaterialTheme.colorScheme.background)
                             .clickable {
                                 navController.navigate(RouteName.PROFILE_DETAIL + "/${it.uid}")
-                                StatisticsTool.instance.eventObject(
+                                eventObject(
                                     context = context,
-                                    resId = R.string.event_page_profile,
-                                    keyAndValue = mapOf(
-                                        R.string.key_source to "个人空间好友"
+                                    params = mapOf(
+                                        R.string.key_source to "个人空间好友",
+                                        R.string.key_action to "头像"
                                     )
                                 )
                             },
@@ -319,4 +320,15 @@ fun ProfileDetailFriendPage(
             }
         }
     }
+}
+
+private fun eventObject(
+    context: Context,
+    params: Map<Int, String>
+) {
+    StatisticsTool.instance.eventObject(
+        context = context,
+        resId = R.string.event_page_profile,
+        keyAndValue = params
+    )
 }

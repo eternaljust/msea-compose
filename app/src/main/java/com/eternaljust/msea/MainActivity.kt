@@ -352,6 +352,14 @@ fun MyApp() {
                     if (UserInfo.instance.auth.isEmpty() && item.route != RouteName.SETTING &&
                                 item.route != RouteName.ABOUT) {
                         navController.navigate((RouteName.LOGIN))
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_login,
+                            keyAndValue = mapOf(
+                                R.string.key_source to "抽屉菜单",
+                                R.string.key_location to "抽屉菜单-${item.title}"
+                            )
+                        )
                     } else {
                         if (item.route == RouteName.LOGOUT) {
                             GlobalScope.launch { UserInfo.instance.clear() }

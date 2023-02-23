@@ -51,6 +51,11 @@ fun SearchPage(
                     viewModel.viewModelScope.launch {
                         if (UserInfo.instance.auth.isEmpty()) {
                             navController.navigate(RouteName.LOGIN)
+                            StatisticsTool.instance.eventObject(
+                                context = context,
+                                resId = R.string.event_page_login,
+                                keyAndValue = mapOf(R.string.key_source to "搜索")
+                            )
                             scaffoldState.showSnackbar(
                                 message = "站内搜索请先登录"
                             )

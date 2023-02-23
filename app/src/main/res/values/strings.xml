@@ -63,4 +63,16 @@
     <string name="key_reply">key_reply</string>
     <!-- 个人空间 -->
     <string name="event_page_profile">event_page_profile</string>
+    <!-- 登录 -->
+    <string name="event_page_login">event_page_login</string>
+    <!-- 来源位置 -->
+    <string name="key_location">key_location</string>
+    <!-- 邀请码注册 -->
+    <string name="key_register">key_register</string>
+    <!-- 账户类型 -->
+    <string name="key_login_type">key_login_type</string>
+    <!-- 安全提问 -->
+    <string name="key_login_question">key_login_question</string>
+    <!-- 失败原因 -->
+    <string name="key_login_failed">key_login_failed</string>
 </resources>
