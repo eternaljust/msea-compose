@@ -141,8 +141,8 @@ class NetworkUtil private constructor() {
             if (text.contains("uid-") && text.contains(".html")) {
                 val uids = text.split("uid-")
                 return uids.last().replace(".html", "")
-            } else if (text.contains("mod=space&uid=")) {
-                return text.split("mod=space&uid=").last()
+            } else if (text.contains("uid=")) {
+                return text.split("uid=").last()
             }
             return ""
         }
