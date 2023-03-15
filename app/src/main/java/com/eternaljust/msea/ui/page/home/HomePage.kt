@@ -66,7 +66,6 @@ fun HomePage(
                         TopicTabItem.NEW -> TopicListViewModel.new
                         TopicTabItem.HOT -> TopicListViewModel.hot
                         TopicTabItem.NEWTHREAD -> TopicListViewModel.newthread
-                        TopicTabItem.SOFA -> TopicListViewModel.sofa
                     }
                     TopicListPage(
                         scaffoldState = scaffoldState,

@@ -8,8 +8,7 @@ class HomeViewModel : ViewModel() {
         get() = listOf(
             TopicTabItem.NEW,
             TopicTabItem.HOT,
-            TopicTabItem.NEWTHREAD,
-            TopicTabItem.SOFA
+            TopicTabItem.NEWTHREAD
         )
 }
 
@@ -32,7 +31,7 @@ enum class TopicTabItem : TopicTab {
             get() = "hot"
 
         override val title: String
-            get() = "热门"
+            get() = "最新热门"
     },
 
     NEWTHREAD{
@@ -41,13 +40,5 @@ enum class TopicTabItem : TopicTab {
 
         override val title: String
             get() = "最新发表"
-    },
-
-    SOFA{
-        override val id: String
-            get() = "sofa"
-
-        override val title: String
-            get() = "前排"
     }
 }

@@ -18,7 +18,6 @@ class TopicListViewModel(
         val new by lazy { TopicListViewModel(tabItem = TopicTabItem.NEW) }
         val hot by lazy { TopicListViewModel(tabItem = TopicTabItem.HOT) }
         val newthread by lazy { TopicListViewModel(tabItem = TopicTabItem.NEWTHREAD) }
-        val sofa by lazy { TopicListViewModel(tabItem = TopicTabItem.SOFA) }
     }
 
     val pageSize: Int
@@ -88,7 +87,7 @@ class TopicListViewModel(
                 if (examine.isNotEmpty()) {
                     topic.examine = examine
                 }
-                val title = it.selectXpath("tr/th[@class='common']/a").text()
+                val title = it.selectXpath("tr/th[@class='common']/a[@class='xst']").text()
                 if (title.isNotEmpty()) {
                     topic.title = title
                 }
@@ -128,9 +127,15 @@ class TopicListViewModel(
                 }
                 if (attachment.isNotEmpty()) {
                     topic.attachment = attachment.replace("-", "")
-                    topic.attachment = " - ${topic.attachment}"
+                    if (topic.attachment == "New") {
+                        topic.attachment = " ${topic.attachment}"
+                    } else {
+                        topic.attachment = " - ${topic.attachment}"
+                    }
                     topic.attachmentColorRed = topic.attachment.contains("回帖")
                             || topic.attachment.contains("悬赏")
+                            || topic.attachment.contains("New")
+                            || topic.attachment.contains("人参与")
                 }
 
                 list.add(topic)
