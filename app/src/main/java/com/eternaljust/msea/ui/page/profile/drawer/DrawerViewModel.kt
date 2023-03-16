@@ -21,6 +21,7 @@ class DrawerViewModel : ViewModel() {
 
     val profileItems: List<DrawerNavigationItem>
         get() = listOf(
+            DrawerNavigationItem.Sign,
             DrawerNavigationItem.Topic,
             DrawerNavigationItem.Friend,
             DrawerNavigationItem.Favorite,
@@ -204,6 +205,13 @@ sealed class DrawerNavigationItem(
     val imageVector: ImageVector?,
     val painter: Int?
 ) {
+    object Sign : DrawerNavigationItem(
+        route = RouteName.SIGN,
+        title = "签到",
+        imageVector = null,
+        painter = R.drawable.ic_baseline_energy_savings_leaf_24
+    )
+
     object Topic : DrawerNavigationItem(
         route = RouteName.PROFILE_TOPIC,
         title = "主题",

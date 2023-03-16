@@ -349,17 +349,11 @@ fun MyApp() {
                     }
 
                     scope.launch { drawerState.close() }
-                    if (UserInfo.instance.auth.isEmpty() && item.route != RouteName.SETTING &&
-                                item.route != RouteName.ABOUT) {
+                    if (UserInfo.instance.auth.isEmpty()
+                        && item.route != RouteName.SETTING
+                        && item.route != RouteName.ABOUT
+                        && item.route != RouteName.SIGN) {
                         navController.navigate((RouteName.LOGIN))
-                        StatisticsTool.instance.eventObject(
-                            context = context,
-                            resId = R.string.event_page_login,
-                            keyAndValue = mapOf(
-                                R.string.key_source to "抽屉菜单",
-                                R.string.key_location to "抽屉菜单-${item.title}"
-                            )
-                        )
                     } else {
                         if (item.route == RouteName.LOGOUT) {
                             GlobalScope.launch { UserInfo.instance.clear() }
@@ -378,6 +372,23 @@ fun MyApp() {
                                 }
                             }
                         }
+                    }
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_login,
+                        keyAndValue = mapOf(
+                            R.string.key_source to "抽屉菜单",
+                            R.string.key_location to "抽屉菜单-${item.title}"
+                        )
+                    )
+                    if (item.route == RouteName.SIGN) {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_sign,
+                            keyAndValue = mapOf(
+                                R.string.key_source to "菜单",
+                            )
+                        )
                     }
                 }
             )
@@ -575,6 +586,13 @@ fun TopAppBarAcitons(
                         resId = R.string.event_page_home,
                         keyAndValue = mapOf(
                             R.string.key_category to "签到"
+                        )
+                    )
+                    StatisticsTool.instance.eventObject(
+                        context = context,
+                        resId = R.string.event_page_sign,
+                        keyAndValue = mapOf(
+                            R.string.key_source to "首页"
                         )
                     )
                     navController.navigate(route = RouteName.SIGN)

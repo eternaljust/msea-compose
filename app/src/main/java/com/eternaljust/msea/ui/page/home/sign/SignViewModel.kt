@@ -173,10 +173,10 @@ class SignViewModel : ViewModel() {
                 }
                 text = text.replace("#", "")
                 _viewEvents.send(SignViewEvent.Message(text))
-                viewStates = viewStates.copy(signText = "")
             } else {
                 _viewEvents.send(SignViewEvent.Message("签到失败！"))
             }
+            viewStates = viewStates.copy(signText = "")
             signDialog(false)
             getDaySign()
         }
