@@ -143,24 +143,36 @@ class NodeListViewModel : ViewModel() {
                         topic.icon4 = getIcon(icon4)
                     }
 
-                    var attachment = it.selectXpath("tr/th[@class='new']/span[@class='xi1']").text()
+                    var attachment = ""
                     var text = it.selectXpath("tr/th[@class='new']").text()
+                    val isLine = text.contains("- [")
                     if (text.count() != topic.title.count()) {
                         text = text.replace("\r\n", "")
-                        var attachment1 = text.replace(title, "")
+                        text = text.split("- [").last()
+                        var attachment1 = if (isLine) "[$text" else text.replace(topic.title, "")
                         val num = it.selectXpath("tr/th[@class='new']/span[@class='tps']").text()
                         if (num.isNotEmpty()) {
                             attachment1 = attachment1.replace(num, "")
                         }
-                        attachment1 = attachment1.replace(" ", "")
-                        attachment1 = attachment1.replace("New", "")
-                        attachment = attachment1
+                        val new = it.selectXpath("tr/th[@class='new']/a[@class='xi1']").text()
+                        attachment = if (new == "New" && !isLine) {
+                            "New"
+                        } else {
+                            attachment1
+                        }
                     }
                     if (attachment.isNotEmpty()) {
                         topic.attachment = attachment.replace("-", "")
-                        topic.attachment = " - ${topic.attachment}"
+                        if (topic.attachment == "New" || topic.attachment == " "
+                            || topic.attachment == topic.title) {
+                            topic.attachment = " ${topic.attachment}"
+                        } else {
+                            topic.attachment = " - ${topic.attachment}"
+                        }
                         topic.attachmentColorRed = topic.attachment.contains("回帖")
                                 || topic.attachment.contains("悬赏")
+                                || topic.attachment.contains("New")
+                                || topic.attachment.contains("人参与")
                     }
 
                     if (topic.title.isNotEmpty()) {
