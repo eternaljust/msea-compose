@@ -193,15 +193,6 @@ fun ProfileDetailHeader(
             modifier = Modifier
         ) {
             Text(
-                text = "好友: "
-            )
-
-            Text(
-                text = profile.friend,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Text(
                 text = " 回帖: "
             )
 

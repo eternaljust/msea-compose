@@ -28,8 +28,7 @@ class ProfileDetailViewModel : ViewModel() {
 
     val profileItems: List<ProfileDetailTabItem>
         get() = listOf(
-            ProfileDetailTabItem.TOPIC,
-            ProfileDetailTabItem.FRIEND
+            ProfileDetailTabItem.TOPIC
         )
 
     fun dispatch(action: ProfileDetailViewAction) {
@@ -93,23 +92,17 @@ class ProfileDetailViewModel : ViewModel() {
                 profile.name = name
             }
 
+            profile.friend = ""
             val a1 = document.selectXpath("//ul[@class='cl bbda pbm mbm']//a[1]").text()
             if (a1.isNotEmpty() && a1.contains(" ")) {
-                val friend = a1.split(" ")[1]
-                println("friend=$friend")
-                profile.friend = friend
-            }
-
-            val a2 = document.selectXpath("//ul[@class='cl bbda pbm mbm']//a[2]").text()
-            if (a2.isNotEmpty() && a2.contains(" ")) {
-                val reply = a2.split(" ")[1]
+                val reply = a1.split(" ")[1]
                 println("reply=$reply")
                 profile.reply = reply
             }
 
-            val a3 = document.selectXpath("//ul[@class='cl bbda pbm mbm']//a[3]").text()
-            if (a3.isNotEmpty() && a3.contains(" ")) {
-                val topic = a3.split(" ")[1]
+            val a2 = document.selectXpath("//ul[@class='cl bbda pbm mbm']//a[2]").text()
+            if (a2.isNotEmpty() && a2.contains(" ")) {
+                val topic = a2.split(" ")[1]
                 println("topic=$topic")
                 profile.topic = topic
             }

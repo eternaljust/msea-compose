@@ -440,6 +440,12 @@ private fun NodeCategoryIcon(fid: String) = when (fid) {
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(40.dp)
     )
+    "130" -> Icon(
+        painter = painterResource(id = R.drawable.ic_baseline_sports_soccer_24),
+        contentDescription = "ChatGPT",
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(40.dp)
+    )
     else -> Icon(
         painter = painterResource(id = R.drawable.ic_baseline_image_24),
         contentDescription = "默认",

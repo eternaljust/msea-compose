@@ -273,15 +273,6 @@ private fun DrawerHeader(
                     modifier = Modifier
                 ) {
                     Text(
-                        text = "好友: "
-                    )
-
-                    Text(
-                        text = userInfo.friend,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-
-                    Text(
                         text = " 回帖: "
                     )
 
