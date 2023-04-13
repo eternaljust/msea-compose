@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -432,10 +433,19 @@ fun MyApp() {
                                 IconButton(onClick = {
                                     scope.launch { drawerState.open() }
                                 }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Menu,
-                                        contentDescription = "我的个人中心"
-                                    )
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Menu,
+                                            contentDescription = "菜单"
+                                        )
+
+                                        Text(
+                                            text = "菜单",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
                                 }
                             },
                             actions = {
@@ -573,10 +583,19 @@ fun TopAppBarAcitons(
                     navController.navigate(route = RouteName.SEARCH)
                 }
             ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "搜索"
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "搜索"
+                    )
+
+                    Text(
+                        text = "搜索",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
 
             IconButton(
@@ -598,10 +617,19 @@ fun TopAppBarAcitons(
                     navController.navigate(route = RouteName.SIGN)
                 }
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
-                    contentDescription = "签到"
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
+                        contentDescription = "签到"
+                    )
+
+                    Text(
+                        text = "签到",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
 
 //            IconButton(onClick = { /* doSomething() */ }) {
@@ -624,10 +652,19 @@ fun TopAppBarAcitons(
                     navController.navigate(route = RouteName.TAG)
                 }
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_baseline_tag_24),
-                    contentDescription = "标签"
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_baseline_tag_24),
+                        contentDescription = "标签"
+                    )
+
+                    Text(
+                        text = "标签",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
         else -> {}
