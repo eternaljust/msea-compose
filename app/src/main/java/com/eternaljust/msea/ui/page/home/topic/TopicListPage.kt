@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshIndicator
 import com.eternaljust.msea.utils.RouteName

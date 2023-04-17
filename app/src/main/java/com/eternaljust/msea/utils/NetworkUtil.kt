@@ -213,7 +213,6 @@ class NetworkUtil private constructor() {
 object HTMLURL {
     const val APP_GITHUB = "https://github.com/eternaljust/msea-compose"
     const val APP_RELEASE = "$APP_GITHUB/releases"
-    const val GET_VERSION = "https://gitee.com/eternaljust/app-config/raw/main/msea-compose/version.json"
 
     const val BASE = "https://www.chongbuluo.com"
 

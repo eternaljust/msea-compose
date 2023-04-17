@@ -28,7 +28,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
+import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.notice.NoticeTabItem
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.widget.RefreshList

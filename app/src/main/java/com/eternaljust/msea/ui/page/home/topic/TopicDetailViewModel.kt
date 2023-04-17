@@ -1,16 +1,14 @@
 package com.eternaljust.msea.ui.page.home.topic
 
-import android.os.Parcelable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eternaljust.msea.ui.page.node.tag.TagItemModel
+import com.eternaljust.msea.ui.data.TagItemModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.UserInfo
-import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -584,9 +582,3 @@ class TopicReplyParamModel {
     var username = ""
     var action = ""
 }
-
-@Parcelize
-data class TopicDetailRouteModel(
-    var tid: String = "",
-    var isNodeFid125: Boolean = false
-) : Parcelable

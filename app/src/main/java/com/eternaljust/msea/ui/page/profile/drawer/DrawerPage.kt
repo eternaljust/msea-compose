@@ -56,14 +56,6 @@ fun DrawerPage(
                         viewModel.dispatch(DrawerViewAction.GetProfile)
                     }
                     viewModel.dispatch(DrawerViewAction.GetVersion)
-                    println("currentCycleCount---${SettingInfo.instance.cycleCount}")
-                    println("configCycleCount---${viewModel.viewStates.version.cycleCount}")
-                    if (SettingInfo.instance.cycleCount == viewModel.viewStates.version.cycleCount) {
-                        // 获取版本更新配置
-                        viewModel.dispatch(DrawerViewAction.LoadVersion)
-                    } else {
-                        SettingInfo.instance.cycleCount += 1
-                    }
                 }
             }
     }

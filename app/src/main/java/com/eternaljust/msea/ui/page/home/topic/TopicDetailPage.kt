@@ -32,7 +32,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.node.tag.TagItemModel
+import com.eternaljust.msea.ui.data.TagItemModel
+import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.theme.getIconTintColorPrimary
 import com.eternaljust.msea.ui.theme.getIconTintColorSecondary

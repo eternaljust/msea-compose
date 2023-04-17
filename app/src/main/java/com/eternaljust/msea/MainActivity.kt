@@ -28,15 +28,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.eternaljust.msea.ui.data.TagItemModel
+import com.eternaljust.msea.ui.data.TopicDetailRouteModel
+import com.eternaljust.msea.ui.data.WebViewModel
 import com.eternaljust.msea.ui.page.home.HomePage
 import com.eternaljust.msea.ui.page.home.search.SearchPage
 import com.eternaljust.msea.ui.page.home.topic.TopicDetailPage
 import com.eternaljust.msea.ui.page.home.sign.SignPage
-import com.eternaljust.msea.ui.page.home.topic.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.node.NodeDetailPage
 import com.eternaljust.msea.ui.page.node.NodePage
 import com.eternaljust.msea.ui.page.node.list.NodeListPage
-import com.eternaljust.msea.ui.page.node.tag.TagItemModel
 import com.eternaljust.msea.ui.page.node.tag.TagListPage
 import com.eternaljust.msea.ui.page.node.tag.TagPage
 import com.eternaljust.msea.ui.page.notice.NoticePage
@@ -48,10 +49,11 @@ import com.eternaljust.msea.ui.theme.colorTheme
 import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.theme.themeStyleDark
 import com.eternaljust.msea.ui.widget.WebURL
-import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.WebViewPage
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.*
+import com.umeng.cconfig.RemoteConfigSettings
+import com.umeng.cconfig.UMRemoteConfig
 import com.umeng.commonsdk.UMConfigure
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -116,6 +118,11 @@ class MainActivity : ComponentActivity() {
                             SettingInfo.instance.agreePrivacyPolicy = true
                             agreePrivacyPolicy = true
                             UMConfigure.submitPolicyGrantResult(this, true)
+                            // 云配置自动更新代码逻辑
+                            UMRemoteConfig.getInstance().setConfigSettings(
+                                RemoteConfigSettings.Builder().setAutoUpdateModeEnabled(true).build()
+                            )
+                            UMRemoteConfig.getInstance().setDefaults(R.xml.cloud_config_parms)
                             val channel = "GitHub"
                             // 友盟正式初始化
                             UMConfigure.init(

@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.data.WebViewModel
 import com.eternaljust.msea.ui.page.profile.login.InvitationRegisterButton
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
-import com.eternaljust.msea.ui.widget.WebViewModel
 import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.*
 
@@ -196,6 +196,11 @@ fun AboutPage(
                                     val web = WebViewModel(url = url)
                                     val args = String.format("/%s", Uri.encode(web.toJson()))
                                     navController.navigate(RouteName.WEBVIEW + args)
+                                } else if (it.route == RouteName.UPDATE_VERSION) {
+                                    openSystemBrowser(
+                                        url = HTMLURL.APP_RELEASE,
+                                        context = context
+                                    )
                                 } else {
                                     navController.navigate(it.route)
                                 }

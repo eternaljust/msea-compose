@@ -28,14 +28,6 @@ class SettingInfo {
     var agreePrivacyPolicy: Boolean
         get() = DataStoreUtil.getData(SettingInfoKey.AGREE_PRIVACY_POLICY, false)
         set(value) = DataStoreUtil.syncSetData(SettingInfoKey.AGREE_PRIVACY_POLICY, value)
-
-    var cycleCount: Int
-        get() = DataStoreUtil.getData(SettingInfoKey.CYCLE_COUNT, 0)
-        set(value) = DataStoreUtil.syncSetData(SettingInfoKey.CYCLE_COUNT, value)
-
-    var configVersion: String
-        get() = DataStoreUtil.getData(SettingInfoKey.CONFIG_VERSION, "")
-        set(value) = DataStoreUtil.syncSetData(SettingInfoKey.CONFIG_VERSION, value)
 }
 
 object SettingInfoKey {
@@ -45,6 +37,4 @@ object SettingInfoKey {
     const val DAY_SIGN_HOUR = "daysignHourKey"
     const val DAY_SIGN_MINUTE = "daysignMinuteKey"
     const val AGREE_PRIVACY_POLICY = "agreePrivacyPolicyKey"
-    const val CYCLE_COUNT = "cycleCountKey"
-    const val CONFIG_VERSION = "configVersionKey"
 }

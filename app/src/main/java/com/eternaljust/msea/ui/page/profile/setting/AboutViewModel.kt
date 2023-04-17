@@ -1,25 +1,25 @@
 package com.eternaljust.msea.ui.page.profile.setting
 
-import android.os.Parcelable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eternaljust.msea.BuildConfig
+import com.eternaljust.msea.ui.data.ConfigVersionModel
 import com.eternaljust.msea.utils.*
-import kotlinx.coroutines.Dispatchers
+import com.umeng.cconfig.UMRemoteConfig
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
 class AboutViewModel : ViewModel() {
     val items: List<AboutListItem>
         get() = listOf(
             AboutListItem.LICENSE,
             AboutListItem.SDK_LIST,
-            AboutListItem.SOURCE_CODE
+            AboutListItem.SOURCE_CODE,
+            AboutListItem.UPDATE_VERSION
         )
     val versionName: String = BuildConfig.VERSION_NAME
     val versionCode: Int = BuildConfig.VERSION_CODE
@@ -44,9 +44,9 @@ class AboutViewModel : ViewModel() {
     }
 
     private fun getVersion() {
-        val content = SettingInfo.instance.configVersion
-        println("ConfigVersion---$content")
-        val version = content.fromJson<ConfigVersionModel>()
+        val configVersion = UMRemoteConfig.getInstance().getConfigValue("config_version")
+        println("config_version $configVersion")
+        val version = configVersion.fromJson<ConfigVersionModel>()
         version?.let {
             viewStates = viewStates.copy(configVersion = it)
         }
@@ -101,14 +101,13 @@ enum class AboutListItem : AboutList {
 
         override val title: String
             get() = "SDK 目录"
+    },
+
+    UPDATE_VERSION {
+        override val route: String
+            get() = RouteName.UPDATE_VERSION
+
+        override val title: String
+            get() = "版本更新"
     }
 }
-
-@Parcelize
-data class ConfigVersionModel(
-    var cycleCount: Int = 0,
-    var versionCode: Int = 0,
-    var versionName: String = "",
-    var versionContent: String = "",
-    var updateTime: String = ""
-) : Parcelable

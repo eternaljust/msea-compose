@@ -1,14 +1,13 @@
 package com.eternaljust.msea.ui.page.node.tag
 
-import android.os.Parcelable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eternaljust.msea.ui.data.TagItemModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
-import kotlinx.parcelize.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -73,9 +72,3 @@ sealed class TagViewAction {
     object GetTagList : TagViewAction()
     object PopBack: TagViewAction()
 }
-
-@Parcelize
-data class TagItemModel(
-    var tid: String = "",
-    var title: String = ""
-) : Parcelable

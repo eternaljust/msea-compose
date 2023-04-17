@@ -2,7 +2,6 @@ package com.eternaljust.msea.ui.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Parcelable
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -20,11 +19,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
+import com.eternaljust.msea.ui.data.WebViewModel
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.openSystemBrowser
 import com.google.accompanist.web.*
-import kotlinx.parcelize.Parcelize
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,13 +122,6 @@ fun WebViewPage(
         }
     )
 }
-
-@Parcelize
-data class WebViewModel(
-    var url: String = "",
-    var title: String = "",
-    var tid: String = ""
-) : Parcelable
 
 const val cssStyle =
     """

@@ -10,8 +10,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eternaljust.msea.BuildConfig
 import com.eternaljust.msea.R
-import com.eternaljust.msea.ui.page.profile.setting.ConfigVersionModel
+import com.eternaljust.msea.ui.data.ConfigVersionModel
 import com.eternaljust.msea.utils.*
+import com.umeng.cconfig.UMRemoteConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -43,7 +44,6 @@ class DrawerViewModel : ViewModel() {
             is DrawerViewAction.Login -> login()
             is DrawerViewAction.GetProfile -> getProfile()
             is DrawerViewAction.GetVersion -> getVersion()
-            is DrawerViewAction.LoadVersion -> loadVersion()
             is DrawerViewAction.LogoutDialog -> updaterLogoutDialog(action.show)
         }
     }
@@ -148,22 +148,14 @@ class DrawerViewModel : ViewModel() {
         }
     }
 
-
-    private fun loadVersion() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val url = HTMLURL.GET_VERSION
-            val content = NetworkUtil.getData(url)
-            println("ConfigVersion---$content")
-            SettingInfo.instance.configVersion = content
-            SettingInfo.instance.cycleCount = 0
-            getVersion()
-        }
-    }
     private fun getVersion() {
-        val version = SettingInfo.instance.configVersion.fromJson<ConfigVersionModel>()
+        val configVersion = UMRemoteConfig.getInstance().getConfigValue("config_version")
+        println("config_version $configVersion")
+        val version = configVersion.fromJson<ConfigVersionModel>()
         version?.let {
+            println("ConfigVersionModel $it")
             val isNewVersion = BuildConfig.VERSION_CODE < version.versionCode
-            viewStates = viewStates.copy(version = version, isNewVersion = isNewVersion)
+            viewStates = viewStates.copy(isNewVersion = isNewVersion)
         }
     }
 
@@ -180,7 +172,6 @@ data class DrawerViewState(
     val isLogin: Boolean = UserInfo.instance.auth.isNotEmpty(),
     val showLogout: Boolean = false,
     val userInfo: UserInfo = UserInfo.instance,
-    val version: ConfigVersionModel = ConfigVersionModel(),
     val isNewVersion: Boolean = false
 )
 
@@ -188,7 +179,6 @@ sealed class DrawerViewAction {
     object Login : DrawerViewAction()
     object GetProfile : DrawerViewAction()
     object GetVersion : DrawerViewAction()
-    object LoadVersion : DrawerViewAction()
 
     data class LogoutDialog(val show: Boolean) : DrawerViewAction()
 }
