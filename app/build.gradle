@@ -96,9 +96,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 
     // vendor
-    implementation 'org.jsoup:jsoup:1.15.4'
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    implementation 'io.coil-kt:coil-compose:2.2.2'
+    implementation 'org.jsoup:jsoup:1.16.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'io.coil-kt:coil-compose:2.4.0'
     implementation 'com.marosseleng.android:compose-material3-datetime-pickers:0.1.1'
 
     // SDK
