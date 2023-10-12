@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
+import androidx.paging.compose.itemKey
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
@@ -39,7 +39,11 @@ fun SignListPage(
             SignListHeader()
         }
 
-        itemsIndexed(lazyPagingItems) { _, item ->
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.uuid },
+        ) { index ->
+            val item = lazyPagingItems[index]
             item?.let {
                 SignListItemContent(
                     item = it,
@@ -143,7 +147,11 @@ fun SignDayListPage(
             SignDayListHeader()
         }
 
-        itemsIndexed(lazyPagingItems) { _, item ->
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.uuid },
+        ) { index ->
+            val item = lazyPagingItems[index]
             item?.let {
                 SignDayListItemContent(
                     item = it,

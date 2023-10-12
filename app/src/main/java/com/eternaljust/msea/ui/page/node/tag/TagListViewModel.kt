@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class TagListViewModel : ViewModel() {
     private var tid: String = ""
@@ -132,6 +133,7 @@ sealed class TagListViewAction {
 }
 
 class TagListModel {
+    val uuid = UUID.randomUUID()
     /**
      * 帖子标题
      */

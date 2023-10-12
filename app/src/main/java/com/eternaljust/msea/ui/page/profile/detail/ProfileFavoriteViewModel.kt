@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class ProfileFavoriteViewModel : ViewModel() {
     private val pager by lazy {
@@ -130,6 +131,7 @@ sealed class ProfileFavoriteListViewAction {
 }
 
 class ProfileFavoriteListModel {
+    val uuid = UUID.randomUUID()
     var time = ""
     var title = ""
     var tid = ""

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.notice.NoticeTabItem
@@ -45,7 +45,11 @@ fun InteractivePage(
     RefreshList(
         lazyPagingItems = lazyPagingItems
     ) {
-        itemsIndexed(lazyPagingItems) { _, item ->
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.uuid },
+        ) { index ->
+            val item = lazyPagingItems[index]
             item?.let {
                 InteractiveListItemContent(
                     item = it,

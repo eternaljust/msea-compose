@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class ProfileTopicViewModel : ViewModel() {
     private var uid = ""
@@ -117,6 +118,7 @@ sealed class ProfileTopicViewAction {
 }
 
 class ProfileTopicListModel {
+    val uuid = UUID.randomUUID()
     /**
      * 帖子标题
      */

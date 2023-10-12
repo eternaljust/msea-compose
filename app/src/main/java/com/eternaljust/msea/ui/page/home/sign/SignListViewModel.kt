@@ -10,6 +10,7 @@ import com.eternaljust.msea.utils.NetworkUtil
 import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 /**
  * 今日签到列表
@@ -76,6 +77,7 @@ data class SignListViewState(
 )
 
 class SignListModel {
+    val uuid = UUID.randomUUID()
     var uid = ""
     var no = ""
     var name = ""
@@ -166,6 +168,7 @@ data class SignDayListViewState(
 )
 
 class SignDayListModel {
+    val uuid = UUID.randomUUID()
     var uid = ""
     var no = ""
     var name = ""

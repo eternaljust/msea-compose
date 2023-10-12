@@ -11,6 +11,7 @@ import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class MyPostViewModel : ViewModel() {
     private val pager by lazy {
@@ -91,6 +92,7 @@ data class MyPostListViewState(
 )
 
 class PostListModel {
+    val uuid = UUID.randomUUID()
     var fid = ""
     var ptid = ""
     var uid = ""

@@ -10,6 +10,7 @@ import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class TopicListViewModel(
     val tabItem: TopicTabItem
@@ -178,6 +179,7 @@ sealed class TopicListViewAction {
 }
 
 class TopicListModel {
+    val uuid = UUID.randomUUID()
     var uid = ""
     var tid = ""
     var name = ""

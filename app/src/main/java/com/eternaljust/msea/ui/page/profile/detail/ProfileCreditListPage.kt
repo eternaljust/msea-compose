@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemsIndexed
+import androidx.paging.compose.itemKey
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.UserInfo
 
@@ -56,7 +56,11 @@ fun CreditLogPage(
             CreditLogListHeader()
         }
 
-        itemsIndexed(lazyPagingItems) { _, item ->
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.uuid },
+        ) { index ->
+            val item = lazyPagingItems[index]
             item?.let {
                 CreditLogListItemContent(it)
             }
@@ -137,7 +141,11 @@ fun CreditSystemPage(
             CreditSystemListHeader()
         }
 
-        itemsIndexed(lazyPagingItems) { _, item ->
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.uuid },
+        ) { index ->
+            val item = lazyPagingItems[index]
             item?.let {
                 CreditSystemListItemContent(it)
             }
@@ -230,7 +238,11 @@ fun CreditRulePage(
             CreditRuleListHeader()
         }
 
-        itemsIndexed(lazyPagingItems) { _, item ->
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.uuid },
+        ) { index ->
+            val item = lazyPagingItems[index]
             item?.let {
                 CreditRuleListItemContent(it)
             }

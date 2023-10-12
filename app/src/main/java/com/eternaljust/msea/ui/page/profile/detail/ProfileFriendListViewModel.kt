@@ -13,6 +13,7 @@ import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class FriendListViewModel : ViewModel() {
     private val pager by lazy {
@@ -73,6 +74,7 @@ data class FriendListViewState(
 )
 
 class FriendListModel {
+    val uuid = UUID.randomUUID()
     var name = ""
     var uid = ""
     var avatar = ""
@@ -141,6 +143,7 @@ data class FriendVisitorTraceListViewState(
 )
 
 class FriendVisitorTraceListModel {
+    val uuid = UUID.randomUUID()
     var name = ""
     var uid = ""
     var avatar = ""

@@ -12,6 +12,7 @@ import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class CreditLogViewModel : ViewModel() {
     private val pager by lazy {
@@ -66,6 +67,7 @@ data class CreditLogListViewState(
 )
 
 class CreditLogListModel {
+    val uuid = UUID.randomUUID()
     var action = ""
     var bit = ""
     var content = ""
@@ -136,6 +138,7 @@ data class CreditSystemListViewState(
 )
 
 class CreditSystemListModel {
+    val uuid = UUID.randomUUID()
     var action = ""
     var count = ""
     var cycles = ""
@@ -203,6 +206,7 @@ data class CreditRuleListViewState(
 )
 
 class CreditRuleListModel {
+    val uuid = UUID.randomUUID()
     var action = ""
     var count = ""
     var cycles = ""

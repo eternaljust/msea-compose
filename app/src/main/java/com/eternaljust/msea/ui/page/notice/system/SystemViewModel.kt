@@ -11,6 +11,7 @@ import com.eternaljust.msea.utils.configPager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class SystemViewModel : ViewModel() {
     private val pager by lazy {
@@ -54,6 +55,7 @@ data class SystemListViewState(
 )
 
 class SystemListModel {
+    val uuid = UUID.randomUUID()
     var time = ""
     var content = ""
 }
