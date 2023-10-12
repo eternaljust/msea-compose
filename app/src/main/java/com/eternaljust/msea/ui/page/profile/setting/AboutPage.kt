@@ -212,7 +212,7 @@ fun AboutPage(
                                     )
                                 )
                             },
-                        headlineText = { Text(text = it.title) },
+                        headlineContent = { Text(text = it.title) },
                         trailingContent = { ListArrowForward() }
                     )
 
@@ -260,7 +260,7 @@ fun LicensePage(
                                 val args = String.format("/%s", Uri.encode(it.toJson()))
                                 navController.navigate(RouteName.WEBVIEW + args)
                             },
-                        headlineText = { Text(text = it.title) },
+                        headlineContent = { Text(text = it.title) },
                         trailingContent = { ListArrowForward() }
                     )
 

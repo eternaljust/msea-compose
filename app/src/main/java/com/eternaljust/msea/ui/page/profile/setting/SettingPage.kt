@@ -143,7 +143,7 @@ fun SettingPage(
                                     else -> { }
                                 }
                             },
-                            headlineText = {
+                            headlineContent = {
                                 SettingListItemTitle(
                                     item = item,
                                     daysignTime = viewModel.viewStates.daysignTime,
@@ -153,7 +153,7 @@ fun SettingPage(
                                     }
                                 )
                             },
-                            supportingText = {
+                            supportingContent = {
                                 if (item == SettingListItem.COLOR_SCHEME) {
                                     Text(text = "开启后将根据您的桌面壁纸颜色来生成动态调色板方案")
                                 }
