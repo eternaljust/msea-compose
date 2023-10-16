@@ -53,7 +53,7 @@ class SettingViewModel : ViewModel() {
             is SettingViewAction.UpdateTimePickerShow -> updateTimePickerShow(show = action.show)
             is SettingViewAction.UpdateContactUsShow-> updateContactUsShow(show = action.show)
             is SettingViewAction.UpdateDaysignChecked -> updateDaysignChecked(check = action.check)
-            is SettingViewAction.UpdateDaysginTime -> updateDaysignTime(time = action.time)
+            is SettingViewAction.UpdateDaysginTime -> updateDaysignTime(hour = action.hour, minute = action.minute)
             is SettingViewAction.UpdateColorSchemeChecked -> updateColorSchemeChecked(check = action.check)
             is SettingViewAction.UpdateThemeStyleIndex -> updateThemeStyleIndex(index = action.index)
         }
@@ -78,10 +78,10 @@ class SettingViewModel : ViewModel() {
         viewStates = viewStates.copy(daysignChecked = check)
     }
 
-    private fun updateDaysignTime(time: LocalTime) {
-        SettingInfo.instance.daysignHour = time.hour
-        SettingInfo.instance.daysignMinute = time.minute
-        viewStates = viewStates.copy(daysignTime = time)
+    private fun updateDaysignTime(hour: Int, minute: Int) {
+        SettingInfo.instance.daysignHour = hour
+        SettingInfo.instance.daysignMinute = minute
+        viewStates = viewStates.copy(daysignTime = LocalTime.of(hour, minute))
     }
 
     private fun updateColorSchemeChecked(check: Boolean) {
@@ -117,7 +117,7 @@ sealed class SettingViewAction {
     data class UpdateTimePickerShow(val show: Boolean) : SettingViewAction()
     data class UpdateContactUsShow(val show: Boolean) : SettingViewAction()
     data class UpdateDaysignChecked(val check: Boolean) : SettingViewAction()
-    data class UpdateDaysginTime(val time: LocalTime) : SettingViewAction()
+    data class UpdateDaysginTime(val hour: Int, val minute: Int) : SettingViewAction()
     data class UpdateColorSchemeChecked(val check: Boolean) : SettingViewAction()
     data class UpdateThemeStyleIndex(val index: Int) : SettingViewAction()
 }

@@ -10,6 +10,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +28,12 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.eternaljust.msea.ui.widget.TimePickerDialog
 import com.eternaljust.msea.ui.widget.WebURL
 import com.eternaljust.msea.utils.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.marosseleng.compose.material3.datetimepickers.time.ui.dialog.TimePickerDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -46,6 +52,10 @@ fun SettingPage(
 
     val notificationPermissionState = rememberPermissionState(
         android.Manifest.permission.POST_NOTIFICATIONS
+    )
+    val timePickerState = rememberTimePickerState(
+        initialHour = SettingInfo.instance.daysignHour,
+        initialMinute = SettingInfo.instance.daysignMinute
     )
 
     LaunchedEffect(Unit) {
@@ -77,12 +87,10 @@ fun SettingPage(
 
             if (viewModel.viewStates.isTimePickerShow) {
                 TimePickerDialog(
-                    onDismissRequest = {
-                        viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
-                    },
-                    initialTime = viewModel.viewStates.daysignTime,
-                    onTimeChange = {
-                        viewModel.dispatch(SettingViewAction.UpdateDaysginTime(it))
+                    title = "选择签到提醒时间",
+                    onCancel = { viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false)) },
+                    onConfirm = {
+                        viewModel.dispatch(SettingViewAction.UpdateDaysginTime(timePickerState.hour, timePickerState.minute))
                         viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
                         RemindersManager.startReminder(context)
 
@@ -90,12 +98,13 @@ fun SettingPage(
                             context = context,
                             resId = R.string.event_list_drawer,
                             keyAndValue = mapOf(
-                                R.string.key_setting_time to "${it.hour}:${it.minute}"
+                                R.string.key_setting_time to "${timePickerState.hour}:${timePickerState.minute}"
                             )
                         )
                     },
-                    title = { Text(text = "选择签到提醒时间") }
-                )
+                ) {
+                    TimePicker(state = timePickerState)
+                }
             }
 
             LazyColumn(contentPadding = paddingValues) {

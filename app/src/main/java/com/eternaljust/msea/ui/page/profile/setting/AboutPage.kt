@@ -232,11 +232,7 @@ fun LicensePage(
     val items: List<WebViewModel> = listOf(
         WebViewModel(title = "jsoup", url = "https://jsoup.org/"),
         WebViewModel(title = "okhttp", url = "https://square.github.io/okhttp/"),
-        WebViewModel(title = "coil-compose", url = "https://coil-kt.github.io/coil/compose/"),
-        WebViewModel(
-            title = "compose-material3-datetime-pickers",
-            url = "https://github.com/marosseleng/compose-material3-datetime-pickers"
-        )
+        WebViewModel(title = "coil-compose", url = "https://coil-kt.github.io/coil/compose/")
      )
 
     Scaffold(

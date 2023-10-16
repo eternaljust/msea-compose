@@ -437,9 +437,13 @@ fun MyApp() {
                                 }
                             },
                             navigationIcon = {
-                                IconButton(onClick = {
-                                    scope.launch { drawerState.open() }
-                                }) {
+                                IconButton(
+                                    modifier = Modifier.height(60.dp),
+                                    onClick =
+                                    {
+                                        scope.launch { drawerState.open() }
+                                    }
+                                ) {
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
@@ -579,6 +583,7 @@ fun TopAppBarAcitons(
     when (route) {
         BottomBarScreen.Home.route -> {
             IconButton(
+                modifier = Modifier.height(60.dp),
                 onClick = {
                     StatisticsTool.instance.eventObject(
                         context = context,
@@ -606,6 +611,7 @@ fun TopAppBarAcitons(
             }
 
             IconButton(
+                modifier = Modifier.height(60.dp),
                 onClick = {
                     StatisticsTool.instance.eventObject(
                         context = context,
@@ -648,6 +654,7 @@ fun TopAppBarAcitons(
         }
         BottomBarScreen.Node.route -> {
             IconButton(
+                modifier = Modifier.height(60.dp),
                 onClick = {
                     StatisticsTool.instance.eventObject(
                         context = context,

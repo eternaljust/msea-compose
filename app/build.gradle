@@ -99,7 +99,6 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.16.1'
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
     implementation 'io.coil-kt:coil-compose:2.4.0'
-    implementation 'com.marosseleng.android:compose-material3-datetime-pickers:0.1.1'
 
     // SDK
     implementation 'com.umeng.umsdk:common:9.6.5' // 友盟基础组件库（所有友盟业务SDK都依赖基础组件库）
