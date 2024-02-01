@@ -1,7 +1,7 @@
 buildscript {
     ext {
         compose_version = '1.6.0'
-        accompanist_version = '0.32.0'
+        accompanist_version = '0.34.0'
     }
     repositories {
         mavenCentral()

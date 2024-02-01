@@ -21,6 +21,7 @@ android {
         }
 
         ndk {
+            //noinspection ChromeOsAbiSupport
             abiFilters "arm64-v8a"
         }
     }
@@ -64,7 +65,7 @@ android {
         }
     }
 
-    android.applicationVariants.all { variant ->
+    android.applicationVariants.configureEach { variant ->
         variant.outputs.each { output ->
             output.outputFileName = "Msea_" + variant.versionName + ".apk"
         }
@@ -82,10 +83,10 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.compose.material3:material3:1.2.0-rc01'
 
-    implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
-    implementation 'androidx.navigation:navigation-compose:2.7.4'
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
+    implementation 'androidx.navigation:navigation-compose:2.7.6'
     implementation 'androidx.paging:paging-runtime-ktx:3.2.1'
     implementation 'androidx.paging:paging-compose:3.2.1'
 
@@ -96,9 +97,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 
     // vendor
-    implementation 'org.jsoup:jsoup:1.16.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
-    implementation 'io.coil-kt:coil-compose:2.4.0'
+    implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'io.coil-kt:coil-compose:2.5.0'
 
     // SDK
     implementation 'com.umeng.umsdk:common:9.6.5' // 友盟基础组件库（所有友盟业务SDK都依赖基础组件库）
