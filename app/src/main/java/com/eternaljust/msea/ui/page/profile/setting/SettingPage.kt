@@ -13,8 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,17 +26,12 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
-import com.eternaljust.msea.ui.widget.TimePickerDialog
 import com.eternaljust.msea.ui.widget.WebURL
 import com.eternaljust.msea.utils.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -49,14 +42,6 @@ fun SettingPage(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    val notificationPermissionState = rememberPermissionState(
-        android.Manifest.permission.POST_NOTIFICATIONS
-    )
-    val timePickerState = rememberTimePickerState(
-        initialHour = SettingInfo.instance.daysignHour,
-        initialMinute = SettingInfo.instance.daysignMinute
-    )
 
     LaunchedEffect(Unit) {
         viewModel.viewEvents.collect {
@@ -85,36 +70,13 @@ fun SettingPage(
                 )
             }
 
-            if (viewModel.viewStates.isTimePickerShow) {
-                TimePickerDialog(
-                    title = "选择签到提醒时间",
-                    onCancel = { viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false)) },
-                    onConfirm = {
-                        viewModel.dispatch(SettingViewAction.UpdateDaysginTime(timePickerState.hour, timePickerState.minute))
-                        viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(false))
-                        RemindersManager.startReminder(context)
-
-                        StatisticsTool.instance.eventObject(
-                            context = context,
-                            resId = R.string.event_list_drawer,
-                            keyAndValue = mapOf(
-                                R.string.key_setting_time to "${timePickerState.hour}:${timePickerState.minute}"
-                            )
-                        )
-                    },
-                ) {
-                    TimePicker(state = timePickerState)
-                }
-            }
-
             LazyColumn(contentPadding = paddingValues) {
                 viewModel.itemGroups.forEach { items ->
                     items(items) { item ->
                         ListItem(
                             modifier = Modifier.clickable {
                                 if (item != SettingListItem.DARK_MODE &&
-                                    item != SettingListItem.COLOR_SCHEME &&
-                                    item != SettingListItem.DAY_SIGN) {
+                                    item != SettingListItem.COLOR_SCHEME) {
                                     StatisticsTool.instance.eventObject(
                                         context = context,
                                         resId = R.string.event_list_drawer,
@@ -154,12 +116,7 @@ fun SettingPage(
                             },
                             headlineContent = {
                                 SettingListItemTitle(
-                                    item = item,
-                                    daysignTime = viewModel.viewStates.daysignTime,
-                                    timePickerEnabled = viewModel.viewStates.daysignChecked,
-                                    timePickerClick = {
-                                        viewModel.dispatch(SettingViewAction.UpdateTimePickerShow(true))
-                                    }
+                                    item = item
                                 )
                             },
                             supportingContent = {
@@ -173,41 +130,6 @@ fun SettingPage(
                             trailingContent = {
                                 SettingListItemAction(
                                     item = item,
-                                    daysignChecked = viewModel.viewStates.daysignChecked,
-                                    daysignCheckedChange = {
-                                        StatisticsTool.instance.eventObject(
-                                            context = context,
-                                            resId = R.string.event_list_drawer,
-                                            keyAndValue = mapOf(
-                                                R.string.key_setting to item.title
-                                            )
-                                        )
-
-                                        StatisticsTool.instance.eventObject(
-                                            context = context,
-                                            resId = R.string.event_list_drawer,
-                                            keyAndValue = mapOf(
-                                                R.string.key_setting_sign to if (it) "开启" else "关闭"
-                                            )
-                                        )
-
-                                        if (it) {
-                                            if (notificationPermissionState.status.isGranted) {
-                                                viewModel.dispatch(
-                                                    SettingViewAction.UpdateDaysignChecked(true)
-                                                )
-                                                RemindersManager.startReminder(context)
-                                            } else {
-                                                SettingViewAction.UpdateDaysignChecked(false)
-                                                notificationPermissionState.launchPermissionRequest()
-                                            }
-                                        } else {
-                                            viewModel.dispatch(
-                                                SettingViewAction.UpdateDaysignChecked(false)
-                                            )
-                                            RemindersManager.stopReminder(context)
-                                        }
-                                    },
                                     colorSchemeChecked = viewModel.viewStates.colorSchemeChecked,
                                     colorSchemeCheckedChange = {
                                         StatisticsTool.instance.eventObject(
@@ -353,7 +275,6 @@ private fun ContactUsDialog(
 
 @Composable
 private fun SettingListItemIcon(item: SettingListItem) = when (item) {
-    SettingListItem.DAY_SIGN -> GetIcon(painter = R.drawable.ic_baseline_alarm_24)
     SettingListItem.DARK_MODE -> GetIcon(painter = R.drawable.ic_baseline_dark_mode_24)
     SettingListItem.COLOR_SCHEME -> GetIcon(painter = R.drawable.ic_baseline_settings_brightness_24)
     SettingListItem.FEEDBACK -> GetIcon(painter = R.drawable.ic_baseline_feedback_24)
@@ -381,39 +302,19 @@ private fun GetIcon(painter: Int) = Icon(
 
 @Composable
 fun SettingListItemTitle(
-    item: SettingListItem,
-    daysignTime: LocalTime,
-    timePickerEnabled: Boolean,
-    timePickerClick: () -> Unit
+    item: SettingListItem
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = item.title,
             maxLines = 2
         )
-
-        if (item == SettingListItem.DAY_SIGN) {
-            Spacer(modifier = Modifier.width(16.dp))
-
-            OutlinedButton(
-                enabled = timePickerEnabled,
-                onClick = timePickerClick
-            ) {
-                Text(
-                    text = daysignTime.format(
-                        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-                    )
-                )
-            }
-        }
     }
 }
 
 @Composable
 private fun SettingListItemAction(
     item: SettingListItem,
-    daysignChecked: Boolean,
-    daysignCheckedChange: (Boolean) -> Unit,
     colorSchemeChecked: Boolean,
     colorSchemeCheckedChange: (Boolean) -> Unit,
     themeStyleItems: List<String>,
@@ -421,12 +322,6 @@ private fun SettingListItemAction(
     themeStyleTabClick: (Int) -> Unit,
 ) {
     when (item) {
-        SettingListItem.DAY_SIGN -> {
-            Switch(
-                checked = daysignChecked,
-                onCheckedChange = { daysignCheckedChange(it) }
-            )
-        }
         SettingListItem.COLOR_SCHEME -> {
             Switch(
                 checked = colorSchemeChecked,

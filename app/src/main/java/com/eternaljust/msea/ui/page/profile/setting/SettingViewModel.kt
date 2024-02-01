@@ -23,7 +23,6 @@ class SettingViewModel : ViewModel() {
             if (isDynamic) {
                 themeList.add(SettingListItem.COLOR_SCHEME)
             }
-            themeList.add(SettingListItem.DAY_SIGN)
             return listOf(
                 themeList,
                 listOf(
@@ -50,10 +49,7 @@ class SettingViewModel : ViewModel() {
     fun dispatch(action: SettingViewAction) {
         when (action) {
             is SettingViewAction.PopBack -> popBack()
-            is SettingViewAction.UpdateTimePickerShow -> updateTimePickerShow(show = action.show)
             is SettingViewAction.UpdateContactUsShow-> updateContactUsShow(show = action.show)
-            is SettingViewAction.UpdateDaysignChecked -> updateDaysignChecked(check = action.check)
-            is SettingViewAction.UpdateDaysginTime -> updateDaysignTime(hour = action.hour, minute = action.minute)
             is SettingViewAction.UpdateColorSchemeChecked -> updateColorSchemeChecked(check = action.check)
             is SettingViewAction.UpdateThemeStyleIndex -> updateThemeStyleIndex(index = action.index)
         }
@@ -65,23 +61,8 @@ class SettingViewModel : ViewModel() {
         }
     }
 
-    private fun updateTimePickerShow(show: Boolean) {
-        viewStates = viewStates.copy(isTimePickerShow = show)
-    }
-
     private fun updateContactUsShow(show: Boolean) {
         viewStates = viewStates.copy(isContactUsShow = show)
-    }
-
-    private fun updateDaysignChecked(check: Boolean) {
-        SettingInfo.instance.daysignSwitch = check
-        viewStates = viewStates.copy(daysignChecked = check)
-    }
-
-    private fun updateDaysignTime(hour: Int, minute: Int) {
-        SettingInfo.instance.daysignHour = hour
-        SettingInfo.instance.daysignMinute = minute
-        viewStates = viewStates.copy(daysignTime = LocalTime.of(hour, minute))
     }
 
     private fun updateColorSchemeChecked(check: Boolean) {
@@ -96,13 +77,7 @@ class SettingViewModel : ViewModel() {
 }
 
 data class SettingViewState constructor(
-    val isTimePickerShow: Boolean = false,
     val isContactUsShow: Boolean = false,
-    val daysignChecked: Boolean = SettingInfo.instance.daysignSwitch,
-    val daysignTime: LocalTime = LocalTime.of(
-        SettingInfo.instance.daysignHour,
-        SettingInfo.instance.daysignMinute
-    ),
     val colorSchemeChecked: Boolean = SettingInfo.instance.colorScheme,
     val themeStyleIndex: Int = SettingInfo.instance.themeStyle
 )
@@ -114,10 +89,7 @@ sealed class SettingViewEvent {
 sealed class SettingViewAction {
     object PopBack : SettingViewAction()
 
-    data class UpdateTimePickerShow(val show: Boolean) : SettingViewAction()
     data class UpdateContactUsShow(val show: Boolean) : SettingViewAction()
-    data class UpdateDaysignChecked(val check: Boolean) : SettingViewAction()
-    data class UpdateDaysginTime(val hour: Int, val minute: Int) : SettingViewAction()
     data class UpdateColorSchemeChecked(val check: Boolean) : SettingViewAction()
     data class UpdateThemeStyleIndex(val index: Int) : SettingViewAction()
 }
@@ -128,14 +100,6 @@ interface SettingList {
 }
 
 enum class SettingListItem : SettingList {
-    DAY_SIGN {
-        override val route: String
-            get() = "day_sign"
-
-        override val title: String
-            get() = "签到提醒\n每日通知"
-    },
-
     DARK_MODE {
         override val route: String
             get() = "dark_mode"

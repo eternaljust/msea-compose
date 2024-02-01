@@ -137,12 +137,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        if (SettingInfo.instance.daysignSwitch) {
-            RemindersManager.startReminder(this)
-        } else {
-            RemindersManager.stopReminder(this)
-        }
     }
 
     override fun onStart() {
