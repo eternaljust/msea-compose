@@ -219,7 +219,7 @@ private fun SignHeader(
 ) {
     Surface(
         modifier = Modifier
-            .height(180.dp)
+            .height(190.dp)
             .fillMaxWidth()
     ) {
         if (showSignDialog) {
