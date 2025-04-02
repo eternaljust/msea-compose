@@ -66,7 +66,7 @@ fun NodeListPage(
                     }
                 },
                 colors = if (!viewModel.isNodeFid125) mseaTopAppBarColors() else {
-                    TopAppBarDefaults.smallTopAppBarColors(
+                    TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Gray,
                         titleContentColor = Color.White,
                         actionIconContentColor = Color.White,
