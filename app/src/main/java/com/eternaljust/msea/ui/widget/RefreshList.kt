@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.eternaljust.msea.ui.widget
 
 import androidx.compose.foundation.layout.*
@@ -12,22 +10,21 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : Any> RefreshList(
     lazyPagingItems: LazyPagingItems<T>,
@@ -37,34 +34,26 @@ fun <T : Any> RefreshList(
     onRefresh: (() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+    val refreshing = remember { derivedStateOf { 
+        (lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing 
+    } }
 
-    SwipeRefresh(
-        state = swipeRefreshState,
+    PullToRefreshBox(
+        isRefreshing = refreshing.value,
         onRefresh = {
             onRefresh.invoke()
             lazyPagingItems.refresh()
-        },
-        indicator = { state, refreshTrigger ->
-            RefreshIndicator(
-                state = state,
-                refreshTriggerDistance = refreshTrigger,
-                contentColor = tint
-            )
         }
     ) {
-        swipeRefreshState.isRefreshing =
-            ((lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing)
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             itemContent()
 
-            refresh(
+            appendState(
                 lazyPagingItems = lazyPagingItems,
-                swipeRefreshState = swipeRefreshState,
+                isRefreshing = refreshing.value,
                 noMoreDataText = noMoreDataText,
                 tint = tint
             )
@@ -72,6 +61,7 @@ fun <T : Any> RefreshList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : Any> RefreshListState(
     lazyPagingItems: LazyPagingItems<T>,
@@ -82,25 +72,17 @@ fun <T : Any> RefreshListState(
     onRefresh: (() -> Unit) = {},
     itemContent: LazyListScope.() -> Unit
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+    val refreshing = remember { derivedStateOf { 
+        (lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing 
+    } }
 
-    SwipeRefresh(
-        state = swipeRefreshState,
+    PullToRefreshBox(
+        isRefreshing = refreshing.value,
         onRefresh = {
             onRefresh.invoke()
             lazyPagingItems.refresh()
-        },
-        indicator = { state, refreshTrigger ->
-            RefreshIndicator(
-                state = state,
-                refreshTriggerDistance = refreshTrigger,
-                contentColor = tint
-            )
         }
     ) {
-        swipeRefreshState.isRefreshing =
-            ((lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing)
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -108,9 +90,9 @@ fun <T : Any> RefreshListState(
         ) {
             itemContent()
 
-            refresh(
+            appendState(
                 lazyPagingItems = lazyPagingItems,
-                swipeRefreshState = swipeRefreshState,
+                isRefreshing = refreshing.value,
                 noMoreDataText = noMoreDataText,
                 tint = tint
             )
@@ -118,14 +100,14 @@ fun <T : Any> RefreshListState(
     }
 }
 
-fun <T : Any> LazyListScope.refresh(
+fun <T : Any> LazyListScope.appendState(
     lazyPagingItems: LazyPagingItems<T>,
-    swipeRefreshState: SwipeRefreshState,
+    isRefreshing: Boolean,
     noMoreDataText: String,
     tint: Color
 ) {
     // 上拉加载更多的状态：加载中、加载错误以及没有更多数据
-    if (!swipeRefreshState.isRefreshing) {
+    if (!isRefreshing) {
         item {
             lazyPagingItems.apply {
                 when (loadState.append) {
@@ -142,6 +124,7 @@ fun <T : Any> LazyListScope.refresh(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : Any> RefreshGrid(
     lazyPagingItems: LazyPagingItems<T>,
@@ -151,25 +134,17 @@ fun <T : Any> RefreshGrid(
     columnCount: Int = 2,
     itemContent: LazyGridScope.() -> Unit
 ) {
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = true)
+    val refreshing = remember { derivedStateOf { 
+        (lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing 
+    } }
 
-    SwipeRefresh(
-        state = swipeRefreshState,
+    PullToRefreshBox(
+        isRefreshing = refreshing.value,
         onRefresh = {
             onRefresh.invoke()
             lazyPagingItems.refresh()
-        },
-        indicator = { state, refreshTrigger ->
-            RefreshIndicator(
-                state = state,
-                refreshTriggerDistance = refreshTrigger,
-                contentColor = MaterialTheme.colorScheme.primary
-            )
         }
     ) {
-        swipeRefreshState.isRefreshing =
-            ((lazyPagingItems.loadState.refresh is LoadState.Loading) || isRefreshing)
-
         LazyVerticalGrid(
             contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -179,7 +154,7 @@ fun <T : Any> RefreshGrid(
                 itemContent()
 
                 // 上拉加载更多的状态：加载中、加载错误以及没有更多数据
-                if (!swipeRefreshState.isRefreshing) {
+                if (!refreshing.value) {
                     item(
                         span = {
                             GridItemSpan(columnCount)
@@ -207,19 +182,6 @@ fun <T : Any> RefreshGrid(
             }
         )
     }
-}
-
-@Composable
-fun RefreshIndicator(
-    state: SwipeRefreshState,
-    refreshTriggerDistance: Dp,
-    contentColor: Color = MaterialTheme.colorScheme.primary
-) {
-    SwipeRefreshIndicator(
-        state = state,
-        refreshTriggerDistance = refreshTriggerDistance,
-        contentColor = contentColor
-    )
 }
 
 @Composable

@@ -2,6 +2,8 @@ package com.eternaljust.msea.ui.page.profile.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,12 +16,9 @@ import androidx.navigation.NavHostController
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.StatisticsTool
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileCreditPage(
     scaffoldState: SnackbarHostState,
@@ -51,9 +50,9 @@ fun ProfileCreditPage(
                     .padding(paddingValues)
                     .padding(horizontal = 16.dp)
             ) {
-                val pagerState = rememberPagerState()
-                val scope = rememberCoroutineScope()
                 val items = viewModel.items
+                val pagerState = rememberPagerState { items.size }
+                val scope = rememberCoroutineScope()
 
                 Column {
                     TabRow(selectedTabIndex = pagerState.currentPage) {
@@ -77,22 +76,20 @@ fun ProfileCreditPage(
                         }
                     }
 
-                    HorizontalPager(count = items.size, state = pagerState) {
-                        if (it == pagerState.currentPage) {
-                            when (items[pagerState.currentPage]) {
-                                ProfileCreditTabItem.LOG -> CreditLogPage(
-                                    scaffoldState = scaffoldState,
-                                    navController = navController
-                                )
-                                ProfileCreditTabItem.SYSTEM -> CreditSystemPage(
-                                    scaffoldState = scaffoldState,
-                                    navController = navController
-                                )
-                                ProfileCreditTabItem.RULE -> CreditRulePage(
-                                    scaffoldState = scaffoldState,
-                                    navController = navController
-                                )
-                            }
+                    HorizontalPager(state = pagerState) { page ->
+                        when (items[page]) {
+                            ProfileCreditTabItem.LOG -> CreditLogPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController
+                            )
+                            ProfileCreditTabItem.SYSTEM -> CreditSystemPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController
+                            )
+                            ProfileCreditTabItem.RULE -> CreditRulePage(
+                                scaffoldState = scaffoldState,
+                                navController = navController
+                            )
                         }
                     }
                 }

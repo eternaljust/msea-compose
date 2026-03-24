@@ -2,6 +2,8 @@ package com.eternaljust.msea.ui.page.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
@@ -16,21 +18,17 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.home.topic.TopicListPage
 import com.eternaljust.msea.ui.page.home.topic.TopicListViewModel
 import com.eternaljust.msea.utils.StatisticsTool
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomePage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     viewModel: HomeViewModel = viewModel()
 ) {
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
     val items = viewModel.topicItems
+    val pagerState = rememberPagerState { items.size }
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     Surface(
@@ -59,20 +57,17 @@ fun HomePage(
                 }
             }
 
-            HorizontalPager(count = items.size, state = pagerState) {
-                if (it == pagerState.currentPage) {
-
-                    val vm = when (items[pagerState.currentPage]) {
-                        TopicTabItem.NEW -> TopicListViewModel.new
-                        TopicTabItem.HOT -> TopicListViewModel.hot
-                        TopicTabItem.NEWTHREAD -> TopicListViewModel.newthread
-                    }
-                    TopicListPage(
-                        scaffoldState = scaffoldState,
-                        navController = navController,
-                        viewModel = vm
-                    )
+            HorizontalPager(state = pagerState) { page ->
+                val vm = when (items[page]) {
+                    TopicTabItem.NEW -> TopicListViewModel.new
+                    TopicTabItem.HOT -> TopicListViewModel.hot
+                    TopicTabItem.NEWTHREAD -> TopicListViewModel.newthread
                 }
+                TopicListPage(
+                    scaffoldState = scaffoldState,
+                    navController = navController,
+                    viewModel = vm
+                )
             }
         }
     }

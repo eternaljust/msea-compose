@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -29,12 +31,9 @@ import com.eternaljust.msea.ui.widget.RefreshGrid
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileDetailPage(
     scaffoldState: SnackbarHostState,
@@ -62,7 +61,7 @@ fun ProfileDetailPage(
         }
     }
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { viewModel.profileItems.size }
 
     Scaffold(
         topBar = {
@@ -110,30 +109,28 @@ fun ProfileDetailPage(
 
                     if (uid.isNotEmpty() || viewModel.viewStates.profile.uid.isNotEmpty()) {
                         val id = uid.ifEmpty { viewModel.viewStates.profile.uid }
-                        HorizontalPager(count = viewModel.profileItems.size, state = pagerState) {
-                            val item = viewModel.profileItems[pagerState.currentPage]
-                            if (it == pagerState.currentPage) {
-                                if (item == ProfileDetailTabItem.TOPIC) {
-                                    ProfileTopicPage(
+                        HorizontalPager(state = pagerState) { page ->
+                            val item = viewModel.profileItems[page]
+                            if (item == ProfileDetailTabItem.TOPIC) {
+                                ProfileTopicPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController,
+                                    uid = id,
+                                    showTopBar = false
+                                )
+                            } else {
+                                // 自己的好友列表
+                                if (id == UserInfo.instance.uid) {
+                                    FriendListPage(
                                         scaffoldState = scaffoldState,
-                                        navController = navController,
-                                        uid = id,
-                                        showTopBar = false
+                                        navController = navController
                                     )
                                 } else {
-                                    // 自己的好友列表
-                                    if (id == UserInfo.instance.uid) {
-                                        FriendListPage(
-                                            scaffoldState = scaffoldState,
-                                            navController = navController
-                                        )
-                                    } else {
-                                        ProfileDetailFriendPage(
-                                            scaffoldState = scaffoldState,
-                                            navController = navController,
-                                            uid = id
-                                        )
-                                    }
+                                    ProfileDetailFriendPage(
+                                        scaffoldState = scaffoldState,
+                                        navController = navController,
+                                        uid = id
+                                    )
                                 }
                             }
                         }

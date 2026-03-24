@@ -1,6 +1,8 @@
 package com.eternaljust.msea.ui.page.home.search
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -21,23 +23,18 @@ import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class,
-       ExperimentalComposeUiApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     viewModel: SearchViewModel = viewModel()
 ) {
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
     val items = viewModel.items
+    val pagerState = rememberPagerState { items.size }
+    val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
@@ -125,20 +122,18 @@ fun SearchPage(
                         }
                     }
 
-                    HorizontalPager(count = items.size, state = pagerState) {
-                        if (it == pagerState.currentPage) {
-                            when (items[pagerState.currentPage]) {
-                                SearchTabItem.POST -> SearchPostPage(
-                                    scaffoldState = scaffoldState,
-                                    navController = navController,
-                                    keyword = viewModel.viewStates.searchContent
-                                )
-                                SearchTabItem.USER -> SearchUserPage(
-                                    scaffoldState = scaffoldState,
-                                    navController = navController,
-                                    keyword = viewModel.viewStates.searchContent
-                                )
-                            }
+                    HorizontalPager(state = pagerState) { page ->
+                        when (items[page]) {
+                            SearchTabItem.POST -> SearchPostPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController,
+                                keyword = viewModel.viewStates.searchContent
+                            )
+                            SearchTabItem.USER -> SearchUserPage(
+                                scaffoldState = scaffoldState,
+                                navController = navController,
+                                keyword = viewModel.viewStates.searchContent
+                            )
                         }
                     }
                 }

@@ -107,13 +107,13 @@ private fun NodeContent(
         RefreshList(
             lazyPagingItems = lazyPagingItems
         ) {
-            lazyPagingItems.itemSnapshotList.forEach {
-                it?.let {
+            lazyPagingItems.itemSnapshotList.forEach { nodeModel ->
+                nodeModel?.let { model ->
                     stickyHeader {
                         NodeListHeader(
-                            item = it
-                        ) {
-                            val route = RouteName.PROFILE_DETAIL_USERNAME + "/$it"
+                            item = model
+                        ) { nickname ->
+                            val route = RouteName.PROFILE_DETAIL_USERNAME + "/$nickname"
                             navController.navigate(route)
                             StatisticsTool.instance.eventObject(
                                 context = context,
@@ -126,7 +126,7 @@ private fun NodeContent(
                         }
                     }
 
-                    items(it.list) { item ->
+                    items(model.list) { item ->
                         NodeListItemContent(
                             item = item,
                             nodeClick = {

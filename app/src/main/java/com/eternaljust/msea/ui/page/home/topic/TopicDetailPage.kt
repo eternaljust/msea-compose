@@ -13,9 +13,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,11 +44,8 @@ import com.eternaljust.msea.ui.theme.getIconTintColorPrimary
 import com.eternaljust.msea.ui.theme.getIconTintColorSecondary
 import com.eternaljust.msea.ui.widget.*
 import com.eternaljust.msea.utils.*
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
-@Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TopicDetailPage(
@@ -62,9 +64,7 @@ fun TopicDetailPage(
     }
 
     val viewStates = viewModel.viewStates
-    val swipeRefreshState = rememberSwipeRefreshState(
-        isRefreshing = viewModel.viewStates.isRefreshing
-    )
+    val refreshing by remember { derivedStateOf { viewModel.viewStates.isRefreshing } }
     val listState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
@@ -273,23 +273,13 @@ fun TopicDetailPage(
                     }
                 )
 
-                SwipeRefresh(
-                    state = swipeRefreshState,
+                PullToRefreshBox(
+                    isRefreshing = refreshing,
                     onRefresh = {
                         viewModel.dispatch(TopicDetailViewAction.LoadData)
                         eventObject(context = context, params = mapOf(R.string.key_list_page to viewModel.page.toString()))
-                    },
-                    indicator = { state, refreshTrigger ->
-                        RefreshIndicator(
-                            state = state,
-                            refreshTriggerDistance = refreshTrigger,
-                            contentColor = if (isNodeFid125) Color.Gray else
-                                MaterialTheme.colorScheme.primary
-                        )
                     }
                 ) {
-                    swipeRefreshState.isRefreshing = viewModel.viewStates.isRefreshing
-
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,

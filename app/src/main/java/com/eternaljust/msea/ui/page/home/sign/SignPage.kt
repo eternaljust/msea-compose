@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,21 +35,18 @@ import com.eternaljust.msea.ui.widget.NormalTopAppBar
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     viewModel: SignViewModel = viewModel()
 ) {
-    val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
     val items = viewModel.signItems
+    val pagerState = rememberPagerState { items.size }
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     viewModel.dispatch(SignViewAction.GetDaySign)
@@ -177,22 +176,20 @@ fun SignPage(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        HorizontalPager(count = items.size, state = pagerState) {
-                            if (it == pagerState.currentPage) {
-                                val item = items[pagerState.currentPage]
-                                if (item == SignTabItem.DAY_SIGN) {
-                                    SignListPage(
-                                        scaffoldState = scaffoldState,
-                                        navController = navController
-                                    )
-                                } else {
-                                    SignDayListPage(
-                                        scaffoldState = scaffoldState,
-                                        navController = navController,
-                                        viewModel = if (item == SignTabItem.TOTAL_DAYS) SignDayListViewModel.days else
-                                            SignDayListViewModel.reward
-                                    )
-                                }
+                        HorizontalPager(state = pagerState) { page ->
+                            val item = items[page]
+                            if (item == SignTabItem.DAY_SIGN) {
+                                SignListPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController
+                                )
+                            } else {
+                                SignDayListPage(
+                                    scaffoldState = scaffoldState,
+                                    navController = navController,
+                                    viewModel = if (item == SignTabItem.TOTAL_DAYS) SignDayListViewModel.days else
+                                        SignDayListViewModel.reward
+                                )
                             }
                         }
                     }

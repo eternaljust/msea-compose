@@ -11,6 +11,9 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,16 +30,13 @@ import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.page.home.topic.*
 import com.eternaljust.msea.ui.theme.colorTheme
-import com.eternaljust.msea.ui.widget.RefreshIndicator
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
 import com.eternaljust.msea.utils.toJson
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
-@OptIn(ExperimentalFoundationApi::class)
-@Suppress("DEPRECATION")
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchPostPage(
     scaffoldState: SnackbarHostState,
@@ -49,26 +49,16 @@ fun SearchPostPage(
         viewModel.dispatch(SearchPostAction.SearchKeyword(keyword))
     }
 
-    val swipeRefreshState = rememberSwipeRefreshState(
-        isRefreshing = viewModel.viewStates.isRefreshing
-    )
+    val refreshing by remember { derivedStateOf { viewModel.viewStates.isRefreshing } }
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-    SwipeRefresh(
-        state = swipeRefreshState,
+    PullToRefreshBox(
+        isRefreshing = refreshing,
         onRefresh = {
             viewModel.dispatch(SearchPostAction.SearchKeyword(keyword))
-        },
-        indicator = { state, refreshTrigger ->
-            RefreshIndicator(
-                state = state,
-                refreshTriggerDistance = refreshTrigger
-            )
         }
     ) {
-        swipeRefreshState.isRefreshing = viewModel.viewStates.isRefreshing
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,

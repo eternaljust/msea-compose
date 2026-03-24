@@ -1,6 +1,8 @@
 package com.eternaljust.msea.ui.page.notice
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,21 +19,17 @@ import com.eternaljust.msea.ui.page.notice.system.SystemPage
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
 import com.eternaljust.msea.utils.UserInfo
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun NoticePage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
     viewModel: NoticeViewModel = viewModel()
 ) {
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
     val items = viewModel.items
+    val pagerState = rememberPagerState { items.size }
+    val scope = rememberCoroutineScope()
     val isLogin = UserInfo.instance.auth.isNotEmpty()
     val context = LocalContext.current
 
@@ -80,22 +78,20 @@ fun NoticePage(
                     }
                 }
 
-                HorizontalPager(count = items.size, state = pagerState) {
-                    if (it == pagerState.currentPage) {
-                        when (items[pagerState.currentPage]) {
-                            NoticeTabItem.MYPOST -> MyPostPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController
-                            )
-                            NoticeTabItem.INTERACTIVE -> InteractivePage(
-                                scaffoldState = scaffoldState,
-                                navController = navController
-                            )
-                            NoticeTabItem.SYSTEM -> SystemPage(
-                                scaffoldState = scaffoldState,
-                                navController = navController
-                            )
-                        }
+                HorizontalPager(state = pagerState) { page ->
+                    when (items[page]) {
+                        NoticeTabItem.MYPOST -> MyPostPage(
+                            scaffoldState = scaffoldState,
+                            navController = navController
+                        )
+                        NoticeTabItem.INTERACTIVE -> InteractivePage(
+                            scaffoldState = scaffoldState,
+                            navController = navController
+                        )
+                        NoticeTabItem.SYSTEM -> SystemPage(
+                            scaffoldState = scaffoldState,
+                            navController = navController
+                        )
                     }
                 }
             }
