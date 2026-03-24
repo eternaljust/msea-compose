@@ -6,8 +6,8 @@
 |------|------|------|
 | 阶段 1 | ✅ 完成 | Gradle 配置与 Kotlin 升级 |
 | 阶段 2 | ✅ 完成 | Jetpack 核心库升级 |
-| 阶段 3 | ⏳ 待执行 | Accompanist 迁移 |
-| 阶段 4 | ⏳ 待执行 | 第三方库升级 |
+| 阶段 3 | ✅ 完成 | Accompanist 迁移 |
+| 阶段 4 | ✅ 完成 | 第三方库升级 |
 | 阶段 5 | ⏳ 可选 | 大版本迁移 (Coil 3 / OkHttp 5) |
 
 ---
@@ -34,7 +34,7 @@
 
 ---
 
-## 阶段 3：Accompanist 迁移（待执行）
+## 阶段 3：Accompanist 迁移（已完成）
 
 ### 3.1 迁移 Pager → Compose 原生 API
 
@@ -191,7 +191,7 @@ implementation "com.google.accompanist:accompanist-permissions:0.36.0"
 
 ---
 
-## 阶段 4：第三方库升级（待执行）
+## 阶段 4：第三方库升级（已完成）
 
 ### 4.1 Jsoup 升级
 
@@ -199,19 +199,17 @@ implementation "com.google.accompanist:accompanist-permissions:0.36.0"
 // 旧版本
 implementation 'org.jsoup:jsoup:1.17.2'
 // 新版本
-implementation 'org.jsoup:jsoup:1.22.1'
+implementation 'org.jsoup:jsoup:1.20.1'
 ```
 
 ### 4.2 友盟 SDK 升级
 
-需访问 https://devs.umeng.com/sdk 确认最新版本。
-
-当前版本：
 ```groovy
-implementation 'com.umeng.umsdk:common:9.6.7'
-implementation 'com.umeng.umsdk:asms:1.8.6'
-implementation 'com.umeng.umsdk:apm:1.9.5'
-implementation 'com.umeng.umsdk:abtest:1.0.1'
+// 旧版本 → 新版本
+implementation 'com.umeng.umsdk:common:9.6.7' → 'com.umeng.umsdk:common:9.9.0'
+implementation 'com.umeng.umsdk:asms:1.8.6' → 'com.umeng.umsdk:asms:1.8.7.2'
+implementation 'com.umeng.umsdk:apm:1.9.5' → 'com.umeng.umsdk:apm:2.0.8'
+implementation 'com.umeng.umsdk:abtest:1.0.1' // 无更新
 ```
 
 ---
@@ -284,8 +282,8 @@ cd msea-compose
 确保：
 - [x] 阶段 1 编译通过
 - [x] 阶段 2 编译通过
-- [ ] 阶段 3 编译通过
-- [ ] 阶段 4 编译通过
+- [x] 阶段 3 编译通过
+- [x] 阶段 4 编译通过
 - [ ] 阶段 5 编译通过（可选）
 
 ---
@@ -324,22 +322,20 @@ dependencies {
     implementation 'androidx.paging:paging-runtime-ktx:3.4.0'
     implementation 'androidx.paging:paging-compose:3.4.0'
 
-    // Accompanist (待迁移)
-    implementation "com.google.accompanist:accompanist-pager:0.36.0"
-    implementation "com.google.accompanist:accompanist-swiperefresh:0.36.0"
+    // Accompanist (仅保留 webview 和 permissions)
     implementation "com.google.accompanist:accompanist-webview:0.36.0"
     implementation "com.google.accompanist:accompanist-permissions:0.36.0"
 
     // 第三方库
     implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'org.jsoup:jsoup:1.20.1'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'io.coil-kt:coil-compose:2.5.0'
 
     // 友盟
-    implementation 'com.umeng.umsdk:common:9.6.7'
-    implementation 'com.umeng.umsdk:asms:1.8.6'
-    implementation 'com.umeng.umsdk:apm:1.9.5'
+    implementation 'com.umeng.umsdk:common:9.9.0'
+    implementation 'com.umeng.umsdk:asms:1.8.7.2'
+    implementation 'com.umeng.umsdk:apm:2.0.8'
     implementation 'com.umeng.umsdk:abtest:1.0.1'
 }
 ```
