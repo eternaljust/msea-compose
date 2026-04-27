@@ -153,7 +153,7 @@ fun SignPage(
                     )
 
                     Column {
-                        TabRow(selectedTabIndex = pagerState.currentPage) {
+                        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
                             items.forEachIndexed { index, item ->
                                 Tab(
                                     text = { AutosizeText(text = item.title) },

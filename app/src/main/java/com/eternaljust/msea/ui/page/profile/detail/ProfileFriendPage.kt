@@ -55,7 +55,7 @@ fun ProfileFriendPage(
                 val scope = rememberCoroutineScope()
 
                 Column {
-                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                    PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
                         items.forEachIndexed { index, item ->
                             Tab(
                                 text = { Text(item.title) },

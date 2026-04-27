@@ -32,7 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.theme.colorTheme

@@ -188,7 +188,7 @@ fun SettingPage(
                         )
 
                         if (item == items.last()) {
-                            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                         }
                     }
                 }
@@ -212,7 +212,7 @@ private fun ContactUsDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Divider()
+                HorizontalDivider()
 
                 TextButton(onClick = {
                     if (isAppInstalled
@@ -237,7 +237,7 @@ private fun ContactUsDialog(
                     Text(text = "微博：@远恒之义")
                 }
 
-                Divider()
+                HorizontalDivider()
 
                 val weixin = "eternaljust"
                 TextButton(onClick = {
@@ -262,7 +262,7 @@ private fun ContactUsDialog(
                     Text(text = "加微信：${weixin} 发送：安卓加群")
                 }
 
-                Divider()
+                HorizontalDivider()
             }
         },
         confirmButton = {
@@ -329,7 +329,7 @@ private fun SettingListItemAction(
             )
         }
         SettingListItem.DARK_MODE -> {
-            TabRow(
+            PrimaryTabRow(
                 modifier = Modifier.width(180.dp),
                 selectedTabIndex = themeStyleIndex
             ) {

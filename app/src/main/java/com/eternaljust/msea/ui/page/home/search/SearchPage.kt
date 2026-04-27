@@ -101,7 +101,7 @@ fun SearchPage(
 
                     Spacer(modifier = Modifier.height(5.dp))
 
-                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                    PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
                         items.forEachIndexed { index, item ->
                             Tab(
                                 text = { Text( text = item.title ) },

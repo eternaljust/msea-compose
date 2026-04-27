@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -rn \"^\\\\s*Divider\\(\\)\\\\s*$\" app/src/main/java/ --include=\"*.kt\")",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(~/Library/Android/sdk/emulator/emulator -verbose -avd Pixel_9_Pro -no-window)",
+      "Bash(kill %1)",
+      "Bash(wait)",
+      "Bash(~/Library/Android/sdk/emulator/emulator *)",
+      "Bash(~/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager --list)",
+      "Bash(xargs cat *)",
+      "Bash(~/Library/Android/sdk/platform-tools/adb devices *)",
+      "Bash(./gradlew installDebug)",
+      "Bash(~/Library/Android/sdk/platform-tools/adb shell *)",
+      "mcp__github__get_file_contents",
+      "mcp__fetcher__fetch_url",
+      "mcp__tavily__tavily_map",
+      "Bash(curl *)",
+      "Bash(python3 -c \" import sys, json data = json.load\\(sys.stdin\\) for item in data: print\\(item['type'], item.get\\('path',''\\), item.get\\('name',''\\)\\) \")",
+      "Bash(python3 -c ' *)",
+      "Bash(mv android-skills/build-agp9 .)",
+      "Bash(mv android-skills/system-edge-to-edge .)",
+      "Bash(rm -rf android-skills)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

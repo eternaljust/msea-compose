@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.SettingInfo
@@ -136,7 +136,7 @@ fun DrawerPage(
                 levelClick = {}
             )
 
-            Divider()
+            HorizontalDivider()
 
             DrawerList(
                 items = viewModel.profileItems,
@@ -145,7 +145,7 @@ fun DrawerPage(
                 }
             )
 
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             DrawerList(
                 items = viewModel.settingItems,
@@ -156,7 +156,7 @@ fun DrawerPage(
             )
 
             if (viewModel.viewStates.isLogin) {
-                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
                 DrawerList(
                     items = viewModel.logoutItems,
@@ -215,16 +215,13 @@ private fun DrawerHeader(
     onClick: () -> Unit,
     levelClick: () -> Unit
 ) {
-    Surface(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
             Spacer(modifier = Modifier.height(10.dp))
 
             if (isLogin) {
@@ -328,5 +325,4 @@ private fun DrawerHeader(
 
             Spacer(modifier = Modifier.height(10.dp))
         }
-    }
 }

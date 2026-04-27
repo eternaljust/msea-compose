@@ -7,7 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -69,7 +69,7 @@ fun LoginPage(
                         onClick = { viewModel.dispatch(LoginViewAction.PopBack()) }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "返回"
                         )
                     }
@@ -84,7 +84,9 @@ fun LoginPage(
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
                     .fillMaxSize()
+                    .imePadding()
                     .verticalScroll(rememberScrollState())
                     .pointerInput(Unit) {
                         detectTapGestures(
@@ -137,7 +139,7 @@ fun LoginPage(
                                     )
                                 })
 
-                            Divider()
+                            HorizontalDivider()
                         }
                     }
                 }
@@ -227,7 +229,7 @@ fun LoginPage(
                                 }
                             )
 
-                            Divider()
+                            HorizontalDivider()
                         }
                     }
                 }

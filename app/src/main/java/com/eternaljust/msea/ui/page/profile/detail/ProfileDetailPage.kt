@@ -22,7 +22,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.page.notice.NoticeTabItem
 import com.eternaljust.msea.ui.widget.AutosizeText
@@ -84,7 +84,7 @@ fun ProfileDetailPage(
                 ) {
                     ProfileDetailHeader(profile = viewModel.viewStates.profile)
 
-                    TabRow(selectedTabIndex = pagerState.currentPage) {
+                    PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
                         viewModel.profileItems.forEachIndexed { index, item ->
                             Tab(
                                 text = { AutosizeText(text = item.title) },

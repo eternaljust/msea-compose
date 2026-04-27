@@ -8,7 +8,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +53,7 @@ fun WebViewPage(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "返回"
                             )
                         }
@@ -112,7 +112,7 @@ fun WebViewPage(
                         println("loading.progress---${loading.progress}")
                         LinearProgressIndicator(
                             modifier = Modifier.fillMaxWidth(),
-                            progress = loading.progress,
+                            progress = { loading.progress },
                             color = MaterialTheme.colorScheme.secondary
                         )
                     }

@@ -31,7 +31,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.theme.colorTheme
+import com.eternaljust.msea.ui.widget.MainTopAppBar
 import com.eternaljust.msea.ui.widget.NormalTopAppBar
+import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.ui.widget.RefreshList
 import com.eternaljust.msea.utils.RouteName
 import com.eternaljust.msea.utils.StatisticsTool
@@ -41,12 +43,52 @@ import com.eternaljust.msea.utils.toJson
 fun NodePage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
+    onMenuClick: () -> Unit,
     viewModel: NodeViewModel = viewModel()
 ) {
-    NodeContent(
-        navController = navController,
-        viewModel = viewModel
-    )
+    val context = LocalContext.current
+
+    Column {
+        MainTopAppBar(
+            onMenuClick = onMenuClick,
+            subtitle = "让搜索更简单",
+            actions = {
+                IconButton(
+                    modifier = Modifier.height(60.dp),
+                    onClick = {
+                        StatisticsTool.instance.eventObject(
+                            context = context,
+                            resId = R.string.event_page_home,
+                            keyAndValue = mapOf(
+                                R.string.key_category to "标签"
+                            )
+                        )
+                        navController.navigate(route = RouteName.TAG)
+                    }
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_baseline_tag_24),
+                            contentDescription = "标签"
+                        )
+                        Text(
+                            text = "标签",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+        )
+
+        Box(modifier = Modifier.weight(1f)) {
+            NodeContent(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

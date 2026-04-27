@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.widget.ListArrowForward
 import com.eternaljust.msea.utils.RouteName

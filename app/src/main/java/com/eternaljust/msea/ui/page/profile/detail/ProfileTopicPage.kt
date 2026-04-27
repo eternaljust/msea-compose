@@ -21,7 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.data.TopicDetailRouteModel
 import com.eternaljust.msea.ui.widget.NormalTopAppBar

@@ -3,6 +3,10 @@ package com.eternaljust.msea
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
@@ -50,7 +54,6 @@ import com.eternaljust.msea.ui.theme.MseaComposeTheme
 import com.eternaljust.msea.ui.theme.themeStyleDark
 import com.eternaljust.msea.ui.widget.WebURL
 import com.eternaljust.msea.ui.widget.WebViewPage
-import com.eternaljust.msea.ui.widget.mseaTopAppBarColors
 import com.eternaljust.msea.utils.*
 import com.umeng.cconfig.RemoteConfigSettings
 import com.umeng.cconfig.UMRemoteConfig
@@ -404,69 +407,10 @@ fun MyApp() {
                 BottomBarScreen.Node,
             )
             val mainScreens = screens.map { it.route }
+            isDrawerGesturesEnabled = mainScreens.contains(currentDestination?.route)
 
             Scaffold(
-                topBar = {
-                    if (mainScreens.contains(currentDestination?.route)) {
-                        isDrawerGesturesEnabled = true
-
-                        TopAppBar(
-                            title = {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = "Msea / 虫部落",
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-
-                                    currentDestination?.route?.let {
-                                        if (it != BottomBarScreen.Home.route) {
-                                            val text = if (it == BottomBarScreen.Notice.route)
-                                                "Make search easier" else "让搜索更简单"
-                                            Text(
-                                                text = text,
-                                                style = MaterialTheme.typography.labelSmall
-                                            )
-                                        }
-                                    }
-                                }
-                            },
-                            navigationIcon = {
-                                IconButton(
-                                    modifier = Modifier.height(60.dp),
-                                    onClick =
-                                    {
-                                        scope.launch { drawerState.open() }
-                                    }
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Menu,
-                                            contentDescription = "菜单"
-                                        )
-
-                                        Text(
-                                            text = "菜单",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    }
-                                }
-                            },
-                            actions = {
-                                currentDestination?.route?.let {
-                                    TopAppBarAcitons(
-                                        route = it,
-                                        navController = navController
-                                    )
-                                }
-                            },
-                            colors = mseaTopAppBarColors()
-                        )
-                    } else {
-                        isDrawerGesturesEnabled = false
-                    }
-                },
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 bottomBar = {
                     if (mainScreens.contains(currentDestination?.route)) {
                         NavigationBar(
@@ -526,35 +470,67 @@ fun MyApp() {
                     }
                 },
                 content = { paddingValues ->
-                    NavHost(
-                        navController,
-                        startDestination = RouteName.HOME,
-                        Modifier.padding(paddingValues)
-                    ) {
-                        composable(RouteName.HOME) {
-                            HomePage(
+                    Box {
+                        NavHost(
+                            navController,
+                            startDestination = RouteName.HOME,
+                            Modifier.padding(paddingValues),
+                            enterTransition = {
+                                slideInHorizontally(animationSpec = tween(300)) { it }
+                            },
+                            exitTransition = {
+                                slideOutHorizontally(animationSpec = tween(300)) { -it }
+                            },
+                            popEnterTransition = {
+                                slideInHorizontally(animationSpec = tween(300)) { -it }
+                            },
+                            popExitTransition = {
+                                slideOutHorizontally(animationSpec = tween(300)) { it }
+                            }
+                        ) {
+                            composable(RouteName.HOME) {
+                                HomePage(
+                                    scaffoldState = snackbarHostState,
+                                    navController = navController,
+                                    onMenuClick = { scope.launch { drawerState.open() } }
+                                )
+                            }
+
+                            composable(RouteName.NOTICE) {
+                                NoticePage(
+                                    scaffoldState = snackbarHostState,
+                                    navController = navController,
+                                    onMenuClick = { scope.launch { drawerState.open() } }
+                                )
+                            }
+
+                            composable(RouteName.NODE) {
+                                NodePage(
+                                    scaffoldState = snackbarHostState,
+                                    navController = navController,
+                                    onMenuClick = { scope.launch { drawerState.open() } }
+                                )
+                            }
+
+                            detailsNav(
                                 scaffoldState = snackbarHostState,
                                 navController = navController
                             )
                         }
 
-                        composable(RouteName.NOTICE) {
-                            NoticePage(
-                                scaffoldState = snackbarHostState,
-                                navController = navController
-                            )
-                        }
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .windowInsetsTopHeight(WindowInsets.statusBars)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
 
-                        composable(RouteName.NODE) {
-                            NodePage(
-                                scaffoldState = snackbarHostState,
-                                navController = navController
-                            )
-                        }
-
-                        detailsNav(
-                            scaffoldState = snackbarHostState,
-                            navController = navController
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomStart)
+                                .windowInsetsBottomHeight(WindowInsets.navigationBars)
+                                .background(colorTheme(light = Color.White, dark = Color.Black))
                         )
                     }
                 }
@@ -563,117 +539,6 @@ fun MyApp() {
     )
 }
 
-@Composable
-fun TopAppBarAcitons(
-    route: String,
-    navController: NavHostController
-) {
-    val context = LocalContext.current
-
-    when (route) {
-        BottomBarScreen.Home.route -> {
-            IconButton(
-                modifier = Modifier.height(60.dp),
-                onClick = {
-                    StatisticsTool.instance.eventObject(
-                        context = context,
-                        resId = R.string.event_page_home,
-                        keyAndValue = mapOf(
-                            R.string.key_category to "搜索"
-                        )
-                    )
-                    navController.navigate(route = RouteName.SEARCH)
-                }
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "搜索"
-                    )
-
-                    Text(
-                        text = "搜索",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-
-            IconButton(
-                modifier = Modifier.height(60.dp),
-                onClick = {
-                    StatisticsTool.instance.eventObject(
-                        context = context,
-                        resId = R.string.event_page_home,
-                        keyAndValue = mapOf(
-                            R.string.key_category to "签到"
-                        )
-                    )
-                    StatisticsTool.instance.eventObject(
-                        context = context,
-                        resId = R.string.event_page_sign,
-                        keyAndValue = mapOf(
-                            R.string.key_source to "首页"
-                        )
-                    )
-                    navController.navigate(route = RouteName.SIGN)
-                }
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_baseline_energy_savings_leaf_24),
-                        contentDescription = "签到"
-                    )
-
-                    Text(
-                        text = "签到",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-
-//            IconButton(onClick = { /* doSomething() */ }) {
-//                Icon(
-//                    imageVector = Icons.Default.FormatListNumbered,
-//                    contentDescription = "排行榜"
-//                )
-//            }
-        }
-        BottomBarScreen.Node.route -> {
-            IconButton(
-                modifier = Modifier.height(60.dp),
-                onClick = {
-                    StatisticsTool.instance.eventObject(
-                        context = context,
-                        resId = R.string.event_page_home,
-                        keyAndValue = mapOf(
-                            R.string.key_category to "标签"
-                        )
-                    )
-                    navController.navigate(route = RouteName.TAG)
-                }
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_baseline_tag_24),
-                        contentDescription = "标签"
-                    )
-
-                    Text(
-                        text = "标签",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-        else -> {}
-    }
-}
 
 @OptIn(DelicateCoroutinesApi::class)
 private fun NavGraphBuilder.detailsNav(

@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -35,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.eternaljust.msea.R
 import com.eternaljust.msea.ui.data.TagItemModel
 import com.eternaljust.msea.ui.data.TopicDetailRouteModel
@@ -110,7 +111,7 @@ fun TopicDetailPage(
                             }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "返回"
                             )
                         }
@@ -164,7 +165,7 @@ fun TopicDetailPage(
                                         enabled = index != viewModel.page
                                     )
 
-                                    Divider()
+                                    HorizontalDivider()
                                 }
                             }
                         }
@@ -797,7 +798,7 @@ fun TopicDetailItemContent(
 
     Spacer(modifier = Modifier.height(4.dp))
 
-    Divider(modifier = Modifier)
+    HorizontalDivider(modifier = Modifier)
 }
 
 @Composable
