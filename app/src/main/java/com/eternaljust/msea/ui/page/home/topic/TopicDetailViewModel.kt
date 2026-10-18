@@ -295,6 +295,14 @@ class TopicDetailViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.BASE + "/thread-$tid-${page}-1.html"
             val document = NetworkUtil.getRequest(url)
+            // 请求失败（被站点拦截、网络异常等）时返回空文档，提示用户而非无限转圈
+            if (document.body() == null || document.body()!!.text().isEmpty()) {
+                _viewEvents.send(TopicDetailViewEvent.Message("内容加载失败，请稍后重试"))
+                if (viewStates.isRefreshing) {
+                    viewStates = viewStates.copy(isRefreshing = false)
+                }
+                return@launch
+            }
             if (page == 1) {
                 val topic = TopicDetailModel()
                 topic.url = url
