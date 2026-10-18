@@ -3,6 +3,8 @@ package com.eternaljust.msea
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -94,11 +96,16 @@ sealed class BottomBarScreen(
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 必须在 super.onCreate 前调用：应用 postSplashScreenTheme（NoActionBar），
+        // 避免装饰器以 Manifest 的 Splash 主题（含 ActionBar）安装窗口
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        // 沉浸式：内容绘制到系统栏后面（targetSdk 36 必需，
+        // Theme.kt 已移除废弃的 statusBarColor，低版本系统需显式开启）
+        enableEdgeToEdge()
 
         println("onCreate-----")
 
-        setTheme(R.style.Theme_Mseacompose)
         setContent {
             MseaComposeTheme(
                 darkTheme = themeStyleDark(),
