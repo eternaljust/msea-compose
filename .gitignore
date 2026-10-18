@@ -35,3 +35,6 @@ proguard-project.txt
 *.iml
 .idea
 .kotlin/
+
+# 签名证书（不入库）
+keystore/
