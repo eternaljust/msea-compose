@@ -80,6 +80,11 @@ class LoginViewModel : ViewModel() {
             )
 
             val document = NetworkUtil.postRequest(url, params, encodedParams)
+            if (document.body() == null || document.body()!!.text().isEmpty()) {
+                _viewEvents.send(LoginViewEvent.Message("网络异常，请稍后重试"))
+                viewStates = viewStates.copy(loginEnabled = true)
+                return@launch
+            }
             val messagetext = document.selectXpath("//div[@class='alert_error']/p")
             val info = document.selectXpath("//div[@class='info']/li")
             val myinfo = document.selectXpath("//div[@id='myinfo']/p")
@@ -93,11 +98,9 @@ class LoginViewModel : ViewModel() {
                 val xpath = "//div[@id='myinfo']/p//a[@target='_blank']"
                 val name = document.selectXpath(xpath).text()
                 val href = document.selectXpath(xpath).attr("href")
-                if (href.isNotEmpty() && href.contains("-")) {
-                    val ids = href.split("-")
-                    val last = ids.last()
-                    if (last.contains(".html")) {
-                        val uid = last.replace(".html", "")
+                if (href.contains("uid-") || href.contains("uid=")) {
+                    val uid = NetworkUtil.getUid(href)
+                    if (uid.isNotEmpty()) {
                         println("uid=$uid")
                         UserInfo.instance.uid = uid
                     }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.efs.sdk.base.core.util.Log
 import com.eternaljust.msea.utils.HTMLURL
 import com.eternaljust.msea.utils.NetworkUtil
 import kotlinx.coroutines.Dispatchers
@@ -57,77 +58,95 @@ class SearchPostViewModel: ViewModel() {
             if (page > 1 && href.isNotEmpty()) {
                 url = "${HTMLURL.BASE}/$href"
             }
-            val document = NetworkUtil.getRequest(url)
-            val a = document.selectXpath("//div[@class='pgs cl mbm']/div/a")
-            a.forEach {
-                val text = it.text()
-                if (text == (page + 1).toString()) {
-                    val aHref = it.attr("href")
-                    if (aHref.isNotEmpty()) {
-                        href = aHref
-                    }
+            val document = try {
+                NetworkUtil.getRequest(url)
+            } catch (e: Exception) {
+                // 请求异常时按空结果处理，避免未捕获异常导致应用崩溃
+                pageLoadCompleted = true
+                if (viewStates.isRefreshing) {
+                    viewStates = viewStates.copy(isRefreshing = false)
                 }
+                return@launch
             }
-
-            val li = document.selectXpath("//ul/li[@class='pbw']")
-            li.forEach {
-                val search = SearchPostListModel()
-                search.keyword = keyword
-                val tid = it.attr("id")
-                if (tid.isNotEmpty()) {
-                    search.tid = tid
-                }
-                val title = it.selectXpath("h3/a[1]").text()
-                if (title.isNotEmpty()) {
-                    search.title = title
-                }
-                val views = it.selectXpath("p[@class='xg1']").text()
-                if (views.isNotEmpty()) {
-                    search.replyViews = views
-                }
-                val content = it.selectXpath("p[2]").text()
-                if (content.isNotEmpty()) {
-                    search.content = content
-                }
-                val time = it.selectXpath("p[3]/span[1]").text()
-                if (time.isNotEmpty()) {
-                    search.time = time
-                }
-                val name = it.selectXpath("p[3]/span[2]/a").text()
-                if (name.isNotEmpty()) {
-                    search.name = name
-                }
-                val plate = it.selectXpath("p[3]/span[3]/a").text()
-                if (plate.isNotEmpty()) {
-                    search.plate = plate
-                }
-                val fid = it.selectXpath("p[3]/span[3]/a").attr("href")
-                if (fid.isNotEmpty()) {
-                    search.fid = NetworkUtil.getFid(fid)
-                }
-                list.add(search)
-
-                if (list.count() == 9) {
-                    if (page == 1 && viewStates.isRefreshing) {
-                        viewStates = viewStates.copy(list = emptyList())
-                    }
-                    viewStates = viewStates.copy(
-                        list = viewStates.list + list,
-                        isRefreshing = false
-                    )
-                    list = mutableListOf()
-                }
-                // 列表最后一个
-                li.last()?.let { last ->
-                    if (last == it) {
-                        pageLoadCompleted = true
-                        if (li.count() != pageSize) {
-                            viewStates = viewStates.copy(
-                                list = viewStates.list + list,
-                                isRefreshing = false
-                            )
+            try {
+                val a = document.selectXpath("//div[@class='pgs cl mbm']/div/a")
+                a.forEach {
+                    val text = it.text()
+                    if (text == (page + 1).toString()) {
+                        val aHref = it.attr("href")
+                        if (aHref.isNotEmpty()) {
+                            href = aHref
                         }
                     }
+                }
+
+                val li = document.selectXpath("//ul/li[@class='pbw']")
+                li.forEach {
+                    val search = SearchPostListModel()
+                    search.keyword = keyword
+                    val tid = it.attr("id")
+                    if (tid.isNotEmpty()) {
+                        search.tid = tid
+                    }
+                    val title = it.selectXpath("h3/a[1]").text()
+                    if (title.isNotEmpty()) {
+                        search.title = title
+                    }
+                    val views = it.selectXpath("p[@class='xg1']").text()
+                    if (views.isNotEmpty()) {
+                        search.replyViews = views
+                    }
+                    val content = it.selectXpath("p[2]").text()
+                    if (content.isNotEmpty()) {
+                        search.content = content
+                    }
+                    val time = it.selectXpath("p[3]/span[1]").text()
+                    if (time.isNotEmpty()) {
+                        search.time = time
+                    }
+                    val name = it.selectXpath("p[3]/span[2]/a").text()
+                    if (name.isNotEmpty()) {
+                        search.name = name
+                    }
+                    val plate = it.selectXpath("p[3]/span[3]/a").text()
+                    if (plate.isNotEmpty()) {
+                        search.plate = plate
+                    }
+                    val fid = it.selectXpath("p[3]/span[3]/a").attr("href")
+                    if (fid.isNotEmpty()) {
+                        search.fid = NetworkUtil.getFid(fid)
+                    }
+                    list.add(search)
+
+                    if (list.count() == 9) {
+                        if (page == 1 && viewStates.isRefreshing) {
+                            viewStates = viewStates.copy(list = emptyList())
+                        }
+                        viewStates = viewStates.copy(
+                            list = viewStates.list + list,
+                            isRefreshing = false
+                        )
+                        list = mutableListOf()
+                    }
+                    // 列表最后一个
+                    li.last()?.let { last ->
+                        if (last == it) {
+                            pageLoadCompleted = true
+                            if (li.count() != pageSize) {
+                                viewStates = viewStates.copy(
+                                    list = viewStates.list + list,
+                                    isRefreshing = false
+                                )
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // 解析异常时按空结果处理，避免未捕获异常导致应用崩溃
+                Log.e("SearchPost", "搜索结果解析异常", e)
+                pageLoadCompleted = true
+                if (viewStates.isRefreshing) {
+                    viewStates = viewStates.copy(isRefreshing = false)
                 }
             }
         }

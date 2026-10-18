@@ -13,7 +13,20 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class SignViewModel : ViewModel() {
+
+class SignViewModel private constructor() : ViewModel() {
+    // 单例实例
+    companion object {
+        @Volatile
+        private var instance: SignViewModel? = null
+
+        fun getInstance(): SignViewModel {
+            return instance ?: synchronized(this) {
+                instance ?: SignViewModel().also { instance = it }
+            }
+        }
+    }
+
     var viewStates by mutableStateOf(SignViewState())
         private set
     private val _viewEvents = Channel<SignViewEvent>(Channel.BUFFERED)

@@ -52,15 +52,15 @@ class ProfileTopicViewModel : ViewModel() {
 
                 val gif = it.selectXpath("td[@class='icn']/a/img").attr("src")
                 if (gif.isNotEmpty()) {
-                    topic.gif = HTMLURL.BASE + "/${gif}"
+                    topic.gif = NetworkUtil.getAvatar(gif)
                 }
                 val title = it.selectXpath("th/a").text()
                 if (title.isNotEmpty()) {
                     topic.title = title
                 }
                 val tid = it.selectXpath("th/a").attr("href")
-                if (tid.contains("thread-")) {
-                    topic.tid = tid.split("thread-").last().split("-").first()
+                if (tid.contains("thread-") || tid.contains("tid=")) {
+                    topic.tid = NetworkUtil.getTid(tid)
                 }
                 val forum = it.selectXpath("td/a[@class='xg1']").text()
                 if (forum.isNotEmpty()) {

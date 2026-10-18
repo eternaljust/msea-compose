@@ -56,7 +56,7 @@ class MyPostViewModel : ViewModel() {
                     post.name = name
                 }
                 val href = it.selectXpath(namePath).attr("href")
-                if (href.contains("uid-")) {
+                if (href.contains("uid-") || href.contains("uid=")) {
                     post.uid = NetworkUtil.getUid(href)
                 }
                 val threadPath = if (!isForum) "dd[@class='ntc_body']/a[2]" else

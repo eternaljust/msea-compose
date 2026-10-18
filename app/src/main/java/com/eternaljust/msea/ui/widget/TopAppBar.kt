@@ -57,7 +57,9 @@ fun MainTopAppBar(
 ) {
     TopAppBar(
         title = {
-            Column(modifier = Modifier.padding(16.dp)) {
+            // 仅水平内边距：64dp 的 TopAppBar 高度有限，
+            // 垂直内边距会把两行标题的次行挤出裁切
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium

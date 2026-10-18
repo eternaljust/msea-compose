@@ -55,15 +55,15 @@ class TagListViewModel : ViewModel() {
 
                 val gif = it.selectXpath("td[@class='icn']/a/img").attr("src")
                 if (gif.isNotEmpty()) {
-                    tag.gif = HTMLURL.BASE + "/${gif}"
+                    tag.gif = NetworkUtil.getAvatar(gif)
                 }
                 val title = it.selectXpath("th/a").text()
                 if (title.isNotEmpty()) {
                     tag.title = title
                 }
                 val id = it.selectXpath("th/a").attr("href")
-                if (id.isNotEmpty()) {
-                    tag.tid = id.split("thread-").last().split("-").first()
+                if (id.contains("thread-") || id.contains("tid=")) {
+                    tag.tid = NetworkUtil.getTid(id)
                 }
                 val forum = it.selectXpath("td[@class='by']/a").text()
                 if (forum.isNotEmpty()) {

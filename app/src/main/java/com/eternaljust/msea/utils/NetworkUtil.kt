@@ -1,8 +1,10 @@
 package com.eternaljust.msea.utils
 
+import com.efs.sdk.base.core.util.Log
 import okhttp3.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.io.IOException
 import java.lang.Exception
 import java.net.URLEncoder
 
@@ -14,6 +16,8 @@ class NetworkUtil private constructor() {
 
         private val httpClient by lazy {
             val builder = OkHttpClient.Builder()
+                .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .followRedirects(false)
                 .addInterceptor { chain ->
@@ -70,15 +74,46 @@ class NetworkUtil private constructor() {
         ): Document {
             println("\ngetRequest.url=$url")
 
-            val document = Jsoup.connect(url)
-                .userAgent(userAgent)
-                .header("Content-Type", contentType)
-                .header("Cookie", getCookies())
-                .get()
-            println(document.html())
-            getFormhash(document = document)
-
-            return document
+            try {
+                // 使用Jsoup发起请求的代码
+                val document = Jsoup.connect(url)
+                    .userAgent(userAgent)
+                    .header("Content-Type", contentType)
+                    .header("Cookie", getCookies())
+                    .get()
+                println(document.html())
+                getFormhash(document = document)
+                // 处理成功响应
+                return document
+            } catch (e: org.jsoup.HttpStatusException) {
+                // 专门处理HTTP状态码异常
+                when (e.statusCode) {
+                    503 -> {
+                        // 处理服务不可用错误
+                        Log.e("Network", "服务暂时不可用，请稍后重试", e)
+                        // 通知UI层显示友好错误信息
+                    }
+                    404 -> {
+                        // 处理未找到错误
+                        Log.e("Network", "请求的资源不存在", e)
+                    }
+                    // 其他状态码...
+                    else -> {
+                        Log.e("Network", "HTTP错误: ${e.statusCode}", e)
+                    }
+                }
+                // 返回可正常 selectXpath 的空文档；
+                // 不能用 Document(url) 壳对象，其上 selectXpath 会抛 NPE 导致应用崩溃
+                return Jsoup.parse("")
+            } catch (e: IOException) {
+                // 处理网络IO异常
+                Log.e("Network", "网络连接异常", e)
+                return Jsoup.parse("")
+            } catch (e: Exception) {
+                // 处理其他所有可能异常
+                Log.e("Network", "请求发生异常", e)
+                return Jsoup.parse("")
+            }
         }
 
         fun postRequest(
@@ -105,18 +140,26 @@ class NetworkUtil private constructor() {
             val reqBuilder = Request.Builder()
             val request = reqBuilder.url(url)
                 .post(requestBody)
+                .header("User-Agent", userAgent)
                 .header("Cookie", getCookies())
                 .build()
-            val response = httpClient.newCall(request).execute()
-            val html = response.body?.string()
-
-            println("response html begin!")
-            println(html)
-            println("response html end!")
 
             var document = Jsoup.parse("")
-            html?.let {
-               document = Jsoup.parse(it)
+            try {
+                val response = httpClient.newCall(request).execute()
+                val html = response.body?.string()
+
+                println("response html begin!")
+                println(html)
+                println("response html end!")
+
+                html?.let {
+                   document = Jsoup.parse(it)
+                }
+            } catch (e: IOException) {
+                // 处理网络IO异常，避免超时导致应用崩溃
+                Log.e("Network", "请求发生异常", e)
+                document = Jsoup.parse("")
             }
             getFormhash(document = document)
 
@@ -131,10 +174,14 @@ class NetworkUtil private constructor() {
             var avatar = url.replace("&size=small", "")
             avatar = avatar.replace("&size=middle", "")
             avatar = avatar.replace("&size=big", "")
-            if (!avatar.contains(HTMLURL.BASE)) {
-                avatar = HTMLURL.BASE + "/" + avatar
+            // 站点改版后页面里的资源 src 可能是绝对地址，旧页面/接口仍是相对路径
+            if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+                return avatar
             }
-            return avatar
+            if (avatar.isEmpty()) {
+                return HTMLURL.NO_AVATAR
+            }
+            return HTMLURL.BASE + "/" + avatar
         }
 
         fun getUid(text: String): String {
@@ -142,7 +189,8 @@ class NetworkUtil private constructor() {
                 val uids = text.split("uid-")
                 return uids.last().replace(".html", "")
             } else if (text.contains("uid=")) {
-                return text.split("uid=").last()
+                // 站点改版后存在 home.php?mod=space&uid=xxx 形式的链接，需截断尾部参数
+                return text.split("uid=").last().split("&").first()
             }
             return ""
         }
@@ -152,10 +200,14 @@ class NetworkUtil private constructor() {
                 val uids = text.split("thread-")
                 return uids.last().split("-").first()
             } else if (text.contains("mod=viewthread&tid=")) {
-                return text.split("mod=viewthread&tid=").last()
+                // 站点改版后链接可能带有 &extra= 等尾部参数，需截断
+                return text.split("mod=viewthread&tid=").last().split("&").first()
             } else if (text.contains("&ptid=")) {
                 return text.split("&ptid=").last()
-                    .split("&pid=").first()
+                    .split("&").first()
+            } else if (text.contains("tid=")) {
+                // 站点改版后存在 forum.php?mod=redirect&tid=xxx 形式的链接
+                return text.split("tid=").last().split("&").first()
             }
             return ""
         }
@@ -215,6 +267,7 @@ object HTMLURL {
     const val APP_RELEASE = "$APP_GITHUB/releases"
 
     const val BASE = "https://www.chongbuluo.com"
+    const val NO_AVATAR = "$BASE/uc_server/images/noavatar_small.gif"
 
     const val LOGIN = "$BASE/member.php?mod=logging&action=login&loginsubmit=yes"
     const val PROFILE = "$BASE/home.php?mod=space&do=profile&from=space&uid="

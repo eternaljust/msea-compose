@@ -73,7 +73,7 @@ class ProfileDetailViewModel : ViewModel() {
                 profile.uid = uid
             } else {
                 val id = document.selectXpath("//div[@class='h cl']//a").attr("href")
-                if (id.contains("uid-")) {
+                if (id.contains("uid-") || id.contains("uid=")) {
                     profile.uid = NetworkUtil.getUid(id)
                     println("profile.uid = ${profile.uid }")
                 }
@@ -259,7 +259,7 @@ class ProfileDetailFriendViewModel : ViewModel() {
                     friend.name = name
                 }
                 val uid = it.selectXpath("h4/a").attr("href")
-                if (uid.contains("uid-")) {
+                if (uid.contains("uid-") || uid.contains("uid=")) {
                     friend.uid = NetworkUtil.getUid(uid)
                 }
                 val content = it.selectXpath("p[@class='maxh']").text()

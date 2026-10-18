@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eternaljust.msea.R
@@ -42,7 +44,7 @@ import kotlinx.coroutines.launch
 fun SignPage(
     scaffoldState: SnackbarHostState,
     navController: NavHostController,
-    viewModel: SignViewModel = viewModel()
+    viewModel: SignViewModel = SignViewModel.getInstance()
 ) {
     val items = viewModel.signItems
     val pagerState = rememberPagerState { items.size }

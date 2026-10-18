@@ -52,6 +52,16 @@ class DrawerViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val url = HTMLURL.PROFILE + UserInfo.instance.uid
             val document = NetworkUtil.getRequest(url)
+            // 兼容旧版本登录未保存 uid 的情况，从个人资料页链接中自愈补存
+            if (UserInfo.instance.uid.isEmpty()) {
+                val id = document.selectXpath("//div[@class='h cl']//a").attr("href")
+                if (id.contains("uid-") || id.contains("uid=")) {
+                    val uid = NetworkUtil.getUid(id)
+                    if (uid.isNotEmpty()) {
+                        UserInfo.instance.uid = uid
+                    }
+                }
+            }
             val src = document.selectXpath("//div[@class='h cl']//img").attr("src")
             if (src.isNotEmpty()) {
                 val avatar = NetworkUtil.getAvatar(src)

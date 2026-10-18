@@ -5,16 +5,39 @@ plugins {
     id 'kotlin-parcelize'
 }
 
+// 签名信息从 local.properties 读取（该文件不入库），避免密钥泄露
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('local.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+def releaseStoreFile = keystoreProperties['RELEASE_STORE_FILE']
+def releaseSigningReady = releaseStoreFile != null && !releaseStoreFile.trim().isEmpty() &&
+        keystoreProperties['RELEASE_STORE_PASSWORD'] != null && !keystoreProperties['RELEASE_STORE_PASSWORD'].trim().isEmpty()
+
 android {
     namespace 'com.eternaljust.msea'
     compileSdk 36
+
+    signingConfigs {
+        if (releaseSigningReady) {
+            release {
+                // 相对路径基于项目根目录解析（而非 app/ 模块目录）
+                storeFile rootProject.file(releaseStoreFile)
+                storeType keystoreProperties['RELEASE_STORE_TYPE'] ?: 'PKCS12'
+                storePassword keystoreProperties['RELEASE_STORE_PASSWORD']
+                keyAlias keystoreProperties['RELEASE_KEY_ALIAS']
+                keyPassword keystoreProperties['RELEASE_KEY_PASSWORD'] ?: keystoreProperties['RELEASE_STORE_PASSWORD']
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.eternaljust.msea"
         minSdk 29
         targetSdk 36
-        versionCode 20
-        versionName "1.1.1"
+        versionCode 21
+        versionName "1.1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -34,6 +57,10 @@ android {
             // 自动移除未使用的资源
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // local.properties 中签名信息填写完整后自动签名；未填写时输出未签名包
+            if (releaseSigningReady) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {

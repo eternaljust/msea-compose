@@ -98,7 +98,7 @@ class TopicDetailViewModel : ViewModel() {
             val document = NetworkUtil.getRequest(url)
             val result = document.html()
             if (result.contains("信息收藏成功")) {
-                val count = viewStates.favoriteCount.toInt() + 1
+                val count = (viewStates.favoriteCount.toIntOrNull() ?: 0) + 1
                 viewStates = viewStates.copy(favoriteCount = count.toString())
                 _viewEvents.send(TopicDetailViewEvent.Message("收藏成功"))
             } else if (result.contains("已收藏")) {
@@ -160,7 +160,7 @@ class TopicDetailViewModel : ViewModel() {
             val result = document.selectXpath("//div[@class='wp cl w']/div[@class='nfl']").text()
             if (result.contains("+")) {
                 if (viewStates.recommendAddCount == "0") {
-                    val count = viewStates.recommendAddCount.toInt() + 1
+                    val count = (viewStates.recommendAddCount.toIntOrNull() ?: 0) + 1
                     viewStates = viewStates.copy(recommendAddCount = count.toString())
                 }
                 _viewEvents.send(TopicDetailViewEvent.Message("已顶"))
@@ -352,8 +352,11 @@ class TopicDetailViewModel : ViewModel() {
                 val pageNumber = document.selectXpath("//div[@class='pgs mtm mbm cl']//label/span").text()
                 if (pageNumber.isNotEmpty()) {
                     val number = pageNumber.replace("/ ", "").replace(" 页", "")
-                    viewStates = viewStates.copy(pageNumber = number.toInt())
-                    println("pageNumber---${viewStates.pageNumber}")
+                    // 站点改版后分页文本可能非纯数字，避免 toInt 崩溃
+                    number.toIntOrNull()?.let {
+                        viewStates = viewStates.copy(pageNumber = it)
+                        println("pageNumber---$it")
+                    }
                 }
 
                 val action = document.selectXpath("//div[@id='f_pst']/form")
@@ -399,7 +402,7 @@ class TopicDetailViewModel : ViewModel() {
                 }
                 val uid = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/a")
                     .attr("href")
-                if (uid.contains("uid-")) {
+                if (uid.contains("uid-") || uid.contains("uid=")) {
                     comment.uid = NetworkUtil.getUid(uid)
                 }
                 val time = it.selectXpath("tr/td[@class='plc']//div[@class='authi']/em")

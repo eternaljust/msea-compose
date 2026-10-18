@@ -102,7 +102,7 @@ class NodeListViewModel : ViewModel() {
                         topic.name = name
                     }
                     val uid = it.selectXpath("tr/td[@class='by']/cite/a").attr("href")
-                    if (uid.contains("uid-")) {
+                    if (uid.contains("uid-") || uid.contains("uid=")) {
                         topic.uid = NetworkUtil.getUid(uid)
                     }
                     val time = it.selectXpath("tr/td[@class='by']/em/a").text()
@@ -122,8 +122,8 @@ class NodeListViewModel : ViewModel() {
                         topic.title = title1
                     }
                     val thread = it.selectXpath("tr/th[@class='new']/a[@class='s xst']").attr("href")
-                    if (thread.contains("thread-")) {
-                        topic.tid = thread.split("thread-").last().split("-").first()
+                    if (thread.contains("thread-") || thread.contains("tid=")) {
+                        topic.tid = NetworkUtil.getTid(thread)
                     }
 
                     val icon1 = it.selectXpath("tr/th[@class='new']/span[1]").attr("class")

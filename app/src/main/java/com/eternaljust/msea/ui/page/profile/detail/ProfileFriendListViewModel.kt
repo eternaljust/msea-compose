@@ -52,7 +52,7 @@ class FriendListViewModel : ViewModel() {
                     friend.hot = hot.replace("\n", "")
                 }
                 val uid = it.selectXpath("h4/a").attr("href")
-                if (uid.contains("uid-")) {
+                if (uid.contains("uid-") || uid.contains("uid=")) {
                     friend.uid = NetworkUtil.getUid(uid)
                 }
                 val topic = it.selectXpath("p[@class='maxh']").text()
@@ -122,7 +122,7 @@ class FriendVisitorTraceListViewModel(
                     friend.time = time.replace("\n", "")
                 }
                 val uid = it.selectXpath("h4/a").attr("href")
-                if (uid.contains("uid-")) {
+                if (uid.contains("uid-") || uid.contains("uid=")) {
                     friend.uid = NetworkUtil.getUid(uid)
                 }
                 val topic = it.selectXpath("p[@class='maxh']").text()

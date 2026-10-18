@@ -44,7 +44,7 @@ class SignListViewModel : ViewModel() {
                     }
 
                     val href = it.selectXpath("td[2]//a").attr("href")
-                    if (href.contains("uid-")) {
+                    if (href.contains("uid-") || href.contains("uid=")) {
                         signModel.uid = NetworkUtil.getUid(href)
                     }
 
@@ -125,7 +125,7 @@ class SignDayListViewModel(
                     }
 
                     val href = it.selectXpath("td[2]//a").attr("href")
-                    if (href.contains("uid-")) {
+                    if (href.contains("uid-") || href.contains("uid=")) {
                         signModel.uid = NetworkUtil.getUid(href)
                     }
 
